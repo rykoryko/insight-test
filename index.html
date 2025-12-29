@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Pixy インサイト（UI）</title>
-  <style>
+  <style>html{ -webkit-text-size-adjust: 100%; }
+
     :root{
       --bg:#ffffff;
       --text:#111827;
@@ -104,14 +105,11 @@
     /* 横スクロール（スマホは指で、PCはホイール/トラックパッド/ドラッグで） */
     .chartViewport{
       position:absolute; left:0; right:0; top:0; bottom:28px;
-      overflow-x: hidden; overflow-y:hidden;
+      overflow-x:hidden; overflow-y:hidden;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      cursor: default;
-    
-  overscroll-behavior: contain;
-  touch-action: pan-y;
-}
+      cursor: grab;
+    }
     .chartViewport:active{ cursor: grabbing; }
     .chartViewport::-webkit-scrollbar{ display:none; }
 
@@ -138,11 +136,14 @@
       border-radius: 10px; font-size: 12px; font-weight:800; color: var(--text);
       transform: translate(-50%, -110%); pointer-events:none; display:none; white-space:nowrap; z-index: 4;
     }
-    .tooltip .tLabel{ font-weight:900; margin-bottom: 2px; color: var(--text); }
-    .tooltip .tVal{ font-weight:900; color: var(--muted); }
+    .tooltip .tLabel{
+  font-size: 12px;
+  font-weight: 700; font-weight:900; margin-bottom: 2px; color: var(--text); }
+    .tooltip .tVal{
+  font-size: 22px;
+  font-weight: 800; font-weight:900; color: var(--muted); }
 
-    .xLabelsViewport{ margin-top: 8px; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none;   touch-action: pan-y;
-}
+    .xLabelsViewport{ margin-top: 8px; overflow-x:hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .xLabelsViewport::-webkit-scrollbar{ display:none; }
     .xLabels{
       display:flex; gap:0; user-select:none; font-size: 12px; color: var(--muted);
@@ -369,8 +370,22 @@
     }
     return arr;
   }
-  function hourLabels(){ const a=[]; for(let i=0;i<24;i++) a.push(i.toString().padStart(2,"0")+"時"); return a; }
-  function dayLabels(){ const a=[]; for(let i=1;i<=31;i++) a.push(i+"日"); return a; }
+  function hourLabels(){
+  const a=[];
+  for(let i=0;i<24;i++){
+    const show = (i%3===0) || (i===23);
+    a.push(show ? `${i}時` : "");
+  }
+  return a;
+}
+  function dayLabels(){
+  const a=[];
+  for(let d=1; d<=31; d++){
+    const show = (d===1) || (d===31) || ((d-1)%5===0);
+    a.push(show ? `${d}日` : "");
+  }
+  return a;
+}
   function weekLabels(){ return ["日","月","火","水","木","金","土"]; }
 
   const APP = {
@@ -534,51 +549,35 @@
   const chart = {
     canvas:null, ctx:null, inner:null, viewport:null, xLabelViewport:null, xLabelRow:null,
     w:0, h:0, padding:{ left:10, right:46, top:10, bottom:10 }, yMax:1155, slot:64,
-    dx:0,
     setSize(){
       const vpRect = this.viewport.getBoundingClientRect();
-      const wCss = Math.max(1, vpRect.width);
-      const hCss = Math.max(1, vpRect.height);
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const d = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode];
+      const n = d.values.length;
 
-      // Canvas sizing (CSS px -> device px)
-      this.canvas.style.width = wCss + "px";
-      this.canvas.style.height = hCss + "px";
-      this.canvas.width = Math.round(wCss * dpr);
-      this.canvas.height = Math.round(hCss * dpr);
-      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const avail = Math.max(1, vpRect.width - this.padding.left - this.padding.right);
+      this.slot = Math.max(8, avail / Math.max(1, (n-1)));
 
-      this.w = wCss;
-      this.h = hCss;
+      const innerW = vpRect.width;
+      const innerH = vpRect.height;
 
-      this.slot = slotForMode(APP.state.chartMode);
+      this.inner.style.width = innerW + "px";
+      this.inner.style.height = innerH + "px";
 
-      const month = APP.state.month;
-      const mode = APP.state.chartMode;
-      const d = (APP.dataByMonth && APP.dataByMonth[month] && APP.dataByMonth[month].chart) ? APP.dataByMonth[month].chart[mode] : null;
-      const n = (d && d.values) ? d.values.length : 0;
-      this.n = n;
+      this.w = Math.floor(innerW);
+      this.h = Math.floor(innerH);
 
-      // No horizontal scroll: keep inner widths fixed to viewport width
-      this.inner.style.width = wCss + "px";
-      this.inner.style.height = hCss + "px";
-      this.xLabelsInner.style.width = wCss + "px";
+      this.canvas.width = Math.floor(this.w * dpr);
+      this.canvas.height = Math.floor(this.h * dpr);
+      this.canvas.style.width = this.w + "px";
+      this.canvas.style.height = this.h + "px";
+      this.ctx.setTransform(dpr,0,0,dpr,0,0);
 
-      const colN = Math.max(1, n);
+      this.xLabelRow.style.width = innerW + "px";
+      this.xLabelRow.style.setProperty("--slot", this.slot + "px");
 
-      // X label row: grid aligned to data points
-      this.xLabelRow.style.display = "grid";
-      this.xLabelRow.style.gridTemplateColumns = `repeat(${colN}, minmax(0, 1fr))`;
-      this.xLabelRow.style.alignItems = "center";
-      this.xLabelRow.style.width = "100%";
-      this.xLabelRow.style.gap = "0px";
-
-      const plotW = Math.max(1, wCss - this.padding.left - this.padding.right);
-      this.dx = (colN <= 1) ? 0 : (plotW / (colN - 1));
-
-      // Reset scroll positions (keep at 0)
+      // 横スクロールを使わない前提
       this.viewport.scrollLeft = 0;
-      this.xLabelsViewport.scrollLeft = 0;
     },
     draw(){
       const ctx = this.ctx;
@@ -612,7 +611,7 @@
       const x0 = padding.left;
       const y0 = h - padding.bottom;
       const y1 = padding.top;
-      const dx = (this.dx && this.dx > 0) ? this.dx : this.slot;
+      const dx = this.slot;
 
       const pts = values.map((v,i)=>{
         const x = x0 + dx*i;
@@ -652,50 +651,15 @@
   };
 
   function renderXLabels(labels){
-    const mode = APP.state.chartMode;
-    const n = labels.length;
-
-    // Ensure grid columns match the data points (no scroll)
-    const colN = Math.max(1, n);
-    chart.xLabelRow.style.display = "grid";
-    chart.xLabelRow.style.gridTemplateColumns = `repeat(${colN}, minmax(0, 1fr))`;
-    chart.xLabelRow.style.gap = "0px";
-
-    const dx = (chart.dx && chart.dx > 0) ? chart.dx : 0;
-
-    // Decide which labels to show (keep range full, avoid cramming)
-    let step = 1;
-    if(mode === "hour"){
-      if(dx >= 30) step = 1;
-      else if(dx >= 20) step = 2;
-      else if(dx >= 12) step = 3;  // default: every 3 hours on small screens
-      else step = 6;
-    }else if(mode === "day"){
-      if(dx >= 26) step = 1;
-      else if(dx >= 20) step = 2;
-      else if(dx >= 12) step = 5;  // default: every 5 days on small screens
-      else step = 7;
-    }else{
-      step = 1; // weekday
-    }
-
-    chart.xLabelRow.innerHTML = "";
-    const frag = document.createDocumentFragment();
-
-    for(let i=0;i<n;i++){
-      const sp = document.createElement("span");
-      sp.className = "xLabel";
-      const show = (step === 1) || (i === 0) || (i === n-1) || (i % step === 0);
-      sp.textContent = show ? labels[i] : "";
-      sp.style.textAlign = "center";
-      frag.appendChild(sp);
-    }
-    chart.xLabelRow.appendChild(frag);
+    const row = chart.xLabelRow; row.innerHTML = "";
+    labels.forEach(lab=>{ const sp = document.createElement("span"); sp.textContent = lab; row.appendChild(sp); });
   }
 
   function autoScrollToX(x){
-    // disabled: no horizontal scrolling
-    return;
+    const vp = chart.viewport;
+    const left = vp.scrollLeft, right = left + vp.clientWidth, pad = 40;
+    if(x < left + pad) vp.scrollLeft = Math.max(0, x - pad);
+    else if(x > right - pad) vp.scrollLeft = Math.max(0, x - vp.clientWidth + pad);
   }
 
   function renderTooltip(x, y, label, val){
@@ -725,21 +689,15 @@
   }
 
   function pickIndexFromClientX(clientX){
-    const month = APP.state.month;
-    const mode = APP.state.chartMode;
-    const d = APP.dataByMonth[month].chart[mode];
+    const d = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode];
     const n = d.values.length;
-    if(n <= 1) return 0;
-
-    const rect = chart.canvas.getBoundingClientRect();
-    const xCss = clientX - rect.left;
-
-    const dx = (chart.dx && chart.dx > 0) ? chart.dx : 1;
+    const rect = chart.viewport.getBoundingClientRect();
+    const xInViewport = clientX - rect.left;
+    const xInInner = xInViewport + chart.viewport.scrollLeft;
     const x0 = chart.padding.left;
-
-    const raw = Math.round((xCss - x0) / dx);
-    const i = Math.max(0, Math.min(n - 1, raw));
-    return i;
+    const dx = chart.slot;
+    const i = Math.round((xInInner - x0) / dx);
+    return Math.max(0, Math.min(n-1, i));
   }
 
   function attachScrollSync(){
@@ -765,41 +723,68 @@
   // PCのマウスは「ドラッグで横スクロール」＋「クリックで点を選ぶ」
   function attachViewportPanAndSelect(){
     const vp = chart.viewport;
+    let down = false;
+    let moved = false;
+    let startX = 0;
+    let startScroll = 0;
 
-    // Mouse hover
-    vp.addEventListener("mousemove", (e)=>{
-      const i = pickIndexFromClientX(e.clientX);
-      APP.state.cursorIndex = i;
-      chart.draw();
-    });
-    vp.addEventListener("mouseleave", ()=>{
-      APP.state.cursorIndex = null;
-      chart.draw();
+    vp.addEventListener("pointerdown", (e)=>{
+      // タッチはネイティブスクロール優先（ここでは何もしない）
+      if(e.pointerType !== "mouse") return;
+      if(e.button !== 0) return;
+
+      down = true;
+      moved = false;
+      startX = e.clientX;
+      startScroll = vp.scrollLeft;
+      vp.setPointerCapture(e.pointerId);
     });
 
-    // Click / tap: keep the tooltip on the selected point
+    vp.addEventListener("pointermove", (e)=>{
+      if(!down) return;
+      const dx = e.clientX - startX;
+      if(Math.abs(dx) > 3) moved = true;
+      vp.scrollLeft = startScroll - dx;
+    });
+
+    vp.addEventListener("pointerup", (e)=>{
+      if(!down) return;
+      down = false;
+      try{ vp.releasePointerCapture(e.pointerId); }catch(_){}
+      // 動いてないなら「クリック」とみなして点を選ぶ
+      if(!moved){
+        APP.state.cursorIndex = pickIndexFromClientX(e.clientX);
+        chart.draw();
+      }
+    });
+
+    vp.addEventListener("pointercancel", (e)=>{ down = false; });
+
+    // タッチでタップしたときに点を選べるように（スクロール後の誤爆はほぼ起きない）
     vp.addEventListener("click", (e)=>{
-      const i = pickIndexFromClientX(e.clientX);
-      APP.state.cursorIndex = i;
+      if(e.detail === 0) return; // programmatic
+      // マウスのクリックはpointerup側で処理済みなので二重にしない
+      // ただし一部環境でpointerupが来ない場合の保険
+      if(e.pointerType === "mouse") return;
+      APP.state.cursorIndex = pickIndexFromClientX(e.clientX);
       chart.draw();
-    });
+    }, {passive:true});
 
-    // Touch: show while touching / moving (no horizontal panning)
+    // スマホ（指でなぞって値を出す）
     vp.addEventListener("touchstart", (e)=>{
-      if(!e.touches || e.touches.length !== 1) return;
-      const t = e.touches[0];
-      const i = pickIndexFromClientX(t.clientX);
-      APP.state.cursorIndex = i;
+      const t = e.touches && e.touches[0];
+      if(!t) return;
+      APP.state.cursorIndex = pickIndexFromClientX(t.clientX);
       chart.draw();
     }, {passive:true});
 
     vp.addEventListener("touchmove", (e)=>{
-      if(!e.touches || e.touches.length !== 1) return;
-      const t = e.touches[0];
-      const i = pickIndexFromClientX(t.clientX);
-      APP.state.cursorIndex = i;
+      const t = e.touches && e.touches[0];
+      if(!t) return;
+      APP.state.cursorIndex = pickIndexFromClientX(t.clientX);
       chart.draw();
     }, {passive:true});
+
   }
 
   function syncChartModeButtons(){
@@ -829,10 +814,9 @@
   }
 
   function attachUIEvents(){
-    el("tabKpi").addEventListener("click", ()=>{ APP.state.mainTab="kpi"; syncAll(false); });
-    el("tabDetail").addEventListener("click", ()=>{ APP.state.mainTab="detail"; syncAll(false); });
-
-    [...document.querySelectorAll(".toggle")].forEach(b=>{
+    el("tabKpi").addEventListener("click",()=>{APP.state.mainTab="kpi";syncAll(false);document.getElementById("viewKpi")?.scrollIntoView({behavior:"smooth",block:"start"});});
+el("tabDetail").addEventListener("click",()=>{APP.state.mainTab="detail";syncAll(false);document.getElementById("viewDetail")?.scrollIntoView({behavior:"smooth",block:"start"});});
+[...document.querySelectorAll(".toggle")].forEach(b=>{
       b.addEventListener("click", ()=>{
         APP.state.chartMode = b.dataset.mode;
         APP.state.cursorIndex = null;
