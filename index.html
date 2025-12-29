@@ -103,7 +103,7 @@
     .chartWrap{ position:relative; height: 180px; margin-top: 4px; border-radius: 12px; background: #ffffff; overflow:hidden; }
 
     /* 横スクロール（スマホは指で、PCはホイール/トラックパッド/ドラッグで） */
-    .chartViewport{
+    .chartViewport{touch-action: pan-y; 
       position:absolute; left:0; right:0; top:0; bottom:28px;
       overflow-x:hidden; overflow-y:hidden;
       -webkit-overflow-scrolling: touch;
@@ -140,7 +140,7 @@
   font-size: 12px;
   font-weight: 700; font-weight:900; margin-bottom: 2px; color: var(--text); }
     .tooltip .tVal{
-  font-size: 22px;
+  font-size:18px;
   font-weight: 800; font-weight:900; color: var(--muted); }
 
     .xLabelsViewport{ margin-top: 8px; overflow-x:hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -150,7 +150,7 @@
       font-weight:700; padding: 0 2px; white-space:nowrap;
     }
     .xLabels span{
-      flex: 0 0 var(--slot, 64px); text-align:center; overflow:hidden; text-overflow:ellipsis;
+      flex: 0 0 var(--slot, 64px); text-align:center; overflow:visible; text-overflow:clip;
     }
 
     .detailTabs{ display:flex; gap:8px; margin: 10px 0 10px; }
@@ -207,7 +207,13 @@
     }
     .cta:active{ transform: scale(.99); }
     .hidden{ display:none !important; }
-  </style>
+  
+@media (max-width: 420px){
+  .xLabels span{font-size:11px;}
+  .tooltip{min-width:94px;}
+  .tooltip .tVal{font-size:16px;}
+}
+</style>
 </head>
 <body>
   <div class="wrap">
@@ -371,21 +377,17 @@
     return arr;
   }
   function hourLabels(){
-  const a=[];
-  for(let i=0;i<24;i++){
-    const show = (i%3===0) || (i===23);
-    a.push(show ? `${i}時` : "");
+    // スライドなしで見やすくするため、3時間おき＋最後に23時を表示
+    const ticks = [0,3,6,9,12,15,18,21,23];
+    return ticks.map(h => `${h}時`);
   }
-  return a;
-}
-  function dayLabels(){
-  const a=[];
-  for(let d=1; d<=31; d++){
-    const show = (d===1) || (d===31) || ((d-1)%5===0);
-    a.push(show ? `${d}日` : "");
+  function dayLabels(nDays=31){
+    // スライドなしで見やすくするため、5日おき＋最後の日（例:31日）を表示
+    const ticks = [1,6,11,16,21,26,nDays];
+    // 重複を除いて昇順に整える
+    const uniq = Array.from(new Set(ticks)).sort((a,b)=>a-b);
+    return uniq.map(d => `${d}日`);
   }
-  return a;
-}
   function weekLabels(){ return ["日","月","火","水","木","金","土"]; }
 
   const APP = {
@@ -396,9 +398,9 @@
         money: 100000, mom: 101,
         repeatCnt: 13, repeatUsers: 9, kanteiCnt: 76, kanteiUsers: 63,
         chart: {
-          hour: { labels: hourLabels(), values: makeSeries(24, 650, 420) },
+          hour: { labels: hourLabels(), values: makeSeries(hourLabels().length, 650, 420) },
           weekday: { labels: weekLabels(), values: makeSeries(7, 720, 300) },
-          day: { labels: dayLabels(), values: makeSeries(31, 680, 520) }
+          day: { labels: dayLabels(31), values: makeSeries(dayLabels(31).length, 680, 520) }
         },
         user: {
           age: [
@@ -438,9 +440,9 @@
       APP.dataByMonth[m] = JSON.parse(JSON.stringify(base));
       APP.dataByMonth[m].money = def.money;
       APP.dataByMonth[m].mom = def.mom;
-      APP.dataByMonth[m].chart.hour.values = makeSeries(24, 650+def.bump, 420);
+      APP.dataByMonth[m].chart.hour.values = makeSeries(hourLabels().length, 650+def.bump, 420);
       APP.dataByMonth[m].chart.weekday.values = makeSeries(7, 720+def.bump*0.5, 300);
-      APP.dataByMonth[m].chart.day.values = makeSeries(31, 680+def.bump, 520);
+      APP.dataByMonth[m].chart.day.values = makeSeries(dayLabels(31).length, 680+def.bump, 520);
     });
   })();
 
@@ -722,69 +724,25 @@
 
   // PCのマウスは「ドラッグで横スクロール」＋「クリックで点を選ぶ」
   function attachViewportPanAndSelect(){
-    const vp = chart.viewport;
-    let down = false;
-    let moved = false;
-    let startX = 0;
-    let startScroll = 0;
+    // ここは「スライドなし」前提。横スクロール/ドラッグはしない。
+    // 代わりに「タップした位置の点」をすぐ選択してツールチップ表示する。
+    const viewport = chart.viewport;
 
-    vp.addEventListener("pointerdown", (e)=>{
-      // タッチはネイティブスクロール優先（ここでは何もしない）
-      if(e.pointerType !== "mouse") return;
-      if(e.button !== 0) return;
+    function selectAtClientX(clientX){
+      const idx = pickIndexFromClientX(clientX);
+      chart.selectIndex(idx);
+    }
 
-      down = true;
-      moved = false;
-      startX = e.clientX;
-      startScroll = vp.scrollLeft;
-      vp.setPointerCapture(e.pointerId);
-    });
+    // iPhone Safari は click が遅い/発火しないケースがあるので
+    // touchstart / pointerdown の両方で拾う
+    viewport.addEventListener("touchstart",(e)=>{
+      if(!e.touches || e.touches.length!==1) return;
+      selectAtClientX(e.touches[0].clientX);
+    },{passive:true});
 
-    vp.addEventListener("pointermove", (e)=>{
-      if(!down) return;
-      const dx = e.clientX - startX;
-      if(Math.abs(dx) > 3) moved = true;
-      vp.scrollLeft = startScroll - dx;
-    });
-
-    vp.addEventListener("pointerup", (e)=>{
-      if(!down) return;
-      down = false;
-      try{ vp.releasePointerCapture(e.pointerId); }catch(_){}
-      // 動いてないなら「クリック」とみなして点を選ぶ
-      if(!moved){
-        APP.state.cursorIndex = pickIndexFromClientX(e.clientX);
-        chart.draw();
-      }
-    });
-
-    vp.addEventListener("pointercancel", (e)=>{ down = false; });
-
-    // タッチでタップしたときに点を選べるように（スクロール後の誤爆はほぼ起きない）
-    vp.addEventListener("click", (e)=>{
-      if(e.detail === 0) return; // programmatic
-      // マウスのクリックはpointerup側で処理済みなので二重にしない
-      // ただし一部環境でpointerupが来ない場合の保険
-      if(e.pointerType === "mouse") return;
-      APP.state.cursorIndex = pickIndexFromClientX(e.clientX);
-      chart.draw();
-    }, {passive:true});
-
-    // スマホ（指でなぞって値を出す）
-    vp.addEventListener("touchstart", (e)=>{
-      const t = e.touches && e.touches[0];
-      if(!t) return;
-      APP.state.cursorIndex = pickIndexFromClientX(t.clientX);
-      chart.draw();
-    }, {passive:true});
-
-    vp.addEventListener("touchmove", (e)=>{
-      const t = e.touches && e.touches[0];
-      if(!t) return;
-      APP.state.cursorIndex = pickIndexFromClientX(t.clientX);
-      chart.draw();
-    }, {passive:true});
-
+    viewport.addEventListener("pointerdown",(e)=>{
+      selectAtClientX(e.clientX);
+    },{passive:true});
   }
 
   function syncChartModeButtons(){
