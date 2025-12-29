@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Pixy インサイト（UI）</title>
+  <title>Pixy インサイト</title>
   <style>html{ -webkit-text-size-adjust: 100%; }
 
     :root{
@@ -100,19 +100,15 @@
       border-radius: var(--radius); background:#fff; box-shadow: var(--shadow);
       padding: 10px 10px 8px; position:relative; overflow:hidden;
     }
+    .chartCard *{ font-size: 14px; } /* フォントサイズ統一 */
     .chartWrap{ position:relative; height: 180px; margin-top: 4px; border-radius: 12px; background: #ffffff; overflow:hidden; }
 
-    /* 横スクロール（スマホは指で、PCはホイール/トラックパッド/ドラッグで） */
-    .chartViewport{touch-action: pan-y; 
+    .chartViewport{
+      touch-action: pan-y;
       position:absolute; left:0; right:0; top:0; bottom:28px;
       overflow-x:hidden; overflow-y:hidden;
       -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      cursor: grab;
     }
-    .chartViewport:active{ cursor: grabbing; }
-    .chartViewport::-webkit-scrollbar{ display:none; }
-
     .chartInner{ position:relative; height:100%; width: 100%; }
     canvas{display:block; width:100%; height:100%;}
 
@@ -136,12 +132,8 @@
       border-radius: 10px; font-size: 12px; font-weight:800; color: var(--text);
       transform: translate(-50%, -110%); pointer-events:none; display:none; white-space:nowrap; z-index: 4;
     }
-    .tooltip .tLabel{
-  font-size: 12px;
-  font-weight: 700; font-weight:900; margin-bottom: 2px; color: var(--text); }
-    .tooltip .tVal{
-  font-size:18px;
-  font-weight: 800; font-weight:900; color: var(--muted); }
+    .tooltip .tLabel{ font-size: 12px; font-weight:900; margin-bottom: 2px; color: var(--text); }
+    .tooltip .tVal{ font-size:18px; font-weight:900; color: var(--muted); }
 
     .xLabelsViewport{ margin-top: 8px; overflow-x:hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
     .xLabelsViewport::-webkit-scrollbar{ display:none; }
@@ -207,12 +199,12 @@
     }
     .cta:active{ transform: scale(.99); }
     .hidden{ display:none !important; }
-  
-@media (max-width: 420px){
-  .xLabels span{font-size:11px;}
-  .tooltip{min-width:94px;}
-  .tooltip .tVal{font-size:16px;}
-}
+
+    @media (max-width: 420px){
+      .xLabels span{font-size:11px;}
+      .tooltip{min-width:94px;}
+      .tooltip .tVal{font-size:16px;}
+    }
 </style>
 </head>
 <body>
@@ -225,11 +217,9 @@
     <div class="pinkline"></div>
 
     <div class="label">鑑定師名</div>
-    <input id="readerName" class="input" placeholder="例：インイン" list="nameList" />
+    <input id="readerName" class="input" placeholder="例：minami" list="nameList" value="minami" />
     <datalist id="nameList">
-      <option value="インイン"></option>
-      <option value="ササイ"></option>
-      <option value="イトト"></option>
+      <option value="minami"></option>
     </datalist>
 
     <div class="chipRow" id="monthRow" aria-label="月選択"></div>
@@ -242,27 +232,27 @@
     <div class="cards" role="tablist" aria-label="メイン切替">
       <button class="card active" id="tabKpi" role="tab" aria-selected="true">
         <div class="kpiTitle">今月の報酬金</div>
-        <div class="kpiValue" id="kpiMoney">¥ 100,000</div>
-        <div class="kpiSub">前月比　<span id="kpiMoM">101%</span></div>
+        <div class="kpiValue" id="kpiMoney">—</div>
+        <div class="kpiSub">前月比　<span id="kpiMoM">—</span></div>
       </button>
       <button class="card" id="tabDetail" role="tab" aria-selected="false">
         <div class="kpiTitle">鑑定データ詳細</div>
         <div class="miniGrid">
           <div class="miniItem">
             <div class="miniLabel">リピート件数</div>
-            <div class="miniVal" id="kpiRepeatCnt">13</div>
+            <div class="miniVal" id="kpiRepeatCnt">—</div>
           </div>
           <div class="miniItem" style="text-align:right">
             <div class="miniLabel">リピート人数</div>
-            <div class="miniVal" id="kpiRepeatUsers">9</div>
+            <div class="miniVal" id="kpiRepeatUsers">—</div>
           </div>
           <div class="miniItem">
             <div class="miniLabel">鑑定件数</div>
-            <div class="miniVal" id="kpiKanteiCnt">76</div>
+            <div class="miniVal" id="kpiKanteiCnt">—</div>
           </div>
           <div class="miniItem" style="text-align:right">
             <div class="miniLabel">鑑定人数</div>
-            <div class="miniVal" id="kpiKanteiUsers">63</div>
+            <div class="miniVal" id="kpiKanteiUsers">—</div>
           </div>
         </div>
       </button>
@@ -282,16 +272,16 @@
               <canvas id="chart"></canvas>
               <div class="cursorLine" id="cursorLine"></div>
               <div class="tooltip" id="tooltip">
-                <div class="tLabel" id="tipLabel">02時</div>
-                <div class="tVal" id="tipValue">¥ 800</div>
+                <div class="tLabel" id="tipLabel">—</div>
+                <div class="tVal" id="tipValue">—</div>
               </div>
             </div>
           </div>
 
           <div class="yLabels">
-            <div id="yTop">1,155</div>
-            <div id="yMid">770</div>
-            <div id="yBot">385</div>
+            <div id="yTop">—</div>
+            <div id="yMid">—</div>
+            <div id="yBot">—</div>
           </div>
         </div>
 
@@ -317,12 +307,12 @@
         <div class="subSection" style="margin-top:14px;"><span class="dot"></span>男女比率</div>
         <div class="genderBar">
           <div class="genderTrack">
-            <div class="genderFemale" id="femaleBar" style="width:10%"></div>
-            <div class="genderMale" id="maleBar" style="width:90%"></div>
+            <div class="genderFemale" id="femaleBar" style="width:0%"></div>
+            <div class="genderMale" id="maleBar" style="width:0%"></div>
           </div>
           <div class="genderLabels">
-            <div>女性　<span class="muted" id="femalePct">10%</span></div>
-            <div>男性　<span class="muted" id="malePct">90%</span></div>
+            <div>女性　<span class="muted" id="femalePct">—</span></div>
+            <div>男性　<span class="muted" id="malePct">—</span></div>
           </div>
         </div>
       </div>
@@ -330,17 +320,17 @@
       <div id="panelReader" class="panel hidden">
         <div class="subSection"><span class="dot"></span>待機時間</div>
         <div class="rows">
-          <div class="row"><div class="rLabel">今月の待機時間</div><div class="rVal" id="waitThis">100h</div></div>
-          <div class="row"><div class="rLabel">前月の待機時間</div><div class="rVal" id="waitPrev">110h</div></div>
-          <div class="row"><div class="rLabel">前月比</div><div class="rVal" id="waitMoM">90%</div></div>
+          <div class="row"><div class="rLabel">今月の待機時間</div><div class="rVal" id="waitThis">—</div></div>
+          <div class="row"><div class="rLabel">前月の待機時間</div><div class="rVal" id="waitPrev">—</div></div>
+          <div class="row"><div class="rLabel">前月比</div><div class="rVal" id="waitMoM">—</div></div>
         </div>
 
         <div class="subSection" style="margin-top:12px;"><span class="dot" style="background:#22c55e"></span>アフターメッセージ</div>
         <div class="rows">
-          <div class="row"><div class="rLabel">鑑定件数</div><div class="rVal" id="amTotal">10</div></div>
-          <div class="row"><div class="rLabel">送信数</div><div class="rVal" id="amSent">6</div></div>
-          <div class="row"><div class="rLabel">未送信</div><div class="rVal" id="amUnsent">4</div></div>
-          <div class="row"><div class="rLabel">送信率</div><div class="rVal" id="amRate">60%</div></div>
+          <div class="row"><div class="rLabel">鑑定件数</div><div class="rVal" id="amTotal">—</div></div>
+          <div class="row"><div class="rLabel">送信数</div><div class="rVal" id="amSent">—</div></div>
+          <div class="row"><div class="rLabel">未送信</div><div class="rVal" id="amUnsent">—</div></div>
+          <div class="row"><div class="rLabel">送信率</div><div class="rVal" id="amRate">—</div></div>
         </div>
       </div>
     </div>
@@ -366,89 +356,28 @@
   </div>
 
 <script>
-  function makeSeries(count, base, wobble){
-    const arr = [];
-    for(let i=0;i<count;i++){
-      const t = Math.sin((i/count) * Math.PI * 2) * wobble;
-      const j = (Math.cos((i/count) * Math.PI * 4) * wobble*0.4);
-      const v = Math.max(50, Math.round(base + t + j + (Math.random()-0.5)*wobble*0.35));
-      arr.push(v);
-    }
-    return arr;
-  }
-  function hourLabels(){
-    // スライドなしで見やすくするため、3時間おき＋最後に23時を表示
-    const ticks = [0,3,6,9,12,15,18,21,23];
-    return ticks.map(h => `${h}時`);
-  }
-  function dayLabels(nDays=31){
-    // スライドなしで見やすくするため、5日おき＋最後の日（例:31日）を表示
-    const ticks = [1,6,11,16,21,26,nDays];
-    // 重複を除いて昇順に整える
-    const uniq = Array.from(new Set(ticks)).sort((a,b)=>a-b);
-    return uniq.map(d => `${d}日`);
-  }
-  function weekLabels(){ return ["日","月","火","水","木","金","土"]; }
-
-  const APP = {
-    months: ["12月","11月","10月","9月","8月"],
-    state: { month: "12月", mainTab: "kpi", chartMode: "hour", detailTab: "user", cursorIndex: null },
-    dataByMonth: {
-      "12月": {
-        money: 100000, mom: 101,
-        repeatCnt: 13, repeatUsers: 9, kanteiCnt: 76, kanteiUsers: 63,
-        chart: {
-          hour: { labels: hourLabels(), values: makeSeries(hourLabels().length, 650, 420) },
-          weekday: { labels: weekLabels(), values: makeSeries(7, 720, 300) },
-          day: { labels: dayLabels(31), values: makeSeries(dayLabels(31).length, 680, 520) }
-        },
-        user: {
-          age: [
-            { label:"18 - 24", pct:41.9 },
-            { label:"25 - 34", pct:30.9 },
-            { label:"35 - 44", pct:12.7 },
-            { label:"45 - 54", pct:9.9 }
-          ],
-          gender: { female: 10, male: 90 }
-        },
-        reader: {
-          waitThis: 100, waitPrev: 110, waitMoM: 90,
-          after: { total: 10, sent: 6, unsent: 4, rate: 60 }
-        },
-        p2: {
-          counts: [
-            { label:"1回", n:54, pct:85.7 },
-            { label:"2回", n:5, pct:7.9 },
-            { label:"3回", n:4, pct:6.3 },
-            { label:"4回", n:0, pct:0.0 },
-            { label:"5回以上", n:0, pct:0.0 }
-          ]
-        }
-      }
-    }
-  };
-
-  (function fillOtherMonths(){
-    const base = APP.dataByMonth["12月"];
-    const monthDefs = {
-      "11月": { money: 98000, mom: 97, bump:-60 },
-      "10月": { money: 102000, mom: 104, bump:+40 },
-      "9月": { money: 96000, mom: 92, bump:-120 },
-      "8月": { money: 104000, mom: 110, bump:+90 }
-    };
-    Object.entries(monthDefs).forEach(([m,def])=>{
-      APP.dataByMonth[m] = JSON.parse(JSON.stringify(base));
-      APP.dataByMonth[m].money = def.money;
-      APP.dataByMonth[m].mom = def.mom;
-      APP.dataByMonth[m].chart.hour.values = makeSeries(hourLabels().length, 650+def.bump, 420);
-      APP.dataByMonth[m].chart.weekday.values = makeSeries(7, 720+def.bump*0.5, 300);
-      APP.dataByMonth[m].chart.day.values = makeSeries(dayLabels(31).length, 680+def.bump, 520);
-    });
-  })();
-
   const el = (id) => document.getElementById(id);
-  function yen(n){ return "¥ " + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
-  function pct(n){ return (Math.round(n*10)/10).toString().replace(/\.0$/,"") + "%"; }
+
+  function yen(n){
+    if(n==null || isNaN(n)) return "—";
+    return "¥ " + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  function pctText(n){
+    if(n==null || isNaN(n)) return "—";
+    const v = Math.round(n*10)/10;
+    return v.toString().replace(/\.0$/,"") + "%";
+  }
+  function hoursText(n){
+    if(n==null || isNaN(n)) return "—";
+    const v = Math.round(n*10)/10;
+    return v.toString().replace(/\.0$/,"");
+  }
+
+const APP = {
+    months: ["12月", "11月", "10月", "9月", "8月"],
+    state: { month: "12月", mainTab: "kpi", chartMode: "hour", detailTab: "user", cursorIndex: null },
+    dataByMonth: {"12月": {"money": 88270, "mom": 56.6, "repeatCnt": 139, "repeatUsers": 118, "kanteiCnt": 257, "kanteiUsers": 118, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 0.0, 12740.0, 3430.0, 7770.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [11550.0, 14630.0, 18970.0, 14840.0, 17290.0, 4550.0, 6440.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [3850.0, 2730.0, 9170.0, 7000.0, 0.0, 0.0, 0.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 165.1, "waitPrev": 184.1, "waitMoM": 89.7, "after": {"total": 210, "sent": 115, "unsent": 95, "rate": 55.0}}, "p2": {"counts": [{"label": "1回", "n": 0, "pct": 0.0}, {"label": "2回", "n": 103, "pct": 87.3}, {"label": "3回", "n": 9, "pct": 7.6}, {"label": "4回", "n": 6, "pct": 5.1}, {"label": "5回以上", "n": 0, "pct": 0.0}]}}, "11月": {"money": 155820, "mom": 100.0, "repeatCnt": 225, "repeatUsers": 165, "kanteiCnt": 398, "kanteiUsers": 173, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 840.0, 3990.0, 11620.0, 4060.0, 17640.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [34230.0, 27300.0, 20020.0, 18060.0, 17850.0, 18130.0, 20230.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "30日"], "values": [2800.0, 8540.0, 4200.0, 7280.0, 6020.0, 4410.0, 980.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 184.1, "waitPrev": 180.5, "waitMoM": 102.0, "after": {"total": 241, "sent": 135, "unsent": 106, "rate": 57.0}}, "p2": {"counts": [{"label": "1回", "n": 8, "pct": 4.6}, {"label": "2回", "n": 143, "pct": 82.7}, {"label": "3回", "n": 13, "pct": 7.5}, {"label": "4回", "n": 2, "pct": 1.2}, {"label": "5回以上", "n": 7, "pct": 4.0}]}}, "10月": {"money": 155820, "mom": 101.6, "repeatCnt": 229, "repeatUsers": 175, "kanteiCnt": 421, "kanteiUsers": 192, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 4130.0, 19250.0, 2590.0, 27930.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [28840.0, 18760.0, 15890.0, 20300.0, 33460.0, 22960.0, 15610.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [8610.0, 8190.0, 2450.0, 3500.0, 0.0, 3430.0, 2100.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 180.5, "waitPrev": 182.3, "waitMoM": 99.0, "after": {"total": 257, "sent": 144, "unsent": 113, "rate": 57.0}}, "p2": {"counts": [{"label": "1回", "n": 17, "pct": 8.9}, {"label": "2回", "n": 157, "pct": 81.8}, {"label": "3回", "n": 10, "pct": 5.2}, {"label": "4回", "n": 3, "pct": 1.6}, {"label": "5回以上", "n": 5, "pct": 2.6}]}}, "9月": {"money": 153440, "mom": 88.9, "repeatCnt": 311, "repeatUsers": 271, "kanteiCnt": 598, "kanteiUsers": 287, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 0.0, 10430.0, 3920.0, 24220.0, 1540.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [22120.0, 23660.0, 25060.0, 17360.0, 26390.0, 17640.0, 21210.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "30日"], "values": [6720.0, 4410.0, 8540.0, 3920.0, 10290.0, 3220.0, 980.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 182.3, "waitPrev": 151.5, "waitMoM": 120.3, "after": {"total": 344, "sent": 144, "unsent": 200, "rate": 42.0}}, "p2": {"counts": [{"label": "1回", "n": 16, "pct": 5.6}, {"label": "2回", "n": 251, "pct": 87.5}, {"label": "3回", "n": 12, "pct": 4.2}, {"label": "4回", "n": 2, "pct": 0.7}, {"label": "5回以上", "n": 6, "pct": 2.1}]}}, "8月": {"money": 172620, "mom": null, "repeatCnt": 245, "repeatUsers": 214, "kanteiCnt": 480, "kanteiUsers": 235, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [910.0, 0.0, 0.0, 8960.0, 15120.0, 2380.0, 28840.0, 4620.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [40740.0, 16870.0, 30030.0, 11060.0, 16030.0, 24430.0, 33460.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [0.0, 980.0, 3220.0, 12740.0, 2310.0, 6790.0, 8330.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 151.5, "waitPrev": null, "waitMoM": null, "after": {"total": 284, "sent": 139, "unsent": 145, "rate": 49.0}}, "p2": {"counts": [{"label": "1回", "n": 21, "pct": 8.9}, {"label": "2回", "n": 201, "pct": 85.5}, {"label": "3回", "n": 7, "pct": 3.0}, {"label": "4回", "n": 1, "pct": 0.4}, {"label": "5回以上", "n": 5, "pct": 2.1}]}}}
+  };
 
   function initMonths(){
     const row = el("monthRow"); row.innerHTML = "";
@@ -464,12 +393,13 @@
   function syncKPIs(){
     const d = APP.dataByMonth[APP.state.month];
     el("kpiMoney").textContent = yen(d.money);
-    el("kpiMoM").textContent = d.mom + "%";
-    el("kpiRepeatCnt").textContent = d.repeatCnt;
-    el("kpiRepeatUsers").textContent = d.repeatUsers;
-    el("kpiKanteiCnt").textContent = d.kanteiCnt;
-    el("kpiKanteiUsers").textContent = d.kanteiUsers;
+    el("kpiMoM").textContent = (d.mom==null ? "—" : pctText(d.mom));
+    el("kpiRepeatCnt").textContent = (d.repeatCnt==null ? "—" : d.repeatCnt);
+    el("kpiRepeatUsers").textContent = (d.repeatUsers==null ? "—" : d.repeatUsers);
+    el("kpiKanteiCnt").textContent = (d.kanteiCnt==null ? "—" : d.kanteiCnt);
+    el("kpiKanteiUsers").textContent = (d.kanteiUsers==null ? "—" : d.kanteiUsers);
   }
+
   function syncMonthChips(){
     [...document.querySelectorAll("#monthRow .chip")].forEach(ch=>{
       ch.classList.toggle("active", ch.textContent===APP.state.month);
@@ -498,54 +428,58 @@
   function syncUserPanel(){
     const d = APP.dataByMonth[APP.state.month].user;
     const ageWrap = el("ageList"); ageWrap.innerHTML = "";
-    d.age.forEach(item=>{
+    (d.age||[]).forEach(item=>{
       const block = document.createElement("div");
       block.className = "barItem";
       block.innerHTML = `
-        <div class="barTop"><div>${item.label}</div><div class="pct">${pct(item.pct)}</div></div>
+        <div class="barTop"><div>${item.label}</div><div class="pct">${pctText(item.pct)}</div></div>
         <div class="barBg"><div class="barFill" style="width:${Math.max(0,Math.min(100,item.pct))}%"></div></div>
       `;
       ageWrap.appendChild(block);
     });
 
-    const f = d.gender.female, m = d.gender.male;
-    el("femaleBar").style.width = f + "%";
-    el("maleBar").style.width = m + "%";
-    el("femalePct").textContent = f + "%";
-    el("malePct").textContent = m + "%";
+    const f = (d.gender?.female ?? null);
+    const m = (d.gender?.male ?? null);
+    el("femaleBar").style.width = (f==null?0:f) + "%";
+    el("maleBar").style.width = (m==null?0:m) + "%";
+    el("femalePct").textContent = (f==null ? "—" : pctText(f));
+    el("malePct").textContent = (m==null ? "—" : pctText(m));
   }
 
   function syncReaderPanel(){
     const d = APP.dataByMonth[APP.state.month].reader;
-    el("waitThis").textContent = d.waitThis + "h";
-    el("waitPrev").textContent = d.waitPrev + "h";
-    el("waitMoM").textContent = d.waitMoM + "%";
-    el("amTotal").textContent = d.after.total;
-    el("amSent").textContent = d.after.sent;
-    el("amUnsent").textContent = d.after.unsent;
-    el("amRate").textContent = d.after.rate + "%";
+
+    el("waitThis").textContent = (d.waitThis==null ? "—" : hoursText(d.waitThis) + "h");
+    el("waitPrev").textContent = (d.waitPrev==null ? "—" : hoursText(d.waitPrev) + "h");
+    el("waitMoM").textContent = (d.waitMoM==null ? "—" : pctText(d.waitMoM));
+
+    const a = d.after || {};
+    el("amTotal").textContent = (a.total==null ? "—" : a.total);
+    el("amSent").textContent = (a.sent==null ? "—" : a.sent);
+    el("amUnsent").textContent = (a.unsent==null ? "—" : a.unsent);
+    el("amRate").textContent = (a.rate==null ? "—" : pctText(a.rate));
   }
 
   function syncP2(){
     const d = APP.dataByMonth[APP.state.month].p2;
     const rows = el("p2Rows"); rows.innerHTML = "";
-    d.counts.forEach(item=>{
+    (d.counts||[]).forEach(item=>{
       const r = document.createElement("div");
       r.className = "p2Row";
       r.innerHTML = `
         <div>${item.label}</div>
         <div class="p2BarBg"><div class="p2BarFill" style="width:${Math.max(0,Math.min(100,item.pct))}%"></div></div>
         <div style="text-align:right;">${item.n}人</div>
-        <div style="text-align:right;">${pct(item.pct)}</div>
+        <div style="text-align:right;">${pctText(item.pct)}</div>
       `;
       rows.appendChild(r);
     });
   }
 
-  function slotForMode(mode){
-    if(mode==="weekday") return 110;  // 曜日別は「右にスライド」前提で広め
-    if(mode==="hour") return 74;      // 時間別も横に流す
-    return 56;                       // 日別は多いので少し詰める
+  function syncChartModeButtons(){
+    [...document.querySelectorAll(".toggle")].forEach(b=>{
+      b.classList.toggle("active", b.dataset.mode===APP.state.chartMode);
+    });
   }
 
   const chart = {
@@ -577,9 +511,6 @@
 
       this.xLabelRow.style.width = innerW + "px";
       this.xLabelRow.style.setProperty("--slot", this.slot + "px");
-
-      // 横スクロールを使わない前提
-      this.viewport.scrollLeft = 0;
     },
     draw(){
       const ctx = this.ctx;
@@ -648,7 +579,6 @@
 
       renderXLabels(d.labels);
       renderTooltip(p.x, p.y, d.labels[p.i], p.v);
-      autoScrollToX(p.x);
     }
   };
 
@@ -657,15 +587,7 @@
     labels.forEach(lab=>{ const sp = document.createElement("span"); sp.textContent = lab; row.appendChild(sp); });
   }
 
-  function autoScrollToX(x){
-    const vp = chart.viewport;
-    const left = vp.scrollLeft, right = left + vp.clientWidth, pad = 40;
-    if(x < left + pad) vp.scrollLeft = Math.max(0, x - pad);
-    else if(x > right - pad) vp.scrollLeft = Math.max(0, x - vp.clientWidth + pad);
-  }
-
   function renderTooltip(x, y, label, val){
-    const vp = chart.viewport;
     const line = el("cursorLine");
     const tip = el("tooltip");
     line.style.display = "block";
@@ -675,16 +597,13 @@
     el("tipLabel").textContent = label;
     el("tipValue").textContent = yen(val);
 
-    const visibleLeft = vp.scrollLeft;
-    const visibleRight = visibleLeft + vp.clientWidth;
-
     let tipX = x;
     tip.style.left = tipX + "px";
     tip.style.top = (y + 6) + "px";
 
     const tipW = tip.offsetWidth;
-    const min = visibleLeft + 10 + tipW/2;
-    const max = visibleRight - 10 - tipW/2;
+    const min = 10 + tipW/2;
+    const max = chart.w - 10 - tipW/2;
     if(tipX < min) tipX = min;
     if(tipX > max) tipX = max;
     tip.style.left = tipX + "px";
@@ -695,46 +614,21 @@
     const n = d.values.length;
     const rect = chart.viewport.getBoundingClientRect();
     const xInViewport = clientX - rect.left;
-    const xInInner = xInViewport + chart.viewport.scrollLeft;
     const x0 = chart.padding.left;
     const dx = chart.slot;
-    const i = Math.round((xInInner - x0) / dx);
+    const i = Math.round((xInViewport - x0) / dx);
     return Math.max(0, Math.min(n-1, i));
   }
 
-  function attachScrollSync(){
-    const vp = chart.viewport;
-    const xvp = chart.xLabelViewport;
-    let lock = false;
-
-    vp.addEventListener("scroll", ()=>{
-      if(lock) return;
-      lock = true;
-      xvp.scrollLeft = vp.scrollLeft;
-      lock = false;
-    }, {passive:true});
-
-    xvp.addEventListener("scroll", ()=>{
-      if(lock) return;
-      lock = true;
-      vp.scrollLeft = xvp.scrollLeft;
-      lock = false;
-    }, {passive:true});
-  }
-
-  // PCのマウスは「ドラッグで横スクロール」＋「クリックで点を選ぶ」
-  function attachViewportPanAndSelect(){
-    // ここは「スライドなし」前提。横スクロール/ドラッグはしない。
-    // 代わりに「タップした位置の点」をすぐ選択してツールチップ表示する。
+  function attachViewportSelect(){
     const viewport = chart.viewport;
 
     function selectAtClientX(clientX){
       const idx = pickIndexFromClientX(clientX);
-      chart.selectIndex(idx);
+      APP.state.cursorIndex = idx;
+      chart.draw();
     }
 
-    // iPhone Safari は click が遅い/発火しないケースがあるので
-    // touchstart / pointerdown の両方で拾う
     viewport.addEventListener("touchstart",(e)=>{
       if(!e.touches || e.touches.length!==1) return;
       selectAtClientX(e.touches[0].clientX);
@@ -745,13 +639,7 @@
     },{passive:true});
   }
 
-  function syncChartModeButtons(){
-    [...document.querySelectorAll(".toggle")].forEach(b=>{
-      b.classList.toggle("active", b.dataset.mode===APP.state.chartMode);
-    });
-  }
-
-  function syncAll(resetScroll){
+  function syncAll(){
     syncMonthChips();
     syncKPIs();
     syncUserPanel();
@@ -763,29 +651,26 @@
 
     if(APP.state.mainTab==="kpi"){
       chart.setSize();
-      if(resetScroll){
-        chart.viewport.scrollLeft = 0;
-        chart.xLabelViewport.scrollLeft = 0;
-      }
       chart.draw();
     }
   }
 
   function attachUIEvents(){
-    el("tabKpi").addEventListener("click",()=>{APP.state.mainTab="kpi";syncAll(false);document.getElementById("viewKpi")?.scrollIntoView({behavior:"smooth",block:"start"});});
-el("tabDetail").addEventListener("click",()=>{APP.state.mainTab="detail";syncAll(false);document.getElementById("viewDetail")?.scrollIntoView({behavior:"smooth",block:"start"});});
-[...document.querySelectorAll(".toggle")].forEach(b=>{
+    el("tabKpi").addEventListener("click",()=>{APP.state.mainTab="kpi";syncAll();});
+    el("tabDetail").addEventListener("click",()=>{APP.state.mainTab="detail";syncAll();});
+
+    [...document.querySelectorAll(".toggle")].forEach(b=>{
       b.addEventListener("click", ()=>{
         APP.state.chartMode = b.dataset.mode;
         APP.state.cursorIndex = null;
-        syncAll(true);
+        syncAll();
       });
     });
 
     [...document.querySelectorAll(".tab")].forEach(b=>{
       b.addEventListener("click", ()=>{
         APP.state.detailTab = b.dataset.detail;
-        syncAll(false);
+        syncAll();
       });
     });
 
@@ -808,10 +693,9 @@ el("tabDetail").addEventListener("click",()=>{APP.state.mainTab="detail";syncAll
     chart.xLabelRow = el("xLabels");
 
     attachUIEvents();
-    attachScrollSync();
-    attachViewportPanAndSelect();
+    attachViewportSelect();
 
-    syncAll(true);
+    syncAll();
   })();
 </script>
 </body>
