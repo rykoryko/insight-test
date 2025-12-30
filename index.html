@@ -3,734 +3,106 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>インサイト（モック v7）</title>
-  <style>
+  <title>Pixy インサイト（UI）</title>
+  <style>html{ -webkit-text-size-adjust: 100%; }
+
     :root{
-      --bg:#f5f6f8; --card:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb;
-      --shadow: 0 6px 18px rgba(0,0,0,.06); --radius:16px; --pad:14px;
-      --pink:#f8d6dd; --pinkLine:#f3b4c0; --chip:#eef0f3;
-      --warnBg:#fff7ed; --warnLine:#fdba74; --warnText:#9a3412;
-      --blue:#2b6de6; --barBg:#eef0f3;
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#f3a6c8;
+      --chip:#e5e7eb;
+      --chipText:#111827;
+      --chipActive:#111111;
+      --chipActiveText:#ffffff;
+      --card:#ffffff;
+      --cardBorder:#d1d5db;
+      --cardActiveBg:#fde7ef;
+      --cardActiveBorder:#f3a6c8;
+      --shadow:0 6px 20px rgba(0,0,0,.06);
+      --radius:16px; --pad:14px;
+      --pink:#f8d6dd; --pinkLine:#f3a6c8;
+      --blue:#2563eb;
     }
-    *{box-sizing:border-box;}
-    body{margin:0; background:var(--bg); color:var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-      -webkit-font-smoothing: antialiased; line-height:1.35;}
-    .wrap{max-width:520px; margin:0 auto; padding:14px; padding-bottom:28px;}
-    header{position:sticky; top:0; z-index:10; background:rgba(245,246,248,.92); backdrop-filter: blur(10px);
-      border-bottom:1px solid var(--line); padding:12px 14px;}
-    .headRow{display:flex; align-items:center; justify-content:space-between; gap:10px;}
-    .logo{font-weight:900; letter-spacing:.2px;}
-    .title{font-weight:900; font-size:18px;}
-    .sub{color:var(--muted); font-size:12px; margin-top:2px;}
-    .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:var(--pad); margin-top:12px;}
-    .warn{background:var(--warnBg); border:1px solid var(--warnLine); color:var(--warnText);
-      border-radius:14px; padding:12px; margin-top:12px; font-size:13px; line-height:1.45;}
-    .h1{font-size:16px; font-weight:900; margin:0 0 8px;}
-    .label{font-size:12px; color:var(--muted); margin-bottom:8px;}
-    .hint{font-size:12px; color:var(--muted); margin-top:10px;}
-    .chips{display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
-    .chip{flex:0 0 auto; font-size:13px; padding:9px 12px; border-radius:999px; border:1px solid var(--line);
-      background:var(--chip); color:var(--text); text-decoration:none; white-space:nowrap;}
-    .chip.on{background:#111; color:#fff; border-color:#111;}
-
-    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:stretch;}
-    .box{border:1px solid var(--line); border-radius:14px; padding:12px; background:#fff; min-height:150px;
-      display:flex; flex-direction:column; cursor:pointer; user-select:none; -webkit-tap-highlight-color: transparent;}
-    .box.active{background:var(--pink); border-color:var(--pinkLine); box-shadow: 0 0 0 1px rgba(243,180,192,.25), var(--shadow);}
-    .boxTitle{font-size:12px; color:var(--muted);}
-    .bigYen{font-size:22px; font-weight:900; margin-top:6px;}
-    .small{font-size:12px; color:var(--muted); margin-top:4px;}
-    .repeatGrid{margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:8px 12px; align-content:start;}
-    .repeatItem{display:flex; justify-content:space-between; gap:8px; align-items:baseline;}
-    .repeatItem .k{font-size:11px; color:var(--muted);}
-    .repeatItem .v{font-size:18px; font-weight:900;}
-
-    .tabs{display:flex; gap:10px; align-items:center; margin-top:14px;}
-    .tab{font-size:14px; padding:10px 14px; border-radius:12px; border:1px solid var(--line);
-      background:var(--chip); cursor:pointer; user-select:none; -webkit-tap-highlight-color: transparent;}
-    .tab.on{background:#111; color:#fff; border-color:#111;}
-
-    .chart{margin-top:10px; border:1px solid var(--line); border-radius:14px; padding:12px 10px 12px; background:#fff;
-      position:relative; overflow:hidden;}
-    .tip{position:absolute; top:12px; left:12px; border:1px solid var(--line); background:#fff; border-radius:14px;
-      padding:10px 12px; display:flex; gap:10px; align-items:center; box-shadow: var(--shadow); pointer-events:none;}
-    .tip .t1{font-size:13px; color:var(--muted);}
-    .tip .t2{font-size:18px; font-weight:900;}
-    .chartTitle{font-size:12px; color:var(--muted); margin-bottom:8px;}
-    svg{display:block; width:100%; height:220px;}
-
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background:linear-gradient(#fff, #fff); color:var(--text);
+    }
+    .wrap{max-width:420px; margin:0 auto; padding:14px 14px 22px;}
+    .pill{
+      background:#fff; border:2px solid var(--pinkLine); color:var(--text);
+      padding:10px 12px; border-radius:999px; font-weight:800; font-size:13px;
+      text-align:center; box-shadow:var(--shadow);
+    }
+    .topNote{margin-top:10px; color:var(--muted); font-size:12px;}
+    .chips{display:flex; gap:10px; margin:12px 0 10px;}
+    .chip{
+      flex:1;
+      padding:10px 0; border-radius:999px; border:1px solid #e5e7eb;
+      background:var(--chip); color:var(--chipText);
+      font-weight:800; font-size:13px; text-decoration:none; text-align:center;
+      box-shadow:0 2px 8px rgba(0,0,0,.04) inset;
+    }
+    .chip.on{background:var(--chipActive); color:var(--chipActiveText); border-color:#111;}
+    .card{
+      background:var(--card);
+      border:1px solid var(--cardBorder);
+      border-radius:var(--radius);
+      padding:var(--pad);
+      box-shadow:var(--shadow);
+      margin-top:10px;
+    }
+    .card.active{
+      border-color:var(--cardActiveBorder);
+      background:var(--cardActiveBg);
+    }
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    .label{font-size:12px; color:var(--muted); font-weight:700;}
+    .value{font-size:20px; font-weight:900; margin-top:6px;}
+    .value small{font-size:12px; font-weight:800; color:var(--muted);}
+    .link{color:#ef476f; font-weight:900; text-decoration:none; font-size:13px;}
     .rowBetween{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .tabs{display:flex; gap:10px; margin-top:12px;}
+    .tab{
+      flex:1; padding:10px 0; border-radius:12px;
+      background:#f3f4f6; border:1px solid #e5e7eb;
+      font-weight:900; text-align:center; cursor:pointer; user-select:none;
+    }
+    .tab.on{background:#111; color:#fff; border-color:#111;}
+    .chartWrap{margin-top:10px; background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:10px;}
+    .chartTitle{display:flex; justify-content:space-between; align-items:baseline; gap:10px;}
+    .chartTitle .big{font-size:18px; font-weight:900;}
+    .chartTitle .sub{font-size:12px; color:var(--muted); font-weight:800;}
+    svg{width:100%; height:auto; display:block;}
+    .note{font-size:12px; color:var(--muted); margin-top:10px;}
     .sec{display:none;}
     .sec.show{display:block;}
-
-    /* ここから「鑑定データ詳細」の見た目 */
-    .rptCardTitle{font-size:14px; font-weight:900; margin:0 0 10px;}
-    .rptTable{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#fff;}
-    .rptHead{display:grid; grid-template-columns:64px 1fr 76px 72px; gap:10px; padding:10px 12px; background:#fff;}
-    .rptHead div{font-size:12px; color:var(--muted);}
-    .rptRow{display:grid; grid-template-columns:64px 1fr 76px 72px; gap:10px;
-      padding:10px 12px; border-top:1px solid var(--line); align-items:center;}
-    .rptK{font-size:13px; font-weight:700;}
-    .rptBarWrap{height:10px; background:var(--barBg); border-radius:999px; overflow:hidden;}
-    .rptBar{height:100%; background:var(--blue); width:0%;}
-    .rptNum{font-size:13px; text-align:right; font-weight:700;}
-    .rptPct{font-size:13px; text-align:right; color:var(--muted); font-weight:700;}
-
-    .endListWrap{margin-top:12px; border:1px solid var(--line); border-radius:14px; background:#fff; overflow:hidden;}
-    .endListTitle{padding:12px; font-size:14px; font-weight:900; border-bottom:1px solid var(--line);}
-    .endItems{padding:6px;}
-    .endItem{display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:12px; border-radius:12px; cursor:pointer; user-select:none; -webkit-tap-highlight-color: transparent;}
-    .endItem:hover{background:#f3f4f6;}
-    .endItem.on{background:var(--pink); box-shadow: inset 0 0 0 1px var(--pinkLine);}
-    .endItem .t{font-size:13px; font-weight:800;}
-    .endItem .n{font-size:13px; color:var(--muted); font-weight:800;}
-
-    .detailWrap{margin-top:10px; border:1px solid var(--line); border-radius:14px; background:#fff; overflow:hidden;}
-    .detailHead{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px;
-      border-bottom:1px solid var(--line);}
-    .detailHead .left{display:flex; align-items:baseline; gap:10px;}
-    .detailHead .h{font-size:14px; font-weight:900;}
-    .detailHead .c{font-size:13px; color:var(--muted); font-weight:900;}
-    .detailBody{max-height:420px; overflow:auto; -webkit-overflow-scrolling:touch;}
-    .uRow{padding:14px 12px; border-top:1px solid var(--line);}
-    .uRow:first-child{border-top:none;}
-    .uTop{display:flex; align-items:center; gap:10px;}
-    .uid{font-size:18px; font-weight:900; letter-spacing:.2px;}
-    .ucnt{font-size:13px; color:var(--muted); font-weight:900;}
-    .dchips{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
-    .dchip{display:inline-flex; align-items:center; gap:6px;
-      padding:8px 12px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--text);
-      font-size:13px; font-weight:700;}
-    .muted{color:var(--muted);}
-
-    .empty{padding:18px 12px; color:var(--muted); font-size:13px;}
-  </style>
-</head>
-
-<body>
-  <header>
-    <div class="headRow">
-      <div class="logo">Pixy</div>
-      <div class="title">インサイト</div>
-      <div style="width:44px;"></div>
-    </div>
-    <div class="sub">鑑定師名：<span id="KANTEISHI_NAME">minami</span></div>
-  </header>
-
-  <noscript>
-    <div class="wrap">
-      <div class="warn">
-        いま開いているのが「iPhoneのファイルのプレビュー」だと、タブ切替やスライドが動かないことがあります。<br>
-        共有ボタンから「Safariで開く（またはChromeで開く）」にすると動きます。<br>
-        （この注意は、JavaScriptが動かない場合だけ表示されます）
-      </div>
-    </div>
-  </noscript>
-
-  <div class="wrap">
-    <div class="card">
-      <div class="label">月</div>
-      <div class="chips" id="monthChips"></div>
-      <div class="hint">※いまは見た目＋動きの確認用。あとで実データ連結。</div>
-    </div>
-
-    <div class="card">
-      <div class="h1">メインデータ</div>
-
-      <div class="grid2">
-        <div class="box active" id="cardReward" role="button" aria-label="今月の報酬金">
-          <div class="boxTitle">今月の報酬金</div>
-          <div class="bigYen" id="MONTH_REWARD">—</div>
-          <div class="small">前月比 <span id="REWARD_MOM">—</span></div>
-          <div class="small" style="margin-top:auto;">※下で切替</div>
-        </div>
-
-        <div class="box" id="cardRepeat" role="button" aria-label="鑑定データ詳細">
-          <div class="boxTitle">鑑定データ詳細</div>
-          <div class="repeatGrid">
-            <div class="repeatItem"><div class="k">リピート件数</div><div class="v" id="REPEAT_CNT">—</div></div>
-            <div class="repeatItem"><div class="k">リピート人数</div><div class="v" id="REPEAT_USERS">—</div></div>
-            <div class="repeatItem"><div class="k">鑑定件数</div><div class="v" id="KANTEI_CNT">—</div></div>
-            <div class="repeatItem"><div class="k">鑑定人数</div><div class="v" id="KANTEI_USERS">—</div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sec show" id="secReward">
-        <div class="tabs">
-          <div class="tab on" id="tabHour">時間別</div>
-          <div class="tab" id="tabWeek">曜日別</div>
-        </div>
-
-        <div class="chart" id="chartWrap">
-          <div class="tip" id="tip">
-            <div class="t1" id="tipLabel">—</div>
-            <div class="t2" id="tipValue">—</div>
-          </div>
-
-          <div class="chartTitle" id="chartTitle">もっともアクティブな時間帯（平均）</div>
-          <svg id="chart" viewBox="0 0 360 220" preserveAspectRatio="none" aria-label="報酬グラフ"></svg>
-          <div class="hint">※グラフをなぞる（スライド）か、点をタップすると表示が更新される（モック）。</div>
-        </div>
-      </div>
-
-      <div class="sec" id="secRepeat">
-        <div class="chart" style="padding:12px;">
-          <div class="rptCardTitle">回数別ユーザー数</div>
-
-          <div class="rptTable" aria-label="回数別ユーザー数 テーブル">
-            <div class="rptHead">
-              <div>区分</div>
-              <div></div>
-              <div style="text-align:right;">人数</div>
-              <div style="text-align:right;">割合</div>
-            </div>
-            <div id="repeatRows"></div>
-          </div>
-
-          <div class="endListWrap" aria-label="終了回数の一覧">
-            <div class="endListTitle">終了回数の一覧</div>
-            <div class="endItems" id="endItems"></div>
-          </div>
-
-          <div class="detailWrap" aria-label="選択した終了回数のユーザー一覧">
-            <div class="detailHead">
-              <div class="left">
-                <div class="h" id="detailTitle">—</div>
-                <div class="c" id="detailCount">—</div>
-              </div>
-              <div class="muted" style="font-size:12px; font-weight:900;">スクロール</div>
-            </div>
-            <div class="detailBody" id="detailBody">
-              <div class="empty">ここにユーザーが表示されます</div>
-            </div>
-          </div>
-
-          <div class="hint">※いまは見た目と動きだけ。あとでCSV/PYの実データを入れる。</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    (function(){
-      function yen(n){
-        if(n===null || n===undefined || n==="—") return "—";
-        const num = Number(n);
-        if(!isFinite(num)) return "—";
-        return "¥" + num.toLocaleString("ja-JP");
-      }
-      function pct(n, d){
-        if(!d || !isFinite(d) || d<=0) return "0%";
-        return ( (n/d)*100 ).toFixed(1) + "%";
-      }
-
-      /* =========================================================
-         ここが「あとで実データ連結」する場所
-         いまはモック。見た目と動きの確認用。
-      ========================================================= */
-      const DATA = {
-        kanteishiName: "minami",
-        months: ["2025-12","2025-11","2025-10","2025-09","2025-08","2025-07"],
-        byMonth: {
-          "2025-12": {
-            reward: 88270,
-            reward_mom: "56.6%",
-            repeat_cnt: 139,
-            repeat_users: 118,
-            kantei_cnt: 257,
-            kantei_users: 118,
-            hourValues: [650,820,500,360,280,800,320,400,720,610,420,350,370,390,250,210,190,260,310,480,510,420,360,540],
-            weekValues: [900,780,1200,880,760,980,820],
-            repeatCounts: { "1": 0, "2": 103, "3": 9, "4": 6, "5p": 0 },
-            repeatDetails: {
-              "1": [],
-              "2": [
-                { uid:"20415161", cnt:2, dates:["1 01/02","2 12/16"] },
-                { uid:"20435755", cnt:2, dates:["1 12/08","2 12/08"] },
-                { uid:"20434256", cnt:2, dates:["1 11/08","2 11/29"] },
-                { uid:"20393623", cnt:2, dates:["1 11/09","2 11/29"] },
-                { uid:"20432937", cnt:2, dates:["1 12/12","2 12/18"] }
-              ],
-              "3": [
-                { uid:"20436187", cnt:3, dates:["1 12/18","2 12/18","3 12/18"] }
-              ],
-              "4": [
-                { uid:"20436141", cnt:4, dates:["1 12/17","2 12/17","3 12/17","4 12/17"] }
-              ],
-              "5p": []
-            }
-          },
-          "2025-11": {
-            reward: 155900,
-            reward_mom: "—",
-            repeat_cnt: 210,
-            repeat_users: 160,
-            kantei_cnt: 320,
-            kantei_users: 200,
-            hourValues: [420,480,410,380,360,500,520,630,680,720,610,590,560,520,410,360,340,370,430,520,610,640,560,480],
-            weekValues: [800,900,780,850,920,980,880],
-            repeatCounts: { "1": 12, "2": 44, "3": 18, "4": 6, "5p": 3 },
-            repeatDetails: { "1": [], "2": [], "3": [], "4": [], "5p": [] }
-          },
-          "2025-10": {
-            reward: 0,
-            reward_mom: "—",
-            repeat_cnt: 0,
-            repeat_users: 0,
-            kantei_cnt: 0,
-            kantei_users: 0,
-            hourValues: new Array(24).fill(0),
-            weekValues: new Array(7).fill(0),
-            repeatCounts: { "1": 0, "2": 0, "3": 0, "4": 0, "5p": 0 },
-            repeatDetails: { "1": [], "2": [], "3": [], "4": [], "5p": [] }
-          },
-          "2025-09": { reward: 120000, reward_mom:"—", repeat_cnt: 80, repeat_users: 60, kantei_cnt: 140, kantei_users: 90,
-            hourValues:[300,280,260,240,220,210,230,260,300,360,420,480,520,500,460,420,380,360,340,360,380,400,360,320],
-            weekValues:[650,620,680,700,640,660,610],
-            repeatCounts:{ "1": 30, "2": 18, "3": 6, "4": 2, "5p": 1 },
-            repeatDetails:{ "1":[], "2":[], "3":[], "4":[], "5p":[] }
-          },
-          "2025-08": { reward: 98000, reward_mom:"—", repeat_cnt: 60, repeat_users: 45, kantei_cnt: 120, kantei_users: 80,
-            hourValues:[260,240,220,210,200,210,220,240,280,320,360,420,460,440,420,380,340,320,300,320,340,360,320,280],
-            weekValues:[600,580,610,640,620,660,590],
-            repeatCounts:{ "1": 22, "2": 14, "3": 5, "4": 1, "5p": 0 },
-            repeatDetails:{ "1":[], "2":[], "3":[], "4":[], "5p":[] }
-          },
-          "2025-07": { reward: 76000, reward_mom:"—", repeat_cnt: 40, repeat_users: 35, kantei_cnt: 90, kantei_users: 65,
-            hourValues:[220,210,200,190,180,190,200,220,260,300,340,380,420,410,390,360,320,300,280,300,320,340,300,260],
-            weekValues:[540,520,550,560,570,600,520],
-            repeatCounts:{ "1": 18, "2": 10, "3": 3, "4": 1, "5p": 0 },
-            repeatDetails:{ "1":[], "2":[], "3":[], "4":[], "5p":[] }
-          }
-        }
-      };
-
-      /* =========================================================
-         月チップ
-      ========================================================= */
-      const KANTEISHI_NAME = document.getElementById("KANTEISHI_NAME");
-      KANTEISHI_NAME.textContent = DATA.kanteishiName || "—";
-
-      const monthChips = document.getElementById("monthChips");
-      let currentMonth = DATA.months[0] || null;
-
-      function jpMonthLabel(ym){
-        if(!ym) return "—";
-        const parts = ym.split("-");
-        if(parts.length!==2) return ym;
-        return String(Number(parts[1])) + "月";
-      }
-
-      function renderMonthChips(){
-        monthChips.innerHTML = "";
-        DATA.months.forEach(ym=>{
-          const a = document.createElement("a");
-          a.className = "chip" + (ym===currentMonth ? " on" : "");
-          a.href = "javascript:void(0)";
-          a.textContent = jpMonthLabel(ym);
-          a.addEventListener("click", ()=>{
-            currentMonth = ym;
-            renderMonthChips();
-            applyMonth();
-          });
-          monthChips.appendChild(a);
-        });
-      }
-
-      /* =========================================================
-         メインカード切替（報酬 / 鑑定データ詳細）
-      ========================================================= */
-      const cardReward = document.getElementById("cardReward");
-      const cardRepeat = document.getElementById("cardRepeat");
-      const secReward  = document.getElementById("secReward");
-      const secRepeat  = document.getElementById("secRepeat");
-
-      function showReward(){
-        cardReward.classList.add("active"); cardRepeat.classList.remove("active");
-        secReward.classList.add("show"); secRepeat.classList.remove("show");
-      }
-      function showRepeat(){
-        cardRepeat.classList.add("active"); cardReward.classList.remove("active");
-        secRepeat.classList.add("show"); secReward.classList.remove("show");
-      }
-      cardReward.addEventListener("click", showReward);
-      cardRepeat.addEventListener("click", showRepeat);
-
-      /* =========================================================
-         数値表示
-      ========================================================= */
-      const MONTH_REWARD = document.getElementById("MONTH_REWARD");
-      const REWARD_MOM   = document.getElementById("REWARD_MOM");
-      const REPEAT_CNT   = document.getElementById("REPEAT_CNT");
-      const REPEAT_USERS = document.getElementById("REPEAT_USERS");
-      const KANTEI_CNT   = document.getElementById("KANTEI_CNT");
-      const KANTEI_USERS = document.getElementById("KANTEI_USERS");
-
-      function applyMonth(){
-        const m = DATA.byMonth[currentMonth];
-        if(!m){
-          MONTH_REWARD.textContent = "—";
-          REWARD_MOM.textContent = "—";
-          REPEAT_CNT.textContent = "—";
-          REPEAT_USERS.textContent = "—";
-          KANTEI_CNT.textContent = "—";
-          KANTEI_USERS.textContent = "—";
-          setGraphData("hour", new Array(24).fill(0), hourLabels);
-          setRepeatSection({ "1":0,"2":0,"3":0,"4":0,"5p":0 }, { "1":[], "2":[], "3":[], "4":[], "5p":[] });
-          return;
-        }
-        MONTH_REWARD.textContent = yen(m.reward);
-        REWARD_MOM.textContent = (m.reward_mom===null || m.reward_mom===undefined || m.reward_mom==="") ? "—" : m.reward_mom;
-
-        REPEAT_CNT.textContent = (m.repeat_cnt ?? "—");
-        REPEAT_USERS.textContent = (m.repeat_users ?? "—");
-        KANTEI_CNT.textContent = (m.kantei_cnt ?? "—");
-        KANTEI_USERS.textContent = (m.kantei_users ?? "—");
-
-        // グラフ
-        setGraphData(mode, (mode==="hour" ? (m.hourValues||[]) : (m.weekValues||[])));
-
-        // 鑑定データ詳細
-        setRepeatSection(m.repeatCounts || {"1":0,"2":0,"3":0,"4":0,"5p":0}, m.repeatDetails || {"1":[], "2":[], "3":[], "4":[], "5p":[]});
-      }
-
-      /* =========================================================
-         グラフ（v6の動きを維持）
-      ========================================================= */
-      const tabHour = document.getElementById("tabHour");
-      const tabWeek = document.getElementById("tabWeek");
-      const tipLabel = document.getElementById("tipLabel");
-      const tipValue = document.getElementById("tipValue");
-      const chartTitle = document.getElementById("chartTitle");
-      const svg = document.getElementById("chart");
-
-      const hourLabels = Array.from({length:24}, (_,i)=> i + "時");
-      const weekLabels = ["日","月","火","水","木","金","土"];
-
-      let mode="hour";
-      let dataLabels=hourLabels.slice();
-      let dataValues=new Array(24).fill(0);
-      let activeIndex=5;
-
-      function setGraphData(nextMode, values){
-        const m = DATA.byMonth[currentMonth] || {};
-        const hourValues = (m.hourValues && m.hourValues.length===24) ? m.hourValues : new Array(24).fill(0);
-        const weekValues = (m.weekValues && m.weekValues.length===7) ? m.weekValues : new Array(7).fill(0);
-
-        if(nextMode==="hour"){
-          mode="hour";
-          tabHour.classList.add("on"); tabWeek.classList.remove("on");
-          chartTitle.textContent="もっともアクティブな時間帯（平均）";
-          dataLabels=hourLabels.slice();
-          dataValues=hourValues.slice();
-          activeIndex=5;
-        }else{
-          mode="week";
-          tabWeek.classList.add("on"); tabHour.classList.remove("on");
-          chartTitle.textContent="もっともアクティブな曜日（平均）";
-          dataLabels=weekLabels.slice();
-          dataValues=weekValues.slice();
-          activeIndex=2;
-        }
-        render();
-        updateTip(activeIndex);
-      }
-
-      tabHour.addEventListener("click", ()=>setGraphData("hour"));
-      tabWeek.addEventListener("click", ()=>setGraphData("week"));
-
-      const W=360, H=220, padL=18, padR=12, padT=16, padB=28;
-      const plotW=W-padL-padR, plotH=H-padT-padB;
-      const BLUE="#2b6de6", GRID="#e5e7eb", AXIS="#9ca3af", AREA="#cfe3ff";
-
-      function scaleX(i,n){ if(n<=1) return padL+plotW/2; return padL+(plotW*(i/(n-1))); }
-      function scaleY(v,vmin,vmax){ if(vmax===vmin) return padT+plotH/2; const t=(v-vmin)/(vmax-vmin); return padT+(plotH*(1-t)); }
-
-      function buildPath(values){
-        const vmaxBase = Math.max.apply(null, values.map(v=>Number(v)||0));
-        const vmax = (vmaxBase>0 ? vmaxBase*1.05 : 1);
-        const vmin=0;
-        const n=values.length;
-        let d="";
-        for(let i=0;i<n;i++){
-          const x=scaleX(i,n), y=scaleY(Number(values[i])||0,vmin,vmax);
-          d += (i===0?"M":"L")+x.toFixed(2)+" "+y.toFixed(2)+" ";
-        }
-        return {d,vmin,vmax};
-      }
-
-      function clearSvg(){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
-      function el(name, attrs){ const e=document.createElementNS("http://www.w3.org/2000/svg", name); if(attrs) Object.keys(attrs).forEach(k=>e.setAttribute(k, attrs[k])); return e; }
-
-      function render(){
-        clearSvg();
-        const n=dataValues.length;
-        const info=buildPath(dataValues);
-        const vmin=info.vmin, vmax=info.vmax;
-
-        for(let i=1;i<=3;i++){
-          const y=padT+(plotH*(i/3));
-          svg.appendChild(el("line",{x1:padL,y1:y,x2:W-padR,y2:y,stroke:GRID,"stroke-width":"1","stroke-dasharray":"3 4"}));
-        }
-
-        const areaD = info.d + `L ${scaleX(n-1,n).toFixed(2)} ${(padT+plotH).toFixed(2)} ` + `L ${scaleX(0,n).toFixed(2)} ${(padT+plotH).toFixed(2)} Z`;
-        svg.appendChild(el("path",{d:areaD,fill:AREA,"fill-opacity":"0.55",stroke:"none"}));
-        svg.appendChild(el("path",{d:info.d,fill:"none",stroke:BLUE,"stroke-width":"2"}));
-
-        if(mode==="hour"){
-          [0,4,8,12,16,20,23].forEach(m=>{
-            const x=scaleX(m,n);
-            const t=el("text",{x:x,y:H-10,"text-anchor":"middle",fill:AXIS,"font-size":"11"});
-            t.textContent=String(m);
-            svg.appendChild(t);
-          });
-        }else{
-          for(let i=0;i<n;i++){
-            const x=scaleX(i,n);
-            const t=el("text",{x:x,y:H-10,"text-anchor":"middle",fill:AXIS,"font-size":"11"});
-            t.textContent=dataLabels[i];
-            svg.appendChild(t);
-          }
-        }
-
-        svg.appendChild(el("line",{id:"cross",x1:0,y1:padT,x2:0,y2:padT+plotH,stroke:BLUE,"stroke-width":"1","stroke-opacity":"0.9"}));
-        svg.appendChild(el("circle",{id:"activeDot",cx:0,cy:0,r:"5.5",fill:"#fff",stroke:BLUE,"stroke-width":"2"}));
-        svg.appendChild(el("circle",{id:"activeDot2",cx:0,cy:0,r:"2.6",fill:BLUE,stroke:"none","opacity":"0.85"}));
-
-        const hit=el("rect",{x:0,y:0,width:W,height:H,fill:"transparent"});
-        svg.appendChild(hit);
-
-        updateCursor(activeIndex, vmin, vmax);
-
-        let dragging=false;
-        function indexFromClientX(clientX){
-          const rect=svg.getBoundingClientRect();
-          const x=Math.max(0, Math.min(rect.width, clientX-rect.left));
-          const t=x/rect.width;
-          return Math.max(0, Math.min(n-1, Math.round(t*(n-1))));
-        }
-        function onDown(e){
-          dragging=true;
-          const ptX=(e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
-          activeIndex=indexFromClientX(ptX);
-          updateCursor(activeIndex, vmin, vmax);
-          updateTip(activeIndex);
-          e.preventDefault();
-        }
-        function onMove(e){
-          if(!dragging) return;
-          const ptX=(e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
-          const i=indexFromClientX(ptX);
-          if(i!==activeIndex){
-            activeIndex=i;
-            updateCursor(activeIndex, vmin, vmax);
-            updateTip(activeIndex);
-          }
-          e.preventDefault();
-        }
-        function onUp(){ dragging=false; }
-
-        hit.addEventListener("mousedown", onDown);
-        hit.addEventListener("mousemove", onMove);
-        window.addEventListener("mouseup", onUp);
-
-        hit.addEventListener("touchstart", onDown, {passive:false});
-        hit.addEventListener("touchmove", onMove, {passive:false});
-        window.addEventListener("touchend", onUp);
-      }
-
-      function updateCursor(i, vmin, vmax){
-        const n=dataValues.length;
-        const x=scaleX(i,n);
-        const y=scaleY(Number(dataValues[i])||0,vmin,vmax);
-        const cross=svg.querySelector("#cross");
-        const dot=svg.querySelector("#activeDot");
-        const dot2=svg.querySelector("#activeDot2");
-        if(cross){ cross.setAttribute("x1",x); cross.setAttribute("x2",x); }
-        if(dot){ dot.setAttribute("cx",x); dot.setAttribute("cy",y); }
-        if(dot2){ dot2.setAttribute("cx",x); dot2.setAttribute("cy",y); }
-      }
-
-      function updateTip(i){
-        tipLabel.textContent = (mode==="hour") ? dataLabels[i] : (dataLabels[i]+"曜日");
-        tipValue.textContent = yen(Number(dataValues[i])||0);
-      }
-
-      /* =========================================================
-         「鑑定データ詳細」：回数別ユーザー数＋終了回数の一覧＋詳細
-      ========================================================= */
-      const repeatRows = document.getElementById("repeatRows");
-      const endItems = document.getElementById("endItems");
-      const detailTitle = document.getElementById("detailTitle");
-      const detailCount = document.getElementById("detailCount");
-      const detailBody  = document.getElementById("detailBody");
-
-      const BUCKETS = [
-        { key:"1",  label:"1回" },
-        { key:"2",  label:"2回" },
-        { key:"3",  label:"3回" },
-        { key:"4",  label:"4回" },
-        { key:"5p", label:"5回以上" }
-      ];
-
-      let currentBucketKey = "1";
-      let currentDetails = { "1":[], "2":[], "3":[], "4":[], "5p":[] };
-      let currentCounts  = { "1":0, "2":0, "3":0, "4":0, "5p":0 };
-
-      function setRepeatSection(counts, details){
-        currentCounts = Object.assign({ "1":0, "2":0, "3":0, "4":0, "5p":0 }, counts||{});
-        currentDetails = Object.assign({ "1":[], "2":[], "3":[], "4":[], "5p":[] }, details||{});
-
-        renderRepeatTable();
-        renderEndItems();
-
-        // まず「1回」を選ぶ。0なら、2→3→4→5回以上の順で最初に数字があるものを自動選択
-        const order = ["1","2","3","4","5p"];
-        let pick = "1";
-        for(const k of order){
-          if((currentCounts[k]||0) > 0){ pick = k; break; }
-        }
-        selectBucket(pick);
-      }
-
-      function renderRepeatTable(){
-        repeatRows.innerHTML = "";
-        const total = BUCKETS.reduce((s,b)=> s + (Number(currentCounts[b.key])||0), 0);
-        const max   = Math.max(1, ...BUCKETS.map(b=>Number(currentCounts[b.key])||0));
-
-        BUCKETS.forEach(b=>{
-          const cnt = Number(currentCounts[b.key])||0;
-          const row = document.createElement("div");
-          row.className = "rptRow";
-
-          const k = document.createElement("div");
-          k.className = "rptK";
-          k.textContent = b.label;
-
-          const barWrap = document.createElement("div");
-          barWrap.className = "rptBarWrap";
-          const bar = document.createElement("div");
-          bar.className = "rptBar";
-          bar.style.width = (cnt/max*100).toFixed(1) + "%";
-          barWrap.appendChild(bar);
-
-          const num = document.createElement("div");
-          num.className = "rptNum";
-          num.textContent = cnt + "人";
-
-          const p = document.createElement("div");
-          p.className = "rptPct";
-          p.textContent = pct(cnt, total);
-
-          row.appendChild(k);
-          row.appendChild(barWrap);
-          row.appendChild(num);
-          row.appendChild(p);
-          repeatRows.appendChild(row);
-        });
-      }
-
-      function renderEndItems(){
-        endItems.innerHTML = "";
-        BUCKETS.forEach(b=>{
-          const cnt = Number(currentCounts[b.key])||0;
-          const item = document.createElement("div");
-          item.className = "endItem";
-          item.dataset.key = b.key;
-
-          const t = document.createElement("div");
-          t.className = "t";
-          t.textContent = b.label + "で終了";
-
-          const n = document.createElement("div");
-          n.className = "n";
-          n.textContent = cnt + "人";
-
-          item.appendChild(t);
-          item.appendChild(n);
-
-          item.addEventListener("click", ()=> selectBucket(b.key));
-          endItems.appendChild(item);
-        });
-      }
-
-      function selectBucket(key){
-        currentBucketKey = key;
-
-        Array.from(endItems.querySelectorAll(".endItem")).forEach(el=>{
-          el.classList.toggle("on", el.dataset.key === key);
-        });
-
-        const bucket = BUCKETS.find(b=>b.key===key) || {label:"—"};
-        const cnt = Number(currentCounts[key])||0;
-
-        detailTitle.textContent = bucket.label + "で終了";
-        detailCount.textContent = cnt + "人";
-
-        const list = currentDetails[key] || [];
-        detailBody.innerHTML = "";
-
-        if(!list.length){
-          const d = document.createElement("div");
-          d.className = "empty";
-          d.textContent = "該当ユーザーがいません";
-          detailBody.appendChild(d);
-          return;
-        }
-
-        list.forEach(u=>{
-          const row = document.createElement("div");
-          row.className = "uRow";
-
-          const top = document.createElement("div");
-          top.className = "uTop";
-
-          const uid = document.createElement("div");
-          uid.className = "uid";
-          uid.textContent = String(u.uid || "—");
-
-          const ucnt = document.createElement("div");
-          ucnt.className = "ucnt";
-          ucnt.textContent = (u.cnt ? String(u.cnt) : bucket.label.replace("回以上","回")) + "回";
-
-          top.appendChild(uid);
-          top.appendChild(ucnt);
-
-          const chips = document.createElement("div");
-          chips.className = "dchips";
-
-          const dates = Array.isArray(u.dates) ? u.dates : [];
-          if(!dates.length){
-            const sp = document.createElement("div");
-            sp.className = "muted";
-            sp.style.fontSize = "12px";
-            sp.textContent = "日時なし";
-            chips.appendChild(sp);
-          }else{
-            dates.forEach(s=>{
-              const ch = document.createElement("span");
-              ch.className = "dchip";
-              ch.textContent = String(s);
-              chips.appendChild(ch);
-            });
-          }
-
-          row.appendChild(top);
-          row.appendChild(chips);
-          detailBody.appendChild(row);
-        });
-      }
-
-      /* 初期表示 */
-      renderMonthChips();
-      setGraphData("hour");
-      applyMonth();
-      showReward(); // 最初は報酬側
-    })();
-  </script>
-</body>
-</html>
+    .hint{font-size:12px; color:var(--muted); font-weight:800;}
+    .nowrap{white-space:nowrap;}
+
+    /* ====== Repeat detail (in-page) ====== */
+    .repBarRow{
+      display:grid;
+      grid-template-columns: 44px 1fr 64px 64px;
+      gap:10px;
+      align-items:center;
+      padding:8px 0;
+      border-bottom:1px solid #f3f4f6;
+    }
+    .repBarRow:last-child{border-bottom:none;}
+    .repBarLabel{font-weight:900;}
+    .repBarBg{
+      height:10px;
+      background:#e5e7eb;
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .repBarFill{
+      height:100%;
+      width:0%;
+      background:#2563eb;
+      border-radius:999px;
+    }
+    .repBarCount{font-weight:900; text-align:right;}
+    .repBarPct{color:var(--muted); text-a
