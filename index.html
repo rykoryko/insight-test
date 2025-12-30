@@ -124,15 +124,13 @@
     .cursorLine{
       position:absolute; top: 8px; bottom: 8px; width:2px;
       background: rgba(37,99,235,.55); border-radius:999px;
-      pointer-events:none; display:none;
-      z-index: 18; /* ★変更：重なり順を上げて消えないように */
+      pointer-events:none; display:none; z-index: 3;
     }
     .tooltip{
       position:absolute; min-width: 90px; padding: 8px 10px;
       background:#fff; border:1px solid rgba(0,0,0,.08); box-shadow: 0 10px 30px rgba(0,0,0,.12);
       border-radius: 10px; font-size: 12px; font-weight:800; color: var(--text);
-      transform: translate(-50%, -110%); pointer-events:none; display:none; white-space:nowrap;
-      z-index: 20; /* ★変更：重なり順を上げて消えないように */
+      transform: translateX(-50%); pointer-events:none; display:none; white-space:nowrap; z-index: 8; /* 修正: 右の目盛りより前に出す */
     }
     .tooltip .tLabel{ font-size: 12px; font-weight:900; margin-bottom: 2px; color: var(--text); }
     .tooltip .tVal{ font-size:18px; font-weight:900; color: var(--muted); }
@@ -375,6 +373,63 @@
     return v.toString().replace(/\.0$/,"");
   }
 
+  // ===== 修正: グラフの点数をモードごとに正規化（時間=24 / 曜日=7 / 日=31） =====
+  // もともとのデータが「0時,3時,6時...」のように間引かれていても、
+  // ここで「存在しない点は0」として埋めて、1つずつ確認できるようにします。
+  const _chartNormCache = {};
+  function getNormalizedChartData(month, mode){
+    const key = month + "|" + mode;
+    if(_chartNormCache[key]) return _chartNormCache[key];
+
+    const raw = (APP.dataByMonth && APP.dataByMonth[month] && APP.dataByMonth[month].chart && APP.dataByMonth[month].chart[mode])
+      ? APP.dataByMonth[month].chart[mode]
+      : {labels:[], values:[]};
+
+    const rawLabels = raw.labels || [];
+    const rawValues = raw.values || [];
+
+    let labels = [];
+    let values = [];
+    let ticks = []; // x軸に「表示する文字」（空文字なら表示しない）
+
+    if(mode === "hour"){
+      labels = Array.from({length:24}, (_,i)=> `${i}時`);
+      values = Array.from({length:24}, ()=> 0);
+      // raw: ["0時","3時",...,"23時"] を 0〜23 に埋める
+      for(let i=0;i<rawLabels.length;i++){
+        const h = parseInt(rawLabels[i], 10);
+        if(!isNaN(h) && h>=0 && h<=23) values[h] = Number(rawValues[i] ?? 0) || 0;
+      }
+      // 画面表示は読みやすさ優先で「3時間ごと＋最後(23時)」だけ出す
+      ticks = labels.map((lab, i)=> (i%3===0 || i===23) ? lab : "");
+    }else if(mode === "weekday"){
+      labels = ["日","月","火","水","木","金","土"];
+      values = Array.from({length:7}, ()=> 0);
+      const map = {"日":0,"月":1,"火":2,"水":3,"木":4,"金":5,"土":6};
+      for(let i=0;i<rawLabels.length;i++){
+        const k = rawLabels[i];
+        const idx = map[k];
+        if(idx!=null) values[idx] = Number(rawValues[i] ?? 0) || 0;
+      }
+      ticks = labels.slice(); // 全部表示
+    }else{ // "day"
+      labels = Array.from({length:31}, (_,i)=> `${i+1}日`);
+      values = Array.from({length:31}, ()=> 0);
+      for(let i=0;i<rawLabels.length;i++){
+        const day = parseInt(rawLabels[i], 10);
+        if(!isNaN(day) && day>=1 && day<=31) values[day-1] = Number(rawValues[i] ?? 0) || 0;
+      }
+      // 画面表示は「1,6,11,16,21,26,31」だけ（既存の見た目に合わせる）
+      const show = new Set([1,6,11,16,21,26,31]);
+      ticks = labels.map((lab, i)=> show.has(i+1) ? lab : "");
+    }
+
+    const out = {labels, values, ticks};
+    _chartNormCache[key] = out;
+    return out;
+  }
+  // ===== 修正ここまで =====
+
 const APP = {
     months: ["12月", "11月", "10月", "9月", "8月"],
     state: { month: "12月", mainTab: "kpi", chartMode: "hour", detailTab: "user", cursorIndex: null },
@@ -490,8 +545,8 @@ const APP = {
     setSize(){
       const vpRect = this.viewport.getBoundingClientRect();
       const dpr = Math.max(1, window.devicePixelRatio || 1);
-      const d = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode];
-      const n = d.values.length;
+      const d = getNormalizedChartData(APP.state.month, APP.state.chartMode);
+      const n = d.values.length; // 修正: 正規化後の点数
 
       const avail = Math.max(1, vpRect.width - this.padding.left - this.padding.right);
       this.slot = Math.max(8, avail / Math.max(1, (n-1)));
@@ -530,7 +585,7 @@ const APP = {
       });
       ctx.setLineDash([]);
 
-      const d = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode];
+      const d = getNormalizedChartData(APP.state.month, APP.state.chartMode); // 修正
       const values = d.values;
       const n = values.length;
       if(n===0) return;
@@ -579,7 +634,7 @@ const APP = {
       ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--blue").trim() || "#2563eb";
       ctx.stroke();
 
-      renderXLabels(d.labels);
+      renderXLabels(d.ticks); // 修正: 表示用ラベルは間引き
       renderTooltip(p.x, p.y, d.labels[p.i], p.v);
     }
   };
@@ -589,6 +644,7 @@ const APP = {
     labels.forEach(lab=>{ const sp = document.createElement("span"); sp.textContent = lab; row.appendChild(sp); });
   }
 
+  // ===== 修正: 吹き出しがスマホで切れないように（左右＋上下の位置を枠内に収める） =====
   function renderTooltip(x, y, label, val){
     const line = el("cursorLine");
     const tip = el("tooltip");
@@ -599,33 +655,34 @@ const APP = {
     el("tipLabel").textContent = label;
     el("tipValue").textContent = yen(val);
 
-    // ★変更：高い値でも枠内に収まる位置へ（左右＋上下）
-    tip.style.transform = "none"; // CSSのtranslateを無効化して、座標で確実に置く
-
-    const margin = 8;
-    const gap = 10;
+    // まず仮置き（サイズ測定用）
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
 
     const tipW = tip.offsetWidth;
     const tipH = tip.offsetHeight;
 
-    // 左右：はみ出さない
-    let left = x - tipW / 2;
-    if(left < margin) left = margin;
-    if(left > chart.w - tipW - margin) left = chart.w - tipW - margin;
+    // 左右のはみ出し防止
+    let tipX = x;
+    const margin = 8;
+    const minX = margin + tipW/2;
+    const maxX = chart.w - margin - tipW/2;
+    if(tipX < minX) tipX = minX;
+    if(tipX > maxX) tipX = maxX;
+    tip.style.left = tipX + "px";
 
-    // 上下：基本は「点の上」。上が無理なら「点の下」。それでも無理なら枠内に押し込む
-    let top = y - tipH - gap;
-    if(top < margin) top = y + gap;
-
-    if(top > chart.h - tipH - margin) top = chart.h - tipH - margin;
-    if(top < margin) top = margin;
-
-    tip.style.left = left + "px";
+    // 上下のはみ出し防止（上が足りないときは下に出す）
+    const aboveTop = y - 10 - tipH;
+    const belowTop = y + 12;
+    let top = aboveTop;
+    if(aboveTop < margin) top = belowTop;
+    if(top + tipH > chart.h - margin) top = Math.max(margin, chart.h - margin - tipH);
     tip.style.top = top + "px";
   }
+  // ===== 修正ここまで =====
 
   function pickIndexFromClientX(clientX){
-    const d = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode];
+    const d = getNormalizedChartData(APP.state.month, APP.state.chartMode); // 修正
     const n = d.values.length;
     const rect = chart.viewport.getBoundingClientRect();
     const xInViewport = clientX - rect.left;
@@ -635,6 +692,7 @@ const APP = {
     return Math.max(0, Math.min(n-1, i));
   }
 
+  // ===== 修正: 「押したまま左右」でカーソルが1つずつ動くように（スマホ Safari/Chrome 対応） =====
   function attachViewportSelect(){
     const viewport = chart.viewport;
 
@@ -644,15 +702,59 @@ const APP = {
       chart.draw();
     }
 
-    viewport.addEventListener("touchstart",(e)=>{
-      if(!e.touches || e.touches.length!==1) return;
-      selectAtClientX(e.touches[0].clientX);
-    },{passive:true});
+    // Pointer Events（Chrome等）
+    let dragging = false;
+    let activePointerId = null;
 
     viewport.addEventListener("pointerdown",(e)=>{
+      dragging = true;
+      activePointerId = e.pointerId;
+      try{ viewport.setPointerCapture(e.pointerId); }catch(_){}
       selectAtClientX(e.clientX);
     },{passive:true});
+
+    viewport.addEventListener("pointermove",(e)=>{
+      if(!dragging) return;
+      if(activePointerId!=null && e.pointerId!==activePointerId) return;
+      selectAtClientX(e.clientX);
+    },{passive:true});
+
+    function endPointer(){
+      dragging = false;
+      activePointerId = null;
+    }
+    viewport.addEventListener("pointerup", endPointer, {passive:true});
+    viewport.addEventListener("pointercancel", endPointer, {passive:true});
+
+    // Touch Events（iOS Safari 対策）
+    let touchStart = null;
+
+    viewport.addEventListener("touchstart",(e)=>{
+      if(!e.touches || e.touches.length!==1) return;
+      const t = e.touches[0];
+      touchStart = {x:t.clientX, y:t.clientY};
+      selectAtClientX(t.clientX);
+    },{passive:true});
+
+    viewport.addEventListener("touchmove",(e)=>{
+      if(!e.touches || e.touches.length!==1) return;
+      const t = e.touches[0];
+
+      // 横移動のときだけスクロールを止めて、1つずつ更新
+      if(touchStart){
+        const dx = t.clientX - touchStart.x;
+        const dy = t.clientY - touchStart.y;
+        if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6){
+          e.preventDefault(); // iOSで「横ドラッグがスクロール扱い」になるのを防ぐ
+        }
+      }
+      selectAtClientX(t.clientX);
+    },{passive:false});
+
+    viewport.addEventListener("touchend",()=>{ touchStart = null; },{passive:true});
+    viewport.addEventListener("touchcancel",()=>{ touchStart = null; },{passive:true});
   }
+  // ===== 修正ここまで =====
 
   function syncAll(){
     syncMonthChips();
