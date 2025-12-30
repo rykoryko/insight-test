@@ -130,7 +130,11 @@
       position:absolute; min-width: 90px; padding: 8px 10px;
       background:#fff; border:1px solid rgba(0,0,0,.08); box-shadow: 0 10px 30px rgba(0,0,0,.12);
       border-radius: 10px; font-size: 12px; font-weight:800; color: var(--text);
-      transform: translateX(-50%); pointer-events:none; display:none; white-space:nowrap; z-index: 8; /* 修正: 右の目盛りより前に出す */
+      pointer-events:none; display:none; white-space:nowrap; z-index: 4;
+      /* 修正：transformで枠外に飛びやすいのでJSでtop/leftを計算する */
+      transform: none;
+      left: 0;
+      top: 0;
     }
     .tooltip .tLabel{ font-size: 12px; font-weight:900; margin-bottom: 2px; color: var(--text); }
     .tooltip .tVal{ font-size:18px; font-weight:900; color: var(--muted); }
@@ -196,14 +200,32 @@
       padding: 10px 18px; border-radius: 999px; background: var(--danger); color:#fff;
       font-weight: 900; font-size: 14px; text-decoration:none; min-width: 140px;
       box-shadow: 0 10px 18px rgba(255,77,79,.25); transition: transform .08s ease;
+      cursor:pointer;
     }
     .cta:active{ transform: scale(.99); }
+
     .hidden{ display:none !important; }
+
+    /* 修正：終了回数の一覧（スクショ2枚目の見た目） */
+    .endList{ display:flex; flex-direction:column; gap:10px; }
+    .endCard{
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:#fff;
+      box-shadow: 0 6px 14px rgba(0,0,0,.05);
+    }
+    .endLeft{ font-size: 12px; font-weight: 900; color: var(--text); }
+    .endRight{ font-size: 12px; font-weight: 900; color: var(--muted); }
 
     @media (max-width: 420px){
       .xLabels span{font-size:11px;}
       .tooltip{min-width:94px;}
       .tooltip .tVal{font-size:16px;}
+      .chartWrap{ height: 190px; } /* 修正：スマホで吹き出しが上で詰まりやすいので少しだけ余白 */
     }
 </style>
 </head>
@@ -335,8 +357,9 @@
       </div>
     </div>
 
+    <!-- 修正：外部遷移をやめて、同一ページに「回数別ユーザー数」＋「終了回数の一覧」を表示 -->
     <div id="viewDetail" class="hidden">
-      <div class="p2Box">
+      <div class="p2Box" id="p2Box">
         <div class="p2Title">回数別ユーザー数</div>
         <div class="p2TableHeader">
           <div>区分</div>
@@ -347,8 +370,14 @@
         <div id="p2Rows"></div>
 
         <div class="ctaRow">
-          <a class="cta" href="https://kuboizaizen.github.io/shino-insight/" target="_blank" rel="noopener noreferrer">詳細を確認</a>
+          <!-- 修正：外部リンクではなく、一覧へスクロールするだけ -->
+          <button class="cta" id="ctaScrollEnd" type="button">詳細を確認</button>
         </div>
+      </div>
+
+      <div class="p2Box" id="endBox">
+        <div class="p2Title">終了回数の一覧</div>
+        <div id="endRows" class="endList"></div>
       </div>
     </div>
 
@@ -373,64 +402,7 @@
     return v.toString().replace(/\.0$/,"");
   }
 
-  // ===== 修正: グラフの点数をモードごとに正規化（時間=24 / 曜日=7 / 日=31） =====
-  // もともとのデータが「0時,3時,6時...」のように間引かれていても、
-  // ここで「存在しない点は0」として埋めて、1つずつ確認できるようにします。
-  const _chartNormCache = {};
-  function getNormalizedChartData(month, mode){
-    const key = month + "|" + mode;
-    if(_chartNormCache[key]) return _chartNormCache[key];
-
-    const raw = (APP.dataByMonth && APP.dataByMonth[month] && APP.dataByMonth[month].chart && APP.dataByMonth[month].chart[mode])
-      ? APP.dataByMonth[month].chart[mode]
-      : {labels:[], values:[]};
-
-    const rawLabels = raw.labels || [];
-    const rawValues = raw.values || [];
-
-    let labels = [];
-    let values = [];
-    let ticks = []; // x軸に「表示する文字」（空文字なら表示しない）
-
-    if(mode === "hour"){
-      labels = Array.from({length:24}, (_,i)=> `${i}時`);
-      values = Array.from({length:24}, ()=> 0);
-      // raw: ["0時","3時",...,"23時"] を 0〜23 に埋める
-      for(let i=0;i<rawLabels.length;i++){
-        const h = parseInt(rawLabels[i], 10);
-        if(!isNaN(h) && h>=0 && h<=23) values[h] = Number(rawValues[i] ?? 0) || 0;
-      }
-      // 画面表示は読みやすさ優先で「3時間ごと＋最後(23時)」だけ出す
-      ticks = labels.map((lab, i)=> (i%3===0 || i===23) ? lab : "");
-    }else if(mode === "weekday"){
-      labels = ["日","月","火","水","木","金","土"];
-      values = Array.from({length:7}, ()=> 0);
-      const map = {"日":0,"月":1,"火":2,"水":3,"木":4,"金":5,"土":6};
-      for(let i=0;i<rawLabels.length;i++){
-        const k = rawLabels[i];
-        const idx = map[k];
-        if(idx!=null) values[idx] = Number(rawValues[i] ?? 0) || 0;
-      }
-      ticks = labels.slice(); // 全部表示
-    }else{ // "day"
-      labels = Array.from({length:31}, (_,i)=> `${i+1}日`);
-      values = Array.from({length:31}, ()=> 0);
-      for(let i=0;i<rawLabels.length;i++){
-        const day = parseInt(rawLabels[i], 10);
-        if(!isNaN(day) && day>=1 && day<=31) values[day-1] = Number(rawValues[i] ?? 0) || 0;
-      }
-      // 画面表示は「1,6,11,16,21,26,31」だけ（既存の見た目に合わせる）
-      const show = new Set([1,6,11,16,21,26,31]);
-      ticks = labels.map((lab, i)=> show.has(i+1) ? lab : "");
-    }
-
-    const out = {labels, values, ticks};
-    _chartNormCache[key] = out;
-    return out;
-  }
-  // ===== 修正ここまで =====
-
-const APP = {
+  const APP = {
     months: ["12月", "11月", "10月", "9月", "8月"],
     state: { month: "12月", mainTab: "kpi", chartMode: "hour", detailTab: "user", cursorIndex: null },
     dataByMonth: {"12月": {"money": 88270, "mom": 56.6, "repeatCnt": 139, "repeatUsers": 118, "kanteiCnt": 257, "kanteiUsers": 118, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 0.0, 12740.0, 3430.0, 7770.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [11550.0, 14630.0, 18970.0, 14840.0, 17290.0, 4550.0, 6440.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [3850.0, 2730.0, 9170.0, 7000.0, 0.0, 0.0, 0.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 165.1, "waitPrev": 184.1, "waitMoM": 89.7, "after": {"total": 210, "sent": 115, "unsent": 95, "rate": 55.0}}, "p2": {"counts": [{"label": "1回", "n": 0, "pct": 0.0}, {"label": "2回", "n": 103, "pct": 87.3}, {"label": "3回", "n": 9, "pct": 7.6}, {"label": "4回", "n": 6, "pct": 5.1}, {"label": "5回以上", "n": 0, "pct": 0.0}]}}, "11月": {"money": 155820, "mom": 100.0, "repeatCnt": 225, "repeatUsers": 165, "kanteiCnt": 398, "kanteiUsers": 173, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 840.0, 3990.0, 11620.0, 4060.0, 17640.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [34230.0, 27300.0, 20020.0, 18060.0, 17850.0, 18130.0, 20230.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "30日"], "values": [2800.0, 8540.0, 4200.0, 7280.0, 6020.0, 4410.0, 980.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 184.1, "waitPrev": 180.5, "waitMoM": 102.0, "after": {"total": 241, "sent": 135, "unsent": 106, "rate": 57.0}}, "p2": {"counts": [{"label": "1回", "n": 8, "pct": 4.6}, {"label": "2回", "n": 143, "pct": 82.7}, {"label": "3回", "n": 13, "pct": 7.5}, {"label": "4回", "n": 2, "pct": 1.2}, {"label": "5回以上", "n": 7, "pct": 4.0}]}}, "10月": {"money": 155820, "mom": 101.6, "repeatCnt": 229, "repeatUsers": 175, "kanteiCnt": 421, "kanteiUsers": 192, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 4130.0, 19250.0, 2590.0, 27930.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [28840.0, 18760.0, 15890.0, 20300.0, 33460.0, 22960.0, 15610.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [8610.0, 8190.0, 2450.0, 3500.0, 0.0, 3430.0, 2100.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 180.5, "waitPrev": 182.3, "waitMoM": 99.0, "after": {"total": 257, "sent": 144, "unsent": 113, "rate": 57.0}}, "p2": {"counts": [{"label": "1回", "n": 17, "pct": 8.9}, {"label": "2回", "n": 157, "pct": 81.8}, {"label": "3回", "n": 10, "pct": 5.2}, {"label": "4回", "n": 3, "pct": 1.6}, {"label": "5回以上", "n": 5, "pct": 2.6}]}}, "9月": {"money": 153440, "mom": 88.9, "repeatCnt": 311, "repeatUsers": 271, "kanteiCnt": 598, "kanteiUsers": 287, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 0.0, 10430.0, 3920.0, 24220.0, 1540.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [22120.0, 23660.0, 25060.0, 17360.0, 26390.0, 17640.0, 21210.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "30日"], "values": [6720.0, 4410.0, 8540.0, 3920.0, 10290.0, 3220.0, 980.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 182.3, "waitPrev": 151.5, "waitMoM": 120.3, "after": {"total": 344, "sent": 144, "unsent": 200, "rate": 42.0}}, "p2": {"counts": [{"label": "1回", "n": 16, "pct": 5.6}, {"label": "2回", "n": 251, "pct": 87.5}, {"label": "3回", "n": 12, "pct": 4.2}, {"label": "4回", "n": 2, "pct": 0.7}, {"label": "5回以上", "n": 6, "pct": 2.1}]}}, "8月": {"money": 172620, "mom": null, "repeatCnt": 245, "repeatUsers": 214, "kanteiCnt": 480, "kanteiUsers": 235, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [910.0, 0.0, 0.0, 8960.0, 15120.0, 2380.0, 28840.0, 4620.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [40740.0, 16870.0, 30030.0, 11060.0, 16030.0, 24430.0, 33460.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [0.0, 980.0, 3220.0, 12740.0, 2310.0, 6790.0, 8330.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 151.5, "waitPrev": null, "waitMoM": null, "after": {"total": 284, "sent": 139, "unsent": 145, "rate": 49.0}}, "p2": {"counts": [{"label": "1回", "n": 21, "pct": 8.9}, {"label": "2回", "n": 201, "pct": 85.5}, {"label": "3回", "n": 7, "pct": 3.0}, {"label": "4回", "n": 1, "pct": 0.4}, {"label": "5回以上", "n": 5, "pct": 2.1}]}}}
@@ -442,7 +414,7 @@ const APP = {
       const b = document.createElement("button");
       b.className = "chip" + (m===APP.state.month ? " active":"");
       b.textContent = m;
-      b.addEventListener("click", ()=>{ APP.state.month=m; syncAll(true); });
+      b.addEventListener("click", ()=>{ APP.state.month=m; syncAll(); });
       row.appendChild(b);
     });
   }
@@ -517,27 +489,56 @@ const APP = {
     el("amRate").textContent = (a.rate==null ? "—" : pctText(a.rate));
   }
 
-  function syncP2(){
-    const d = APP.dataByMonth[APP.state.month].p2;
-    const rows = el("p2Rows"); rows.innerHTML = "";
-    (d.counts||[]).forEach(item=>{
-      const r = document.createElement("div");
-      r.className = "p2Row";
-      r.innerHTML = `
-        <div>${item.label}</div>
-        <div class="p2BarBg"><div class="p2BarFill" style="width:${Math.max(0,Math.min(100,item.pct))}%"></div></div>
-        <div style="text-align:right;">${item.n}人</div>
-        <div style="text-align:right;">${pctText(item.pct)}</div>
-      `;
-      rows.appendChild(r);
-    });
-  }
-
   function syncChartModeButtons(){
     [...document.querySelectorAll(".toggle")].forEach(b=>{
       b.classList.toggle("active", b.dataset.mode===APP.state.chartMode);
     });
   }
+
+  /* ===== 修正：チャートの点数を 24 / 7 / 31 に正規化（1つずつ確認できる） ===== */
+  function normalizeSeries(mode, labels, values){
+    const safeLabels = Array.isArray(labels) ? labels : [];
+    const safeValues = Array.isArray(values) ? values : [];
+
+    if(mode==="hour"){
+      const outLabels = Array.from({length:24},(_,i)=>`${i}時`);
+      const outValues = Array(24).fill(0);
+      // 既存ラベルが「0時」「3時」などの場合は該当時刻だけ埋める（他は0）
+      for(let i=0;i<Math.min(safeLabels.length, safeValues.length);i++){
+        const h = parseInt(String(safeLabels[i]).replace(/[^\d]/g,""), 10);
+        if(Number.isInteger(h) && h>=0 && h<=23) outValues[h] = Number(safeValues[i]) || 0;
+      }
+      return { labels: outLabels, values: outValues };
+    }
+
+    if(mode==="weekday"){
+      const order = ["日","月","火","水","木","金","土"];
+      const outValues = Array(7).fill(0);
+      for(let i=0;i<Math.min(safeLabels.length, safeValues.length);i++){
+        const idx = order.indexOf(String(safeLabels[i]));
+        if(idx>=0) outValues[idx] = Number(safeValues[i]) || 0;
+      }
+      return { labels: order, values: outValues };
+    }
+
+    if(mode==="day"){
+      const outLabels = Array.from({length:31},(_,i)=>`${i+1}日`);
+      const outValues = Array(31).fill(0);
+      for(let i=0;i<Math.min(safeLabels.length, safeValues.length);i++){
+        const d = parseInt(String(safeLabels[i]).replace(/[^\d]/g,""), 10);
+        if(Number.isInteger(d) && d>=1 && d<=31) outValues[d-1] = Number(safeValues[i]) || 0;
+      }
+      return { labels: outLabels, values: outValues };
+    }
+
+    return { labels: safeLabels, values: safeValues };
+  }
+
+  function getSeries(){
+    const src = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode] || {labels:[],values:[]};
+    return normalizeSeries(APP.state.chartMode, src.labels, src.values);
+  }
+  /* ===== 修正ここまで ===== */
 
   const chart = {
     canvas:null, ctx:null, inner:null, viewport:null, xLabelViewport:null, xLabelRow:null,
@@ -545,8 +546,9 @@ const APP = {
     setSize(){
       const vpRect = this.viewport.getBoundingClientRect();
       const dpr = Math.max(1, window.devicePixelRatio || 1);
-      const d = getNormalizedChartData(APP.state.month, APP.state.chartMode);
-      const n = d.values.length; // 修正: 正規化後の点数
+
+      const series = getSeries(); /* 修正 */
+      const n = series.values.length;
 
       const avail = Math.max(1, vpRect.width - this.padding.left - this.padding.right);
       this.slot = Math.max(8, avail / Math.max(1, (n-1)));
@@ -585,10 +587,19 @@ const APP = {
       });
       ctx.setLineDash([]);
 
-      const d = getNormalizedChartData(APP.state.month, APP.state.chartMode); // 修正
-      const values = d.values;
+      const series = getSeries(); /* 修正 */
+      const values = series.values;
+      const labels = series.labels;
       const n = values.length;
-      if(n===0) return;
+      if(n===0){
+        el("yTop").textContent = "—";
+        el("yMid").textContent = "—";
+        el("yBot").textContent = "—";
+        el("cursorLine").style.display = "none";
+        el("tooltip").style.display = "none";
+        renderXLabels(labels);
+        return;
+      }
 
       const maxV = Math.max(...values, 1);
       const targetMax = Math.max(1155, Math.ceil(maxV/5)*5);
@@ -634,186 +645,4 @@ const APP = {
       ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--blue").trim() || "#2563eb";
       ctx.stroke();
 
-      renderXLabels(d.ticks); // 修正: 表示用ラベルは間引き
-      renderTooltip(p.x, p.y, d.labels[p.i], p.v);
-    }
-  };
-
-  function renderXLabels(labels){
-    const row = chart.xLabelRow; row.innerHTML = "";
-    labels.forEach(lab=>{ const sp = document.createElement("span"); sp.textContent = lab; row.appendChild(sp); });
-  }
-
-  // ===== 修正: 吹き出しがスマホで切れないように（左右＋上下の位置を枠内に収める） =====
-  function renderTooltip(x, y, label, val){
-    const line = el("cursorLine");
-    const tip = el("tooltip");
-    line.style.display = "block";
-    tip.style.display = "block";
-    line.style.left = x + "px";
-
-    el("tipLabel").textContent = label;
-    el("tipValue").textContent = yen(val);
-
-    // まず仮置き（サイズ測定用）
-    tip.style.left = x + "px";
-    tip.style.top = y + "px";
-
-    const tipW = tip.offsetWidth;
-    const tipH = tip.offsetHeight;
-
-    // 左右のはみ出し防止
-    let tipX = x;
-    const margin = 8;
-    const minX = margin + tipW/2;
-    const maxX = chart.w - margin - tipW/2;
-    if(tipX < minX) tipX = minX;
-    if(tipX > maxX) tipX = maxX;
-    tip.style.left = tipX + "px";
-
-    // 上下のはみ出し防止（上が足りないときは下に出す）
-    const aboveTop = y - 10 - tipH;
-    const belowTop = y + 12;
-    let top = aboveTop;
-    if(aboveTop < margin) top = belowTop;
-    if(top + tipH > chart.h - margin) top = Math.max(margin, chart.h - margin - tipH);
-    tip.style.top = top + "px";
-  }
-  // ===== 修正ここまで =====
-
-  function pickIndexFromClientX(clientX){
-    const d = getNormalizedChartData(APP.state.month, APP.state.chartMode); // 修正
-    const n = d.values.length;
-    const rect = chart.viewport.getBoundingClientRect();
-    const xInViewport = clientX - rect.left;
-    const x0 = chart.padding.left;
-    const dx = chart.slot;
-    const i = Math.round((xInViewport - x0) / dx);
-    return Math.max(0, Math.min(n-1, i));
-  }
-
-  // ===== 修正: 「押したまま左右」でカーソルが1つずつ動くように（スマホ Safari/Chrome 対応） =====
-  function attachViewportSelect(){
-    const viewport = chart.viewport;
-
-    function selectAtClientX(clientX){
-      const idx = pickIndexFromClientX(clientX);
-      APP.state.cursorIndex = idx;
-      chart.draw();
-    }
-
-    // Pointer Events（Chrome等）
-    let dragging = false;
-    let activePointerId = null;
-
-    viewport.addEventListener("pointerdown",(e)=>{
-      dragging = true;
-      activePointerId = e.pointerId;
-      try{ viewport.setPointerCapture(e.pointerId); }catch(_){}
-      selectAtClientX(e.clientX);
-    },{passive:true});
-
-    viewport.addEventListener("pointermove",(e)=>{
-      if(!dragging) return;
-      if(activePointerId!=null && e.pointerId!==activePointerId) return;
-      selectAtClientX(e.clientX);
-    },{passive:true});
-
-    function endPointer(){
-      dragging = false;
-      activePointerId = null;
-    }
-    viewport.addEventListener("pointerup", endPointer, {passive:true});
-    viewport.addEventListener("pointercancel", endPointer, {passive:true});
-
-    // Touch Events（iOS Safari 対策）
-    let touchStart = null;
-
-    viewport.addEventListener("touchstart",(e)=>{
-      if(!e.touches || e.touches.length!==1) return;
-      const t = e.touches[0];
-      touchStart = {x:t.clientX, y:t.clientY};
-      selectAtClientX(t.clientX);
-    },{passive:true});
-
-    viewport.addEventListener("touchmove",(e)=>{
-      if(!e.touches || e.touches.length!==1) return;
-      const t = e.touches[0];
-
-      // 横移動のときだけスクロールを止めて、1つずつ更新
-      if(touchStart){
-        const dx = t.clientX - touchStart.x;
-        const dy = t.clientY - touchStart.y;
-        if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6){
-          e.preventDefault(); // iOSで「横ドラッグがスクロール扱い」になるのを防ぐ
-        }
-      }
-      selectAtClientX(t.clientX);
-    },{passive:false});
-
-    viewport.addEventListener("touchend",()=>{ touchStart = null; },{passive:true});
-    viewport.addEventListener("touchcancel",()=>{ touchStart = null; },{passive:true});
-  }
-  // ===== 修正ここまで =====
-
-  function syncAll(){
-    syncMonthChips();
-    syncKPIs();
-    syncUserPanel();
-    syncReaderPanel();
-    syncP2();
-    syncMainTab();
-    syncDetailTab();
-    syncChartModeButtons();
-
-    if(APP.state.mainTab==="kpi"){
-      chart.setSize();
-      chart.draw();
-    }
-  }
-
-  function attachUIEvents(){
-    el("tabKpi").addEventListener("click",()=>{APP.state.mainTab="kpi";syncAll();});
-    el("tabDetail").addEventListener("click",()=>{APP.state.mainTab="detail";syncAll();});
-
-    [...document.querySelectorAll(".toggle")].forEach(b=>{
-      b.addEventListener("click", ()=>{
-        APP.state.chartMode = b.dataset.mode;
-        APP.state.cursorIndex = null;
-        syncAll();
-      });
-    });
-
-    [...document.querySelectorAll(".tab")].forEach(b=>{
-      b.addEventListener("click", ()=>{
-        APP.state.detailTab = b.dataset.detail;
-        syncAll();
-      });
-    });
-
-    window.addEventListener("resize", ()=>{
-      if(APP.state.mainTab==="kpi"){
-        chart.setSize();
-        chart.draw();
-      }
-    });
-  }
-
-  (function boot(){
-    initMonths();
-
-    chart.canvas = el("chart");
-    chart.ctx = chart.canvas.getContext("2d");
-    chart.inner = el("chartInner");
-    chart.viewport = el("chartViewport");
-    chart.xLabelViewport = el("xLabelsViewport");
-    chart.xLabelRow = el("xLabels");
-
-    attachUIEvents();
-    attachViewportSelect();
-
-    syncAll();
-  })();
-</script>
-</body>
-</html>
+      renderXLabels(labels);
