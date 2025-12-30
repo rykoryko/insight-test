@@ -20,58 +20,62 @@
       --cardActiveBg:#fde7ef;
       --cardActiveBorder:#f3a6c8;
       --shadow: 0 8px 20px rgba(0,0,0,.08);
-      --radius: 16px;
+      --radius: 14px;
+      --blue:#2563eb;
+      --pink:#ff4db8;
+      --grid:#e5e7eb;
+      --danger:#ff4d4f;
     }
-
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box;}
+    html,body{height:100%;}
     body{
-      margin:0; background: var(--bg); color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Meiryo", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a{color:inherit;}
+    .wrap{ max-width: 420px; margin:0 auto; padding: 10px 12px 28px; }
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 4px 2px 8px; position: sticky; top: 0; background: var(--bg); z-index: 30;
+    }
+    .logo{ font-weight:700; letter-spacing:.02em; font-size: 18px; }
+    .title{ font-size: 18px; font-weight:700; text-align:center; flex:1; }
+    .spacer{width:48px;}
+    .pinkline{ height:2px; background: var(--line); border-radius:999px; margin: 0 0 10px; opacity:.75; }
+    .label{ font-size: 13px; color: var(--text); margin: 6px 0 6px; font-weight:600; }
+    .input{
+      width:100%; border:0; border-bottom:2px solid var(--line);
+      padding:10px 2px 10px; font-size:16px; outline:none; background:transparent;
     }
 
-    .wrap{ max-width: 980px; margin:0 auto; padding: 14px 14px 18px; }
-
-    .topRow{
-      display:flex; gap:10px; overflow:auto; padding:10px 0 2px;
-      scrollbar-width: none;
+    .chipRow{
+      display:flex; gap:8px; overflow:auto; padding:10px 0 2px;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
     }
-    .topRow::-webkit-scrollbar{ display:none; }
-
-    .chipRow{ display:flex; gap:8px; overflow:auto; padding:10px 0 2px; scrollbar-width:none; }
     .chipRow::-webkit-scrollbar{ display:none; }
     .chip{
-      border:1px solid rgba(0,0,0,.08);
-      background: var(--chip); color: var(--chipText);
-      padding: 8px 12px; border-radius: 999px;
-      font-weight:800; font-size: 13px; cursor:pointer;
-      transition: transform .08s ease;
-      white-space: nowrap;
+      border:0; padding:8px 14px; border-radius:999px;
+      background:var(--chip); color:var(--chipText);
+      font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap;
+      flex:0 0 auto; transition: transform .08s ease;
     }
     .chip:active{ transform: scale(.98); }
-    .chip.active{ background: var(--chipActive); color: var(--chipActiveText); }
+    .chip.active{ background:var(--chipActive); color:var(--chipActiveText); }
 
-    .tabs{
-      display:flex; gap:10px; margin: 12px 0 10px;
-    }
-    .tabBtn{
-      flex:1; border:0; background:#fff; box-shadow: var(--shadow);
-      border-radius: 14px; padding: 12px 10px; cursor:pointer;
-      display:flex; justify-content:space-between; align-items:center;
-      font-weight:900;
-    }
-    .tabBtn span{ font-size: 14px; }
-    .tabBtn small{ font-size: 12px; color: var(--muted); font-weight:800; }
-    .tabBtn.active{ outline: 2px solid rgba(243,166,200,.9); }
+    .sectionTitle{ display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin-top: 10px; }
+    .sectionTitle h2{ margin:0; font-size: 18px; font-weight:800; letter-spacing:.01em; }
+    .divider{ height:2px; background: var(--line); border-radius:999px; margin: 6px 0 10px; opacity:.75; }
 
-    .cards{ display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:10px; margin-top: 12px; }
-    @media (max-width: 720px){
-      .cards{ grid-template-columns: 1fr; }
-    }
+    .cards{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
     .card{
-      border:1px solid rgba(0,0,0,.08); background: var(--card);
-      border-radius: var(--radius); box-shadow: var(--shadow);
-      padding: 12px; cursor:pointer;
-      transition: transform .08s ease, background-color .15s ease, border-color .15s ease;
+      border: 1.5px solid var(--cardBorder); background: var(--card);
+      border-radius: 12px; padding: 10px; cursor:pointer;
+      transition: transform .08s ease, border-color .15s ease, background .15s ease;
+      min-height: 88px; position:relative;
     }
     .card:active{ transform: scale(.99); }
     .card.active{ border-color: var(--cardActiveBorder); background: var(--cardActiveBg); }
@@ -120,13 +124,13 @@
     .cursorLine{
       position:absolute; top: 8px; bottom: 8px; width:2px;
       background: rgba(37,99,235,.55); border-radius:999px;
-      pointer-events:none; display:none; z-index: 18;
+      pointer-events:none; display:none; z-index: 3;
     }
     .tooltip{
       position:absolute; min-width: 90px; padding: 8px 10px;
       background:#fff; border:1px solid rgba(0,0,0,.08); box-shadow: 0 10px 30px rgba(0,0,0,.12);
       border-radius: 10px; font-size: 12px; font-weight:800; color: var(--text);
-      transform: translate(-50%, -110%); pointer-events:none; display:none; white-space:nowrap; z-index: 20;
+      transform: translate(-50%, -110%); pointer-events:none; display:none; white-space:nowrap; z-index: 4;
     }
     .tooltip .tLabel{ font-size: 12px; font-weight:900; margin-bottom: 2px; color: var(--text); }
     .tooltip .tVal{ font-size:18px; font-weight:900; color: var(--muted); }
@@ -146,58 +150,93 @@
     .tab.active{ background:#4b5563; color:#fff; }
 
     .panel{ background:#fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px; }
-    .panel.hidden{ display:none; }
+    .panel + .panel{ margin-top: 10px; }
 
-    .subSection{ font-weight:900; font-size: 13px; margin: 6px 0 8px; display:flex; align-items:center; gap:8px; }
-    .dot{ width:8px; height:8px; border-radius:999px; background:#f3a6c8; flex:0 0 8px; }
+    .subSection{ margin-top: 6px; font-size: 13px; font-weight:900; color: var(--text); display:flex; align-items:center; gap:8px; }
+    .dot{ width:10px; height:10px; border-radius:2px; background: var(--blue); flex:0 0 auto; }
 
-    .ageRow{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin: 8px 0; }
-    .ageRow .label{ font-weight:800; color: var(--text); }
-    .ageRow .pct{ color: var(--muted); font-weight:900; }
+    .rows{ margin-top: 8px; border-top:1px solid rgba(0,0,0,.06); }
+    .row{
+      display:flex; justify-content:space-between; align-items:center;
+      padding: 8px 0; border-bottom:1px solid rgba(0,0,0,.06);
+      font-size: 13px; font-weight:700; color: var(--text);
+    }
+    .row .rVal{ color: var(--text); font-weight:900; }
+
+    .barItem{ margin-top: 10px; }
+    .barTop{ display:flex; justify-content:space-between; gap:8px; font-size: 12px; font-weight:800; color: var(--text); }
     .barBg{ height: 10px; background: #e5e7eb; border-radius: 999px; overflow:hidden; margin-top: 6px; }
-    .barFill{ height:100%; background: #f3a6c8; border-radius: 999px; width: 0%; }
+    .barFill{ height: 100%; background: var(--blue); width: 0%; border-radius: 999px; }
 
     .genderBar{ margin-top: 10px; }
     .genderTrack{ height: 10px; background: #e5e7eb; border-radius: 999px; overflow:hidden; display:flex; }
-    .genderFemale{ background: #f3a6c8; width:0%; }
-    .genderMale{ background: #93c5fd; width:0%; }
-    .genderLabels{ display:flex; justify-content:space-between; margin-top: 8px; font-weight:900; }
-
-    .rows{ display:flex; flex-direction:column; gap: 8px; }
-    .row{ display:flex; justify-content:space-between; align-items:baseline; }
-    .row .rLabel{ color: var(--muted); font-weight:800; font-size: 12px; }
-    .row .rVal{ font-weight:900; font-size: 14px; }
+    .genderFemale{ background: var(--pink); }
+    .genderMale{ background: var(--blue); }
+    .genderLabels{ margin-top: 8px; display:flex; justify-content:space-between; font-size: 12px; color: var(--text); font-weight:800; }
+    .muted{ color: var(--muted); font-weight:700; }
 
     .p2Box{ background:#fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px; margin-top: 10px; }
-    .p2Title{ font-weight:900; font-size: 13px; margin-bottom: 10px; }
-    .p2Item{ margin: 10px 0; }
-    .p2Top{ display:flex; justify-content:space-between; font-weight:900; }
-    .p2Top small{ color: var(--muted); font-weight:900; }
-    .p2BarBg{ height: 8px; background:#e5e7eb; border-radius:999px; overflow:hidden; margin-top: 6px; }
-    .p2BarFill{ height:100%; background:#4b5563; width:0%; }
+    .p2Title{ font-size: 13px; font-weight: 900; margin: 0 0 10px; }
+    .p2TableHeader{
+      display:grid; grid-template-columns: 64px 1fr 56px 56px; gap: 8px;
+      font-size: 11px; color: var(--muted); font-weight: 900;
+      padding-bottom: 6px; border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .p2Row{
+      display:grid; grid-template-columns: 64px 1fr 56px 56px; gap: 8px;
+      align-items:center; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,.06);
+      font-size: 12px; font-weight: 800;
+    }
+    .p2BarBg{ height: 8px; background:#e5e7eb; border-radius:999px; overflow:hidden; }
+    .p2BarFill{ height: 100%; background: var(--blue); width: 0%; border-radius:999px; }
 
-    .sectionTitle{ display:flex; align-items:center; justify-content:space-between; margin-top: 14px; }
-    .sectionTitle h2{ margin:0; font-size: 14px; font-weight:900; }
-    .divider{ height:1px; background: rgba(0,0,0,.08); margin: 10px 0 0; }
+    .ctaRow{ display:flex; justify-content:flex-end; margin-top: 12px; }
+    .cta{
+      display:inline-flex; align-items:center; justify-content:center; border:0;
+      padding: 10px 18px; border-radius: 999px; background: var(--danger); color:#fff;
+      font-weight: 900; font-size: 14px; text-decoration:none; min-width: 140px;
+      box-shadow: 0 10px 18px rgba(255,77,79,.25); transition: transform .08s ease;
+    }
+    .cta:active{ transform: scale(.99); }
+    .hidden{ display:none !important; }
 
-    .smallNote{ font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
-
-    .rightHint{ position:absolute; right: 10px; top: 10px; color: var(--muted); font-weight:800; font-size: 12px; }
-  </style>
+    @media (max-width: 420px){
+      .xLabels span{font-size:11px;}
+      .tooltip{min-width:94px;}
+      .tooltip .tVal{font-size:16px;}
+    }
+</style>
 </head>
 <body>
   <div class="wrap">
-    <div class="chipRow" id="monthChips"></div>
+    <div class="topbar">
+      <div class="logo">Pixy</div>
+      <div class="title">インサイト</div>
+      <div class="spacer"></div>
+    </div>
+    <div class="pinkline"></div>
 
-    <div class="cards">
-      <button class="card active" id="cardMoney" aria-label="報酬金">
-        <div class="kpiTitle">報酬金</div>
+    <div class="label">鑑定師名</div>
+    <input id="readerName" class="input" placeholder="例：minami" list="nameList" value="minami" />
+    <datalist id="nameList">
+      <option value="minami"></option>
+    </datalist>
+
+    <div class="chipRow" id="monthRow" aria-label="月選択"></div>
+
+    <div class="sectionTitle">
+      <h2>メインデータ</h2>
+    </div>
+    <div class="divider"></div>
+
+    <div class="cards" role="tablist" aria-label="メイン切替">
+      <button class="card active" id="tabKpi" role="tab" aria-selected="true">
+        <div class="kpiTitle">今月の報酬金</div>
         <div class="kpiValue" id="kpiMoney">—</div>
-        <div class="kpiSub">前月比 <span id="kpiMoM">—</span></div>
+        <div class="kpiSub">前月比　<span id="kpiMoM">—</span></div>
       </button>
-
-      <button class="card" id="cardRepeat" aria-label="リピート">
-        <div class="kpiTitle">リピート</div>
+      <button class="card" id="tabDetail" role="tab" aria-selected="false">
+        <div class="kpiTitle">鑑定データ詳細</div>
         <div class="miniGrid">
           <div class="miniItem">
             <div class="miniLabel">リピート件数</div>
@@ -299,124 +338,71 @@
     <div id="viewDetail" class="hidden">
       <div class="p2Box">
         <div class="p2Title">回数別ユーザー数</div>
-        <div id="p2List"></div>
+        <div class="p2TableHeader">
+          <div>区分</div>
+          <div></div>
+          <div style="text-align:right;">人数</div>
+          <div style="text-align:right;">割合</div>
+        </div>
+        <div id="p2Rows"></div>
+
+        <div class="ctaRow">
+          <a class="cta" href="https://kuboizaizen.github.io/shino-insight/" target="_blank" rel="noopener noreferrer">詳細を確認</a>
+        </div>
       </div>
     </div>
 
-    <div class="smallNote">
-      ※ 数値はサンプル表示です（CSVなどの実データ連携は別途）。<br>
-      ※ 「高い値で吹き出しが切れる」問題は、吹き出し位置を枠内に収める処理で解消しています。
-    </div>
+    <div style="height:12px"></div>
   </div>
 
 <script>
-  const el = (id)=>document.getElementById(id);
+  const el = (id) => document.getElementById(id);
 
-  const APP = {
-    months: [],
+  function yen(n){
+    if(n==null || isNaN(n)) return "—";
+    return "¥ " + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  function pctText(n){
+    if(n==null || isNaN(n)) return "—";
+    const v = Math.round(n*10)/10;
+    return v.toString().replace(/\.0$/,"") + "%";
+  }
+  function hoursText(n){
+    if(n==null || isNaN(n)) return "—";
+    const v = Math.round(n*10)/10;
+    return v.toString().replace(/\.0$/,"");
+  }
+
+const APP = {
+    months: ["12月", "11月", "10月", "9月", "8月"],
     state: { month: "12月", mainTab: "kpi", chartMode: "hour", detailTab: "user", cursorIndex: null },
     dataByMonth: {"12月": {"money": 88270, "mom": 56.6, "repeatCnt": 139, "repeatUsers": 118, "kanteiCnt": 257, "kanteiUsers": 118, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 0.0, 12740.0, 3430.0, 7770.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [11550.0, 14630.0, 18970.0, 14840.0, 17290.0, 4550.0, 6440.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [3850.0, 2730.0, 9170.0, 7000.0, 0.0, 0.0, 0.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 165.1, "waitPrev": 184.1, "waitMoM": 89.7, "after": {"total": 210, "sent": 115, "unsent": 95, "rate": 55.0}}, "p2": {"counts": [{"label": "1回", "n": 0, "pct": 0.0}, {"label": "2回", "n": 103, "pct": 87.3}, {"label": "3回", "n": 9, "pct": 7.6}, {"label": "4回", "n": 6, "pct": 5.1}, {"label": "5回以上", "n": 0, "pct": 0.0}]}}, "11月": {"money": 155820, "mom": 100.0, "repeatCnt": 225, "repeatUsers": 165, "kanteiCnt": 398, "kanteiUsers": 173, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 840.0, 3990.0, 11620.0, 4060.0, 17640.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [34230.0, 27300.0, 20020.0, 18060.0, 17850.0, 18130.0, 20230.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "30日"], "values": [2800.0, 8540.0, 4200.0, 7280.0, 6020.0, 4410.0, 980.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 184.1, "waitPrev": 180.5, "waitMoM": 102.0, "after": {"total": 241, "sent": 135, "unsent": 106, "rate": 57.0}}, "p2": {"counts": [{"label": "1回", "n": 8, "pct": 4.6}, {"label": "2回", "n": 143, "pct": 82.7}, {"label": "3回", "n": 13, "pct": 7.5}, {"label": "4回", "n": 2, "pct": 1.2}, {"label": "5回以上", "n": 7, "pct": 4.0}]}}, "10月": {"money": 155820, "mom": 101.6, "repeatCnt": 229, "repeatUsers": 175, "kanteiCnt": 421, "kanteiUsers": 192, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 4130.0, 19250.0, 2590.0, 27930.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [28840.0, 18760.0, 15890.0, 20300.0, 33460.0, 22960.0, 15610.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [8610.0, 8190.0, 2450.0, 3500.0, 0.0, 3430.0, 2100.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 180.5, "waitPrev": 182.3, "waitMoM": 99.0, "after": {"total": 257, "sent": 144, "unsent": 113, "rate": 57.0}}, "p2": {"counts": [{"label": "1回", "n": 17, "pct": 8.9}, {"label": "2回", "n": 157, "pct": 81.8}, {"label": "3回", "n": 10, "pct": 5.2}, {"label": "4回", "n": 3, "pct": 1.6}, {"label": "5回以上", "n": 5, "pct": 2.6}]}}, "9月": {"money": 153440, "mom": 88.9, "repeatCnt": 311, "repeatUsers": 271, "kanteiCnt": 598, "kanteiUsers": 287, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 0.0, 10430.0, 3920.0, 24220.0, 1540.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [22120.0, 23660.0, 25060.0, 17360.0, 26390.0, 17640.0, 21210.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "30日"], "values": [6720.0, 4410.0, 8540.0, 3920.0, 10290.0, 3220.0, 980.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 182.3, "waitPrev": 151.5, "waitMoM": 120.3, "after": {"total": 344, "sent": 144, "unsent": 200, "rate": 42.0}}, "p2": {"counts": [{"label": "1回", "n": 16, "pct": 5.6}, {"label": "2回", "n": 251, "pct": 87.5}, {"label": "3回", "n": 12, "pct": 4.2}, {"label": "4回", "n": 2, "pct": 0.7}, {"label": "5回以上", "n": 6, "pct": 2.1}]}}, "8月": {"money": 172620, "mom": null, "repeatCnt": 245, "repeatUsers": 214, "kanteiCnt": 480, "kanteiUsers": 235, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [910.0, 0.0, 0.0, 8960.0, 15120.0, 2380.0, 28840.0, 4620.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [40740.0, 16870.0, 30030.0, 11060.0, 16030.0, 24430.0, 33460.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [0.0, 980.0, 3220.0, 12740.0, 2310.0, 6790.0, 8330.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 151.5, "waitPrev": null, "waitMoM": null, "after": {"total": 284, "sent": 139, "unsent": 145, "rate": 49.0}}, "p2": {"counts": [{"label": "1回", "n": 21, "pct": 8.9}, {"label": "2回", "n": 201, "pct": 85.5}, {"label": "3回", "n": 7, "pct": 3.0}, {"label": "4回", "n": 1, "pct": 0.4}, {"label": "5回以上", "n": 5, "pct": 2.1}]}}}
   };
 
-  function yen(n){
-    if(n===null || n===undefined) return "—";
-    const v = Math.round(Number(n) || 0);
-    return "¥ " + v.toLocaleString("ja-JP");
-  }
-  function pct(n){
-    if(n===null || n===undefined) return "—";
-    return (Math.round(n*10)/10).toFixed(1) + "%";
-  }
-  function fmtHours(n){
-    if(n===null || n===undefined) return "—";
-    return (Math.round(n*10)/10).toFixed(1) + "時間";
-  }
-  function fmtInt(n){
-    if(n===null || n===undefined) return "—";
-    return (Number(n)||0).toLocaleString("ja-JP");
-  }
-
   function initMonths(){
-    const keys = Object.keys(APP.dataByMonth);
-    const order = (m)=>parseInt(m.replace("月",""),10);
-    keys.sort((a,b)=>order(a)-order(b));
-    APP.months = keys;
-
-    const row = el("monthChips");
-    row.innerHTML = "";
-    keys.forEach(m=>{
+    const row = el("monthRow"); row.innerHTML = "";
+    APP.months.forEach(m=>{
       const b = document.createElement("button");
-      b.className = "chip" + (m===APP.state.month ? " active": "");
+      b.className = "chip" + (m===APP.state.month ? " active":"");
       b.textContent = m;
-      b.addEventListener("click", ()=>{
-        APP.state.month = m;
-        APP.state.cursorIndex = null;
-        syncAll();
-      });
+      b.addEventListener("click", ()=>{ APP.state.month=m; syncAll(true); });
       row.appendChild(b);
-    });
-  }
-  function syncMonthChips(){
-    [...document.querySelectorAll("#monthChips .chip")].forEach(b=>{
-      b.classList.toggle("active", b.textContent===APP.state.month);
     });
   }
 
   function syncKPIs(){
     const d = APP.dataByMonth[APP.state.month];
     el("kpiMoney").textContent = yen(d.money);
-    el("kpiMoM").textContent = (d.mom===null || d.mom===undefined) ? "—" : pct(d.mom);
-
-    el("kpiRepeatCnt").textContent = fmtInt(d.repeatCnt);
-    el("kpiRepeatUsers").textContent = fmtInt(d.repeatUsers);
-    el("kpiKanteiCnt").textContent = fmtInt(d.kanteiCnt);
-    el("kpiKanteiUsers").textContent = fmtInt(d.kanteiUsers);
+    el("kpiMoM").textContent = (d.mom==null ? "—" : pctText(d.mom));
+    el("kpiRepeatCnt").textContent = (d.repeatCnt==null ? "—" : d.repeatCnt);
+    el("kpiRepeatUsers").textContent = (d.repeatUsers==null ? "—" : d.repeatUsers);
+    el("kpiKanteiCnt").textContent = (d.kanteiCnt==null ? "—" : d.kanteiCnt);
+    el("kpiKanteiUsers").textContent = (d.kanteiUsers==null ? "—" : d.kanteiUsers);
   }
 
-  function syncUserPanel(){
-    const d = APP.dataByMonth[APP.state.month].user;
-
-    const list = el("ageList");
-    list.innerHTML = "";
-    d.age.forEach(a=>{
-      const wrap = document.createElement("div");
-      wrap.className = "ageRow";
-      wrap.innerHTML = `
-        <div style="flex:1">
-          <div class="label">${a.label}</div>
-          <div class="barBg"><div class="barFill" style="width:${a.pct}%"></div></div>
-        </div>
-        <div class="pct">${pct(a.pct)}</div>
-      `;
-      list.appendChild(wrap);
-    });
-
-    const f = d.gender.female;
-    const m = d.gender.male;
-    el("femaleBar").style.width = f + "%";
-    el("maleBar").style.width = m + "%";
-    el("femalePct").textContent = pct(f);
-    el("malePct").textContent = pct(m);
-  }
-
-  function syncReaderPanel(){
-    const d = APP.dataByMonth[APP.state.month].reader;
-    el("waitThis").textContent = fmtHours(d.waitThis);
-    el("waitPrev").textContent = fmtHours(d.waitPrev);
-    el("waitMoM").textContent = (d.waitMoM===null || d.waitMoM===undefined) ? "—" : pct(d.waitMoM);
-
-    el("amTotal").textContent = fmtInt(d.after.total);
-    el("amSent").textContent = fmtInt(d.after.sent);
-    el("amUnsent").textContent = fmtInt(d.after.unsent);
-    el("amRate").textContent = pct(d.after.rate);
-  }
-
-  function syncDetailTab(){
-    const isUser = APP.state.detailTab==="user";
-    el("panelUser").classList.toggle("hidden", !isUser);
-    el("panelReader").classList.toggle("hidden", isUser);
-    [...document.querySelectorAll(".detailTabs .tab")].forEach(b=>{
-      b.classList.toggle("active", b.dataset.detail===APP.state.detailTab);
+  function syncMonthChips(){
+    [...document.querySelectorAll("#monthRow .chip")].forEach(ch=>{
+      ch.classList.toggle("active", ch.textContent===APP.state.month);
     });
   }
 
@@ -424,6 +410,70 @@
     const isKpi = APP.state.mainTab==="kpi";
     el("viewKpi").classList.toggle("hidden", !isKpi);
     el("viewDetail").classList.toggle("hidden", isKpi);
+    el("tabKpi").classList.toggle("active", isKpi);
+    el("tabKpi").setAttribute("aria-selected", isKpi ? "true":"false");
+    el("tabDetail").classList.toggle("active", !isKpi);
+    el("tabDetail").setAttribute("aria-selected", !isKpi ? "true":"false");
+  }
+
+  function syncDetailTab(){
+    const isUser = APP.state.detailTab==="user";
+    el("panelUser").classList.toggle("hidden", !isUser);
+    el("panelReader").classList.toggle("hidden", isUser);
+    [...document.querySelectorAll(".tab")].forEach(t=>{
+      t.classList.toggle("active", t.dataset.detail===APP.state.detailTab);
+    });
+  }
+
+  function syncUserPanel(){
+    const d = APP.dataByMonth[APP.state.month].user;
+    const ageWrap = el("ageList"); ageWrap.innerHTML = "";
+    (d.age||[]).forEach(item=>{
+      const block = document.createElement("div");
+      block.className = "barItem";
+      block.innerHTML = `
+        <div class="barTop"><div>${item.label}</div><div class="pct">${pctText(item.pct)}</div></div>
+        <div class="barBg"><div class="barFill" style="width:${Math.max(0,Math.min(100,item.pct))}%"></div></div>
+      `;
+      ageWrap.appendChild(block);
+    });
+
+    const f = (d.gender?.female ?? null);
+    const m = (d.gender?.male ?? null);
+    el("femaleBar").style.width = (f==null?0:f) + "%";
+    el("maleBar").style.width = (m==null?0:m) + "%";
+    el("femalePct").textContent = (f==null ? "—" : pctText(f));
+    el("malePct").textContent = (m==null ? "—" : pctText(m));
+  }
+
+  function syncReaderPanel(){
+    const d = APP.dataByMonth[APP.state.month].reader;
+
+    el("waitThis").textContent = (d.waitThis==null ? "—" : hoursText(d.waitThis) + "h");
+    el("waitPrev").textContent = (d.waitPrev==null ? "—" : hoursText(d.waitPrev) + "h");
+    el("waitMoM").textContent = (d.waitMoM==null ? "—" : pctText(d.waitMoM));
+
+    const a = d.after || {};
+    el("amTotal").textContent = (a.total==null ? "—" : a.total);
+    el("amSent").textContent = (a.sent==null ? "—" : a.sent);
+    el("amUnsent").textContent = (a.unsent==null ? "—" : a.unsent);
+    el("amRate").textContent = (a.rate==null ? "—" : pctText(a.rate));
+  }
+
+  function syncP2(){
+    const d = APP.dataByMonth[APP.state.month].p2;
+    const rows = el("p2Rows"); rows.innerHTML = "";
+    (d.counts||[]).forEach(item=>{
+      const r = document.createElement("div");
+      r.className = "p2Row";
+      r.innerHTML = `
+        <div>${item.label}</div>
+        <div class="p2BarBg"><div class="p2BarFill" style="width:${Math.max(0,Math.min(100,item.pct))}%"></div></div>
+        <div style="text-align:right;">${item.n}人</div>
+        <div style="text-align:right;">${pctText(item.pct)}</div>
+      `;
+      rows.appendChild(r);
+    });
   }
 
   function syncChartModeButtons(){
@@ -432,202 +482,161 @@
     });
   }
 
-  function syncP2(){
-    const d = APP.dataByMonth[APP.state.month].p2.counts;
-    const list = el("p2List");
-    list.innerHTML = "";
-    d.forEach(it=>{
-      const div = document.createElement("div");
-      div.className = "p2Item";
-      div.innerHTML = `
-        <div class="p2Top"><div>${it.label}</div><small>${fmtInt(it.n)}人（${pct(it.pct)}）</small></div>
-        <div class="p2BarBg"><div class="p2BarFill" style="width:${it.pct}%"></div></div>
-      `;
-      list.appendChild(div);
-    });
-  }
-
   const chart = {
     canvas:null, ctx:null, inner:null, viewport:null, xLabelViewport:null, xLabelRow:null,
     w:0, h:0, padding:{ left:10, right:46, top:10, bottom:10 }, yMax:1155, slot:64,
     setSize(){
-      const rect = this.viewport.getBoundingClientRect();
-      this.w = Math.round(rect.width);
-      this.h = Math.round(rect.height);
-      const dpr = window.devicePixelRatio || 1;
-      this.canvas.width = Math.round(this.w * dpr);
-      this.canvas.height = Math.round(this.h * dpr);
+      const vpRect = this.viewport.getBoundingClientRect();
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const d = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode];
+      const n = d.values.length;
+
+      const avail = Math.max(1, vpRect.width - this.padding.left - this.padding.right);
+      this.slot = Math.max(8, avail / Math.max(1, (n-1)));
+
+      const innerW = vpRect.width;
+      const innerH = vpRect.height;
+
+      this.inner.style.width = innerW + "px";
+      this.inner.style.height = innerH + "px";
+
+      this.w = Math.floor(innerW);
+      this.h = Math.floor(innerH);
+
+      this.canvas.width = Math.floor(this.w * dpr);
+      this.canvas.height = Math.floor(this.h * dpr);
       this.canvas.style.width = this.w + "px";
       this.canvas.style.height = this.h + "px";
       this.ctx.setTransform(dpr,0,0,dpr,0,0);
+
+      this.xLabelRow.style.width = innerW + "px";
+      this.xLabelRow.style.setProperty("--slot", this.slot + "px");
     },
     draw(){
       const ctx = this.ctx;
+      const {w,h,padding} = this;
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0,0,w,h);
+
+      const gridYs = [ padding.top + 8, (h + padding.top - padding.bottom)/2, h - padding.bottom - 8 ];
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--grid").trim() || "#e5e7eb";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3,4]);
+      gridYs.forEach(y=>{
+        ctx.beginPath(); ctx.moveTo(padding.left, y); ctx.lineTo(w - padding.right, y); ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
       const d = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode];
-      const labels = d.labels;
       const values = d.values;
       const n = values.length;
+      if(n===0) return;
 
-      const pad = this.padding;
-      const w = this.w;
-      const h = this.h;
+      const maxV = Math.max(...values, 1);
+      const targetMax = Math.max(1155, Math.ceil(maxV/5)*5);
+      this.yMax = targetMax;
 
-      // slot幅を更新
-      const maxSlots = n;
-      const totalW = maxSlots * this.slot;
-      this.inner.style.width = totalW + "px";
-      this.xLabelRow.style.setProperty("--slot", this.slot + "px");
+      el("yTop").textContent = targetMax.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      el("yMid").textContent = Math.round(targetMax*2/3).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      el("yBot").textContent = Math.round(targetMax*1/3).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-      // xラベル生成
-      this.xLabelRow.innerHTML = labels.map(l=>`<span>${l}</span>`).join("");
+      const x0 = padding.left;
+      const y0 = h - padding.bottom;
+      const y1 = padding.top;
+      const dx = this.slot;
 
-      // スクロール同期（固定：横スクロールなし仕様）
-      this.xLabelViewport.scrollLeft = this.viewport.scrollLeft;
-
-      // 描画
-      ctx.clearRect(0,0,w,h);
-
-      // y最大
-      const vmax = Math.max(...values, 0);
-      const yMax = vmax===0 ? 1 : vmax;
-      el("yTop").textContent = fmtInt(yMax);
-      el("yMid").textContent = fmtInt(Math.round(yMax*0.666));
-      el("yBot").textContent = fmtInt(Math.round(yMax*0.333));
-
-      const plotW = totalW - pad.left - pad.right;
-      const plotH = h - pad.top - pad.bottom;
-
-      // grid（3本）
-      ctx.save();
-      ctx.strokeStyle = "rgba(0,0,0,.06)";
-      ctx.lineWidth = 1;
-      [0.333, 0.666, 1].forEach(fr=>{
-        const y = pad.top + plotH*(1-fr);
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
+      const pts = values.map((v,i)=>{
+        const x = x0 + dx*i;
+        const t = v / targetMax;
+        const y = y0 - (y0 - y1) * t;
+        return {x,y,v,i};
       });
-      ctx.restore();
 
-      // line
-      const pts = [];
-      for(let i=0;i<n;i++){
-        const x = pad.left + i*this.slot + this.slot/2;
-        const y = pad.top + plotH*(1 - (values[i]/yMax));
-        pts.push({x,y,v:values[i],label:labels[i]});
-      }
-
-      // area fill
-      ctx.save();
-      ctx.fillStyle = "rgba(37,99,235,.10)";
       ctx.beginPath();
-      ctx.moveTo(pad.left, pad.top+plotH);
-      pts.forEach((p,idx)=>{
-        if(idx===0) ctx.lineTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-      });
-      ctx.lineTo(pad.left + (n-1)*this.slot + this.slot/2, pad.top+plotH);
+      ctx.moveTo(pts[0].x, y0);
+      pts.forEach(p=>ctx.lineTo(p.x,p.y));
+      ctx.lineTo(pts[pts.length-1].x, y0);
       ctx.closePath();
+      ctx.fillStyle = "rgba(37,99,235,.10)";
       ctx.fill();
-      ctx.restore();
 
-      // stroke
-      ctx.save();
-      ctx.strokeStyle = "rgba(37,99,235,.95)";
-      ctx.lineWidth = 2;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
       ctx.beginPath();
-      pts.forEach((p,idx)=>{
-        if(idx===0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-      });
+      pts.forEach((p,idx)=>{ if(idx===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--blue").trim() || "#2563eb";
+      ctx.lineWidth = 2;
       ctx.stroke();
-      ctx.restore();
 
-      // point (selected)
-      if(APP.state.cursorIndex!==null){
-        const p = pts[APP.state.cursorIndex];
-        ctx.save();
-        ctx.fillStyle = "#fff";
-        ctx.strokeStyle = "rgba(37,99,235,.95)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 5, 0, Math.PI*2);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
+      const idx = (APP.state.cursorIndex==null ? Math.floor(n/2) : APP.state.cursorIndex);
+      const p = pts[Math.max(0,Math.min(n-1,idx))];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--blue").trim() || "#2563eb";
+      ctx.stroke();
 
-        showTooltip(p.x, p.y, p.label, p.v);
-      }else{
-        hideTooltip();
-      }
+      renderXLabels(d.labels);
+      renderTooltip(p.x, p.y, d.labels[p.i], p.v);
     }
   };
 
-  function hideTooltip(){
-    el("tooltip").style.display = "none";
-    el("cursorLine").style.display = "none";
+  function renderXLabels(labels){
+    const row = chart.xLabelRow; row.innerHTML = "";
+    labels.forEach(lab=>{ const sp = document.createElement("span"); sp.textContent = lab; row.appendChild(sp); });
   }
 
-  function showTooltip(x, y, label, val){
-    const tip = el("tooltip");
+  function renderTooltip(x, y, label, val){
     const line = el("cursorLine");
-    tip.style.display = "block";
+    const tip = el("tooltip");
     line.style.display = "block";
+    tip.style.display = "block";
+    line.style.left = x + "px";
 
     el("tipLabel").textContent = label;
     el("tipValue").textContent = yen(val);
 
-    // 高い数値でも表示が切れないように、画面内に収まる位置へ固定する
-    tip.style.transform = "none";
-
-    const margin = 8;
-    const gap = 10;
+    let tipX = x;
+    tip.style.left = tipX + "px";
+    tip.style.top = (y + 6) + "px";
 
     const tipW = tip.offsetWidth;
-    const tipH = tip.offsetHeight;
-
-    let left = x - tipW/2;
-    if(left < margin) left = margin;
-    if(left > chart.w - tipW - margin) left = chart.w - tipW - margin;
-
-    // 基本は「点の上」。上に出せないときは「点の下」に回す
-    let top = y - tipH - gap;
-    if(top < margin) top = y + gap;
-
-    // それでもはみ出す場合は、最終的に画面内へ収める
-    if(top > chart.h - tipH - margin) top = chart.h - tipH - margin;
-    if(top < margin) top = margin;
-
-    tip.style.left = left + "px";
-    tip.style.top = top + "px";
-
-    line.style.left = x + "px";
+    const min = 10 + tipW/2;
+    const max = chart.w - 10 - tipW/2;
+    if(tipX < min) tipX = min;
+    if(tipX > max) tipX = max;
+    tip.style.left = tipX + "px";
   }
 
   function pickIndexFromClientX(clientX){
     const d = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode];
     const n = d.values.length;
-    const rect = chart.canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const idx = Math.round((x - chart.padding.left - chart.slot/2)/chart.slot);
-    return Math.max(0, Math.min(n-1, idx));
+    const rect = chart.viewport.getBoundingClientRect();
+    const xInViewport = clientX - rect.left;
+    const x0 = chart.padding.left;
+    const dx = chart.slot;
+    const i = Math.round((xInViewport - x0) / dx);
+    return Math.max(0, Math.min(n-1, i));
   }
 
   function attachViewportSelect(){
-    const v = el("chartViewport");
-    const onMove = (ev)=>{
-      const clientX = (ev.touches && ev.touches[0]) ? ev.touches[0].clientX : ev.clientX;
+    const viewport = chart.viewport;
+
+    function selectAtClientX(clientX){
       const idx = pickIndexFromClientX(clientX);
       APP.state.cursorIndex = idx;
       chart.draw();
-    };
-    v.addEventListener("mousemove", onMove);
-    v.addEventListener("touchstart", onMove, {passive:true});
-    v.addEventListener("touchmove", onMove, {passive:true});
-    v.addEventListener("mouseleave", ()=>{ APP.state.cursorIndex=null; chart.draw(); });
+    }
+
+    viewport.addEventListener("touchstart",(e)=>{
+      if(!e.touches || e.touches.length!==1) return;
+      selectAtClientX(e.touches[0].clientX);
+    },{passive:true});
+
+    viewport.addEventListener("pointerdown",(e)=>{
+      selectAtClientX(e.clientX);
+    },{passive:true});
   }
 
   function syncAll(){
@@ -647,6 +656,9 @@
   }
 
   function attachUIEvents(){
+    el("tabKpi").addEventListener("click",()=>{APP.state.mainTab="kpi";syncAll();});
+    el("tabDetail").addEventListener("click",()=>{APP.state.mainTab="detail";syncAll();});
+
     [...document.querySelectorAll(".toggle")].forEach(b=>{
       b.addEventListener("click", ()=>{
         APP.state.chartMode = b.dataset.mode;
