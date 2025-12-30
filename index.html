@@ -124,13 +124,15 @@
     .cursorLine{
       position:absolute; top: 8px; bottom: 8px; width:2px;
       background: rgba(37,99,235,.55); border-radius:999px;
-      pointer-events:none; display:none; z-index: 3;
+      pointer-events:none; display:none;
+      z-index: 18; /* ★変更：重なり順を上げて消えないように */
     }
     .tooltip{
       position:absolute; min-width: 90px; padding: 8px 10px;
       background:#fff; border:1px solid rgba(0,0,0,.08); box-shadow: 0 10px 30px rgba(0,0,0,.12);
       border-radius: 10px; font-size: 12px; font-weight:800; color: var(--text);
-      transform: translate(-50%, -110%); pointer-events:none; display:none; white-space:nowrap; z-index: 4;
+      transform: translate(-50%, -110%); pointer-events:none; display:none; white-space:nowrap;
+      z-index: 20; /* ★変更：重なり順を上げて消えないように */
     }
     .tooltip .tLabel{ font-size: 12px; font-weight:900; margin-bottom: 2px; color: var(--text); }
     .tooltip .tVal{ font-size:18px; font-weight:900; color: var(--muted); }
@@ -597,16 +599,29 @@ const APP = {
     el("tipLabel").textContent = label;
     el("tipValue").textContent = yen(val);
 
-    let tipX = x;
-    tip.style.left = tipX + "px";
-    tip.style.top = (y + 6) + "px";
+    // ★変更：高い値でも枠内に収まる位置へ（左右＋上下）
+    tip.style.transform = "none"; // CSSのtranslateを無効化して、座標で確実に置く
+
+    const margin = 8;
+    const gap = 10;
 
     const tipW = tip.offsetWidth;
-    const min = 10 + tipW/2;
-    const max = chart.w - 10 - tipW/2;
-    if(tipX < min) tipX = min;
-    if(tipX > max) tipX = max;
-    tip.style.left = tipX + "px";
+    const tipH = tip.offsetHeight;
+
+    // 左右：はみ出さない
+    let left = x - tipW / 2;
+    if(left < margin) left = margin;
+    if(left > chart.w - tipW - margin) left = chart.w - tipW - margin;
+
+    // 上下：基本は「点の上」。上が無理なら「点の下」。それでも無理なら枠内に押し込む
+    let top = y - tipH - gap;
+    if(top < margin) top = y + gap;
+
+    if(top > chart.h - tipH - margin) top = chart.h - tipH - margin;
+    if(top < margin) top = margin;
+
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
   }
 
   function pickIndexFromClientX(clientX){
