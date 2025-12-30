@@ -3,646 +3,734 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Pixy インサイト</title>
-  <style>html{ -webkit-text-size-adjust: 100%; }
-
+  <title>インサイト（モック v7）</title>
+  <style>
     :root{
-      --bg:#ffffff;
-      --text:#111827;
-      --muted:#6b7280;
-      --line:#f3a6c8;
-      --chip:#e5e7eb;
-      --chipText:#111827;
-      --chipActive:#111111;
-      --chipActiveText:#ffffff;
-      --card:#ffffff;
-      --cardBorder:#d1d5db;
-      --cardActiveBg:#fde7ef;
-      --cardActiveBorder:#f3a6c8;
-      --shadow: 0 8px 20px rgba(0,0,0,.08);
-      --radius: 14px;
-      --blue:#2563eb;
-      --pink:#ff4db8;
-      --grid:#e5e7eb;
-      --danger:#ff4d4f;
+      --bg:#f5f6f8; --card:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb;
+      --shadow: 0 6px 18px rgba(0,0,0,.06); --radius:16px; --pad:14px;
+      --pink:#f8d6dd; --pinkLine:#f3b4c0; --chip:#eef0f3;
+      --warnBg:#fff7ed; --warnLine:#fdba74; --warnText:#9a3412;
+      --blue:#2b6de6; --barBg:#eef0f3;
     }
     *{box-sizing:border-box;}
-    html,body{height:100%;}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Meiryo", Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    a{color:inherit;}
-    .wrap{ max-width: 420px; margin:0 auto; padding: 10px 12px 28px; }
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      padding: 4px 2px 8px; position: sticky; top: 0; background: var(--bg); z-index: 30;
-    }
-    .logo{ font-weight:700; letter-spacing:.02em; font-size: 18px; }
-    .title{ font-size: 18px; font-weight:700; text-align:center; flex:1; }
-    .spacer{width:48px;}
-    .pinkline{ height:2px; background: var(--line); border-radius:999px; margin: 0 0 10px; opacity:.75; }
-    .label{ font-size: 13px; color: var(--text); margin: 6px 0 6px; font-weight:600; }
-    .input{
-      width:100%; border:0; border-bottom:2px solid var(--line);
-      padding:10px 2px 10px; font-size:16px; outline:none; background:transparent;
-    }
+    body{margin:0; background:var(--bg); color:var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      -webkit-font-smoothing: antialiased; line-height:1.35;}
+    .wrap{max-width:520px; margin:0 auto; padding:14px; padding-bottom:28px;}
+    header{position:sticky; top:0; z-index:10; background:rgba(245,246,248,.92); backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line); padding:12px 14px;}
+    .headRow{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .logo{font-weight:900; letter-spacing:.2px;}
+    .title{font-weight:900; font-size:18px;}
+    .sub{color:var(--muted); font-size:12px; margin-top:2px;}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:var(--pad); margin-top:12px;}
+    .warn{background:var(--warnBg); border:1px solid var(--warnLine); color:var(--warnText);
+      border-radius:14px; padding:12px; margin-top:12px; font-size:13px; line-height:1.45;}
+    .h1{font-size:16px; font-weight:900; margin:0 0 8px;}
+    .label{font-size:12px; color:var(--muted); margin-bottom:8px;}
+    .hint{font-size:12px; color:var(--muted); margin-top:10px;}
+    .chips{display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
+    .chip{flex:0 0 auto; font-size:13px; padding:9px 12px; border-radius:999px; border:1px solid var(--line);
+      background:var(--chip); color:var(--text); text-decoration:none; white-space:nowrap;}
+    .chip.on{background:#111; color:#fff; border-color:#111;}
 
-    .chipRow{
-      display:flex; gap:8px; overflow:auto; padding:10px 0 2px;
-      -webkit-overflow-scrolling: touch; scrollbar-width: none;
-    }
-    .chipRow::-webkit-scrollbar{ display:none; }
-    .chip{
-      border:0; padding:8px 14px; border-radius:999px;
-      background:var(--chip); color:var(--chipText);
-      font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap;
-      flex:0 0 auto; transition: transform .08s ease;
-    }
-    .chip:active{ transform: scale(.98); }
-    .chip.active{ background:var(--chipActive); color:var(--chipActiveText); }
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:stretch;}
+    .box{border:1px solid var(--line); border-radius:14px; padding:12px; background:#fff; min-height:150px;
+      display:flex; flex-direction:column; cursor:pointer; user-select:none; -webkit-tap-highlight-color: transparent;}
+    .box.active{background:var(--pink); border-color:var(--pinkLine); box-shadow: 0 0 0 1px rgba(243,180,192,.25), var(--shadow);}
+    .boxTitle{font-size:12px; color:var(--muted);}
+    .bigYen{font-size:22px; font-weight:900; margin-top:6px;}
+    .small{font-size:12px; color:var(--muted); margin-top:4px;}
+    .repeatGrid{margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:8px 12px; align-content:start;}
+    .repeatItem{display:flex; justify-content:space-between; gap:8px; align-items:baseline;}
+    .repeatItem .k{font-size:11px; color:var(--muted);}
+    .repeatItem .v{font-size:18px; font-weight:900;}
 
-    .sectionTitle{ display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin-top: 10px; }
-    .sectionTitle h2{ margin:0; font-size: 18px; font-weight:800; letter-spacing:.01em; }
-    .divider{ height:2px; background: var(--line); border-radius:999px; margin: 6px 0 10px; opacity:.75; }
+    .tabs{display:flex; gap:10px; align-items:center; margin-top:14px;}
+    .tab{font-size:14px; padding:10px 14px; border-radius:12px; border:1px solid var(--line);
+      background:var(--chip); cursor:pointer; user-select:none; -webkit-tap-highlight-color: transparent;}
+    .tab.on{background:#111; color:#fff; border-color:#111;}
 
-    .cards{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-    .card{
-      border: 1.5px solid var(--cardBorder); background: var(--card);
-      border-radius: 12px; padding: 10px; cursor:pointer;
-      transition: transform .08s ease, border-color .15s ease, background .15s ease;
-      min-height: 88px; position:relative;
-    }
-    .card:active{ transform: scale(.99); }
-    .card.active{ border-color: var(--cardActiveBorder); background: var(--cardActiveBg); }
-    .card .kpiTitle{ font-size: 12px; color: var(--muted); font-weight:700; margin-bottom: 6px; }
-    .card .kpiValue{ font-size: 20px; font-weight:900; margin-bottom: 2px; }
-    .card .kpiSub{ font-size: 12px; color: var(--muted); font-weight:700; }
+    .chart{margin-top:10px; border:1px solid var(--line); border-radius:14px; padding:12px 10px 12px; background:#fff;
+      position:relative; overflow:hidden;}
+    .tip{position:absolute; top:12px; left:12px; border:1px solid var(--line); background:#fff; border-radius:14px;
+      padding:10px 12px; display:flex; gap:10px; align-items:center; box-shadow: var(--shadow); pointer-events:none;}
+    .tip .t1{font-size:13px; color:var(--muted);}
+    .tip .t2{font-size:18px; font-weight:900;}
+    .chartTitle{font-size:12px; color:var(--muted); margin-bottom:8px;}
+    svg{display:block; width:100%; height:220px;}
 
-    .miniGrid{ display:grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; margin-top: 6px; align-items:end; }
-    .miniItem .miniLabel{ font-size: 10px; color: var(--muted); font-weight:700; line-height:1.1; }
-    .miniItem .miniVal{ font-size: 16px; font-weight:900; margin-top:2px; line-height:1.1; }
+    .rowBetween{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .sec{display:none;}
+    .sec.show{display:block;}
 
-    .toggleRow{ display:flex; gap:8px; margin: 10px 0 8px; }
-    .toggle{
-      border:0; background: var(--chip); color: var(--chipText);
-      font-weight:800; font-size: 13px; padding:8px 12px; border-radius: 999px;
-      cursor:pointer; transition: transform .08s ease;
-    }
-    .toggle:active{ transform: scale(.98); }
-    .toggle.active{ background: #4b5563; color:#fff; }
+    /* ここから「鑑定データ詳細」の見た目 */
+    .rptCardTitle{font-size:14px; font-weight:900; margin:0 0 10px;}
+    .rptTable{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#fff;}
+    .rptHead{display:grid; grid-template-columns:64px 1fr 76px 72px; gap:10px; padding:10px 12px; background:#fff;}
+    .rptHead div{font-size:12px; color:var(--muted);}
+    .rptRow{display:grid; grid-template-columns:64px 1fr 76px 72px; gap:10px;
+      padding:10px 12px; border-top:1px solid var(--line); align-items:center;}
+    .rptK{font-size:13px; font-weight:700;}
+    .rptBarWrap{height:10px; background:var(--barBg); border-radius:999px; overflow:hidden;}
+    .rptBar{height:100%; background:var(--blue); width:0%;}
+    .rptNum{font-size:13px; text-align:right; font-weight:700;}
+    .rptPct{font-size:13px; text-align:right; color:var(--muted); font-weight:700;}
 
-    .chartCard{
-      border-radius: var(--radius); background:#fff; box-shadow: var(--shadow);
-      padding: 10px 10px 8px; position:relative; overflow:hidden;
-    }
-    .chartCard *{ font-size: 14px; } /* フォントサイズ統一 */
-    .chartWrap{ position:relative; height: 180px; margin-top: 4px; border-radius: 12px; background: #ffffff; overflow:hidden; }
+    .endListWrap{margin-top:12px; border:1px solid var(--line); border-radius:14px; background:#fff; overflow:hidden;}
+    .endListTitle{padding:12px; font-size:14px; font-weight:900; border-bottom:1px solid var(--line);}
+    .endItems{padding:6px;}
+    .endItem{display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:12px; border-radius:12px; cursor:pointer; user-select:none; -webkit-tap-highlight-color: transparent;}
+    .endItem:hover{background:#f3f4f6;}
+    .endItem.on{background:var(--pink); box-shadow: inset 0 0 0 1px var(--pinkLine);}
+    .endItem .t{font-size:13px; font-weight:800;}
+    .endItem .n{font-size:13px; color:var(--muted); font-weight:800;}
 
-    .chartViewport{
-      touch-action: pan-y;
-      position:absolute; left:0; right:0; top:0; bottom:28px;
-      overflow-x:hidden; overflow-y:hidden;
-      -webkit-overflow-scrolling: touch;
-    }
-    .chartInner{ position:relative; height:100%; width: 100%; }
-    canvas{display:block; width:100%; height:100%;}
+    .detailWrap{margin-top:10px; border:1px solid var(--line); border-radius:14px; background:#fff; overflow:hidden;}
+    .detailHead{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px;
+      border-bottom:1px solid var(--line);}
+    .detailHead .left{display:flex; align-items:baseline; gap:10px;}
+    .detailHead .h{font-size:14px; font-weight:900;}
+    .detailHead .c{font-size:13px; color:var(--muted); font-weight:900;}
+    .detailBody{max-height:420px; overflow:auto; -webkit-overflow-scrolling:touch;}
+    .uRow{padding:14px 12px; border-top:1px solid var(--line);}
+    .uRow:first-child{border-top:none;}
+    .uTop{display:flex; align-items:center; gap:10px;}
+    .uid{font-size:18px; font-weight:900; letter-spacing:.2px;}
+    .ucnt{font-size:13px; color:var(--muted); font-weight:900;}
+    .dchips{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+    .dchip{display:inline-flex; align-items:center; gap:6px;
+      padding:8px 12px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--text);
+      font-size:13px; font-weight:700;}
+    .muted{color:var(--muted);}
 
-    .yLabels{
-      position:absolute; right: 6px; top: 4px; bottom: 28px;
-      display:flex; flex-direction:column; justify-content:space-between;
-      pointer-events:none; font-size: 11px; color: var(--muted); font-weight:700; opacity:.9;
-      z-index: 5;
-      background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.92) 25%, rgba(255,255,255,1) 60%);
-      padding-left: 16px;
-    }
-
-    .cursorLine{
-      position:absolute; top: 8px; bottom: 8px; width:2px;
-      background: rgba(37,99,235,.55); border-radius:999px;
-      pointer-events:none; display:none; z-index: 3;
-    }
-    .tooltip{
-      position:absolute; min-width: 90px; padding: 8px 10px;
-      background:#fff; border:1px solid rgba(0,0,0,.08); box-shadow: 0 10px 30px rgba(0,0,0,.12);
-      border-radius: 10px; font-size: 12px; font-weight:800; color: var(--text);
-      pointer-events:none; display:none; white-space:nowrap; z-index: 4;
-      /* 修正：transformで枠外に飛びやすいのでJSでtop/leftを計算する */
-      transform: none;
-      left: 0;
-      top: 0;
-    }
-    .tooltip .tLabel{ font-size: 12px; font-weight:900; margin-bottom: 2px; color: var(--text); }
-    .tooltip .tVal{ font-size:18px; font-weight:900; color: var(--muted); }
-
-    .xLabelsViewport{ margin-top: 8px; overflow-x:hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .xLabelsViewport::-webkit-scrollbar{ display:none; }
-    .xLabels{
-      display:flex; gap:0; user-select:none; font-size: 12px; color: var(--muted);
-      font-weight:700; padding: 0 2px; white-space:nowrap;
-    }
-    .xLabels span{
-      flex: 0 0 var(--slot, 64px); text-align:center; overflow:visible; text-overflow:clip;
-    }
-
-    .detailTabs{ display:flex; gap:8px; margin: 10px 0 10px; }
-    .tab{ border:0; padding: 8px 14px; border-radius: 999px; background: var(--chip); color: var(--chipText); font-weight:900; font-size: 13px; cursor:pointer; }
-    .tab.active{ background:#4b5563; color:#fff; }
-
-    .panel{ background:#fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px; }
-    .panel + .panel{ margin-top: 10px; }
-
-    .subSection{ margin-top: 6px; font-size: 13px; font-weight:900; color: var(--text); display:flex; align-items:center; gap:8px; }
-    .dot{ width:10px; height:10px; border-radius:2px; background: var(--blue); flex:0 0 auto; }
-
-    .rows{ margin-top: 8px; border-top:1px solid rgba(0,0,0,.06); }
-    .row{
-      display:flex; justify-content:space-between; align-items:center;
-      padding: 8px 0; border-bottom:1px solid rgba(0,0,0,.06);
-      font-size: 13px; font-weight:700; color: var(--text);
-    }
-    .row .rVal{ color: var(--text); font-weight:900; }
-
-    .barItem{ margin-top: 10px; }
-    .barTop{ display:flex; justify-content:space-between; gap:8px; font-size: 12px; font-weight:800; color: var(--text); }
-    .barBg{ height: 10px; background: #e5e7eb; border-radius: 999px; overflow:hidden; margin-top: 6px; }
-    .barFill{ height: 100%; background: var(--blue); width: 0%; border-radius: 999px; }
-
-    .genderBar{ margin-top: 10px; }
-    .genderTrack{ height: 10px; background: #e5e7eb; border-radius: 999px; overflow:hidden; display:flex; }
-    .genderFemale{ background: var(--pink); }
-    .genderMale{ background: var(--blue); }
-    .genderLabels{ margin-top: 8px; display:flex; justify-content:space-between; font-size: 12px; color: var(--text); font-weight:800; }
-    .muted{ color: var(--muted); font-weight:700; }
-
-    .p2Box{ background:#fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 12px; margin-top: 10px; }
-    .p2Title{ font-size: 13px; font-weight: 900; margin: 0 0 10px; }
-    .p2TableHeader{
-      display:grid; grid-template-columns: 64px 1fr 56px 56px; gap: 8px;
-      font-size: 11px; color: var(--muted); font-weight: 900;
-      padding-bottom: 6px; border-bottom: 1px solid rgba(0,0,0,.06);
-    }
-    .p2Row{
-      display:grid; grid-template-columns: 64px 1fr 56px 56px; gap: 8px;
-      align-items:center; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,.06);
-      font-size: 12px; font-weight: 800;
-    }
-    .p2BarBg{ height: 8px; background:#e5e7eb; border-radius:999px; overflow:hidden; }
-    .p2BarFill{ height: 100%; background: var(--blue); width: 0%; border-radius:999px; }
-
-    .ctaRow{ display:flex; justify-content:flex-end; margin-top: 12px; }
-    .cta{
-      display:inline-flex; align-items:center; justify-content:center; border:0;
-      padding: 10px 18px; border-radius: 999px; background: var(--danger); color:#fff;
-      font-weight: 900; font-size: 14px; text-decoration:none; min-width: 140px;
-      box-shadow: 0 10px 18px rgba(255,77,79,.25); transition: transform .08s ease;
-      cursor:pointer;
-    }
-    .cta:active{ transform: scale(.99); }
-
-    .hidden{ display:none !important; }
-
-    /* 修正：終了回数の一覧（スクショ2枚目の見た目） */
-    .endList{ display:flex; flex-direction:column; gap:10px; }
-    .endCard{
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: 12px;
-      padding: 10px 12px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      background:#fff;
-      box-shadow: 0 6px 14px rgba(0,0,0,.05);
-    }
-    .endLeft{ font-size: 12px; font-weight: 900; color: var(--text); }
-    .endRight{ font-size: 12px; font-weight: 900; color: var(--muted); }
-
-    @media (max-width: 420px){
-      .xLabels span{font-size:11px;}
-      .tooltip{min-width:94px;}
-      .tooltip .tVal{font-size:16px;}
-      .chartWrap{ height: 190px; } /* 修正：スマホで吹き出しが上で詰まりやすいので少しだけ余白 */
-    }
-</style>
+    .empty{padding:18px 12px; color:var(--muted); font-size:13px;}
+  </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="topbar">
+  <header>
+    <div class="headRow">
       <div class="logo">Pixy</div>
       <div class="title">インサイト</div>
-      <div class="spacer"></div>
+      <div style="width:44px;"></div>
     </div>
-    <div class="pinkline"></div>
+    <div class="sub">鑑定師名：<span id="KANTEISHI_NAME">minami</span></div>
+  </header>
 
-    <div class="label">鑑定師名</div>
-    <input id="readerName" class="input" placeholder="例：minami" list="nameList" value="minami" />
-    <datalist id="nameList">
-      <option value="minami"></option>
-    </datalist>
-
-    <div class="chipRow" id="monthRow" aria-label="月選択"></div>
-
-    <div class="sectionTitle">
-      <h2>メインデータ</h2>
+  <noscript>
+    <div class="wrap">
+      <div class="warn">
+        いま開いているのが「iPhoneのファイルのプレビュー」だと、タブ切替やスライドが動かないことがあります。<br>
+        共有ボタンから「Safariで開く（またはChromeで開く）」にすると動きます。<br>
+        （この注意は、JavaScriptが動かない場合だけ表示されます）
+      </div>
     </div>
-    <div class="divider"></div>
+  </noscript>
 
-    <div class="cards" role="tablist" aria-label="メイン切替">
-      <button class="card active" id="tabKpi" role="tab" aria-selected="true">
-        <div class="kpiTitle">今月の報酬金</div>
-        <div class="kpiValue" id="kpiMoney">—</div>
-        <div class="kpiSub">前月比　<span id="kpiMoM">—</span></div>
-      </button>
-      <button class="card" id="tabDetail" role="tab" aria-selected="false">
-        <div class="kpiTitle">鑑定データ詳細</div>
-        <div class="miniGrid">
-          <div class="miniItem">
-            <div class="miniLabel">リピート件数</div>
-            <div class="miniVal" id="kpiRepeatCnt">—</div>
-          </div>
-          <div class="miniItem" style="text-align:right">
-            <div class="miniLabel">リピート人数</div>
-            <div class="miniVal" id="kpiRepeatUsers">—</div>
-          </div>
-          <div class="miniItem">
-            <div class="miniLabel">鑑定件数</div>
-            <div class="miniVal" id="kpiKanteiCnt">—</div>
-          </div>
-          <div class="miniItem" style="text-align:right">
-            <div class="miniLabel">鑑定人数</div>
-            <div class="miniVal" id="kpiKanteiUsers">—</div>
+  <div class="wrap">
+    <div class="card">
+      <div class="label">月</div>
+      <div class="chips" id="monthChips"></div>
+      <div class="hint">※いまは見た目＋動きの確認用。あとで実データ連結。</div>
+    </div>
+
+    <div class="card">
+      <div class="h1">メインデータ</div>
+
+      <div class="grid2">
+        <div class="box active" id="cardReward" role="button" aria-label="今月の報酬金">
+          <div class="boxTitle">今月の報酬金</div>
+          <div class="bigYen" id="MONTH_REWARD">—</div>
+          <div class="small">前月比 <span id="REWARD_MOM">—</span></div>
+          <div class="small" style="margin-top:auto;">※下で切替</div>
+        </div>
+
+        <div class="box" id="cardRepeat" role="button" aria-label="鑑定データ詳細">
+          <div class="boxTitle">鑑定データ詳細</div>
+          <div class="repeatGrid">
+            <div class="repeatItem"><div class="k">リピート件数</div><div class="v" id="REPEAT_CNT">—</div></div>
+            <div class="repeatItem"><div class="k">リピート人数</div><div class="v" id="REPEAT_USERS">—</div></div>
+            <div class="repeatItem"><div class="k">鑑定件数</div><div class="v" id="KANTEI_CNT">—</div></div>
+            <div class="repeatItem"><div class="k">鑑定人数</div><div class="v" id="KANTEI_USERS">—</div></div>
           </div>
         </div>
-      </button>
-    </div>
-
-    <div id="viewKpi">
-      <div class="toggleRow" aria-label="グラフ切替">
-        <button class="toggle active" data-mode="hour">時間別</button>
-        <button class="toggle" data-mode="weekday">曜日別</button>
-        <button class="toggle" data-mode="day">日別</button>
       </div>
 
-      <div class="chartCard">
-        <div class="chartWrap">
-          <div class="chartViewport" id="chartViewport">
-            <div class="chartInner" id="chartInner">
-              <canvas id="chart"></canvas>
-              <div class="cursorLine" id="cursorLine"></div>
-              <div class="tooltip" id="tooltip">
-                <div class="tLabel" id="tipLabel">—</div>
-                <div class="tVal" id="tipValue">—</div>
+      <div class="sec show" id="secReward">
+        <div class="tabs">
+          <div class="tab on" id="tabHour">時間別</div>
+          <div class="tab" id="tabWeek">曜日別</div>
+        </div>
+
+        <div class="chart" id="chartWrap">
+          <div class="tip" id="tip">
+            <div class="t1" id="tipLabel">—</div>
+            <div class="t2" id="tipValue">—</div>
+          </div>
+
+          <div class="chartTitle" id="chartTitle">もっともアクティブな時間帯（平均）</div>
+          <svg id="chart" viewBox="0 0 360 220" preserveAspectRatio="none" aria-label="報酬グラフ"></svg>
+          <div class="hint">※グラフをなぞる（スライド）か、点をタップすると表示が更新される（モック）。</div>
+        </div>
+      </div>
+
+      <div class="sec" id="secRepeat">
+        <div class="chart" style="padding:12px;">
+          <div class="rptCardTitle">回数別ユーザー数</div>
+
+          <div class="rptTable" aria-label="回数別ユーザー数 テーブル">
+            <div class="rptHead">
+              <div>区分</div>
+              <div></div>
+              <div style="text-align:right;">人数</div>
+              <div style="text-align:right;">割合</div>
+            </div>
+            <div id="repeatRows"></div>
+          </div>
+
+          <div class="endListWrap" aria-label="終了回数の一覧">
+            <div class="endListTitle">終了回数の一覧</div>
+            <div class="endItems" id="endItems"></div>
+          </div>
+
+          <div class="detailWrap" aria-label="選択した終了回数のユーザー一覧">
+            <div class="detailHead">
+              <div class="left">
+                <div class="h" id="detailTitle">—</div>
+                <div class="c" id="detailCount">—</div>
               </div>
+              <div class="muted" style="font-size:12px; font-weight:900;">スクロール</div>
+            </div>
+            <div class="detailBody" id="detailBody">
+              <div class="empty">ここにユーザーが表示されます</div>
             </div>
           </div>
 
-          <div class="yLabels">
-            <div id="yTop">—</div>
-            <div id="yMid">—</div>
-            <div id="yBot">—</div>
-          </div>
-        </div>
-
-        <div class="xLabelsViewport" id="xLabelsViewport">
-          <div class="xLabels" id="xLabels"></div>
-        </div>
-      </div>
-
-      <div class="sectionTitle" style="margin-top:14px;">
-        <h2>詳細データ</h2>
-      </div>
-      <div class="divider"></div>
-
-      <div class="detailTabs">
-        <button class="tab active" data-detail="user">ユーザー分析</button>
-        <button class="tab" data-detail="reader">鑑定師分析</button>
-      </div>
-
-      <div id="panelUser" class="panel">
-        <div class="subSection"><span class="dot"></span>年齢構成比</div>
-        <div id="ageList"></div>
-
-        <div class="subSection" style="margin-top:14px;"><span class="dot"></span>男女比率</div>
-        <div class="genderBar">
-          <div class="genderTrack">
-            <div class="genderFemale" id="femaleBar" style="width:0%"></div>
-            <div class="genderMale" id="maleBar" style="width:0%"></div>
-          </div>
-          <div class="genderLabels">
-            <div>女性　<span class="muted" id="femalePct">—</span></div>
-            <div>男性　<span class="muted" id="malePct">—</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div id="panelReader" class="panel hidden">
-        <div class="subSection"><span class="dot"></span>待機時間</div>
-        <div class="rows">
-          <div class="row"><div class="rLabel">今月の待機時間</div><div class="rVal" id="waitThis">—</div></div>
-          <div class="row"><div class="rLabel">前月の待機時間</div><div class="rVal" id="waitPrev">—</div></div>
-          <div class="row"><div class="rLabel">前月比</div><div class="rVal" id="waitMoM">—</div></div>
-        </div>
-
-        <div class="subSection" style="margin-top:12px;"><span class="dot" style="background:#22c55e"></span>アフターメッセージ</div>
-        <div class="rows">
-          <div class="row"><div class="rLabel">鑑定件数</div><div class="rVal" id="amTotal">—</div></div>
-          <div class="row"><div class="rLabel">送信数</div><div class="rVal" id="amSent">—</div></div>
-          <div class="row"><div class="rLabel">未送信</div><div class="rVal" id="amUnsent">—</div></div>
-          <div class="row"><div class="rLabel">送信率</div><div class="rVal" id="amRate">—</div></div>
+          <div class="hint">※いまは見た目と動きだけ。あとでCSV/PYの実データを入れる。</div>
         </div>
       </div>
     </div>
-
-    <!-- 修正：外部遷移をやめて、同一ページに「回数別ユーザー数」＋「終了回数の一覧」を表示 -->
-    <div id="viewDetail" class="hidden">
-      <div class="p2Box" id="p2Box">
-        <div class="p2Title">回数別ユーザー数</div>
-        <div class="p2TableHeader">
-          <div>区分</div>
-          <div></div>
-          <div style="text-align:right;">人数</div>
-          <div style="text-align:right;">割合</div>
-        </div>
-        <div id="p2Rows"></div>
-
-        <div class="ctaRow">
-          <!-- 修正：外部リンクではなく、一覧へスクロールするだけ -->
-          <button class="cta" id="ctaScrollEnd" type="button">詳細を確認</button>
-        </div>
-      </div>
-
-      <div class="p2Box" id="endBox">
-        <div class="p2Title">終了回数の一覧</div>
-        <div id="endRows" class="endList"></div>
-      </div>
-    </div>
-
-    <div style="height:12px"></div>
   </div>
 
-<script>
-  const el = (id) => document.getElementById(id);
-
-  function yen(n){
-    if(n==null || isNaN(n)) return "—";
-    return "¥ " + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-  function pctText(n){
-    if(n==null || isNaN(n)) return "—";
-    const v = Math.round(n*10)/10;
-    return v.toString().replace(/\.0$/,"") + "%";
-  }
-  function hoursText(n){
-    if(n==null || isNaN(n)) return "—";
-    const v = Math.round(n*10)/10;
-    return v.toString().replace(/\.0$/,"");
-  }
-
-  const APP = {
-    months: ["12月", "11月", "10月", "9月", "8月"],
-    state: { month: "12月", mainTab: "kpi", chartMode: "hour", detailTab: "user", cursorIndex: null },
-    dataByMonth: {"12月": {"money": 88270, "mom": 56.6, "repeatCnt": 139, "repeatUsers": 118, "kanteiCnt": 257, "kanteiUsers": 118, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 0.0, 12740.0, 3430.0, 7770.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [11550.0, 14630.0, 18970.0, 14840.0, 17290.0, 4550.0, 6440.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [3850.0, 2730.0, 9170.0, 7000.0, 0.0, 0.0, 0.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 165.1, "waitPrev": 184.1, "waitMoM": 89.7, "after": {"total": 210, "sent": 115, "unsent": 95, "rate": 55.0}}, "p2": {"counts": [{"label": "1回", "n": 0, "pct": 0.0}, {"label": "2回", "n": 103, "pct": 87.3}, {"label": "3回", "n": 9, "pct": 7.6}, {"label": "4回", "n": 6, "pct": 5.1}, {"label": "5回以上", "n": 0, "pct": 0.0}]}}, "11月": {"money": 155820, "mom": 100.0, "repeatCnt": 225, "repeatUsers": 165, "kanteiCnt": 398, "kanteiUsers": 173, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 840.0, 3990.0, 11620.0, 4060.0, 17640.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [34230.0, 27300.0, 20020.0, 18060.0, 17850.0, 18130.0, 20230.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "30日"], "values": [2800.0, 8540.0, 4200.0, 7280.0, 6020.0, 4410.0, 980.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 184.1, "waitPrev": 180.5, "waitMoM": 102.0, "after": {"total": 241, "sent": 135, "unsent": 106, "rate": 57.0}}, "p2": {"counts": [{"label": "1回", "n": 8, "pct": 4.6}, {"label": "2回", "n": 143, "pct": 82.7}, {"label": "3回", "n": 13, "pct": 7.5}, {"label": "4回", "n": 2, "pct": 1.2}, {"label": "5回以上", "n": 7, "pct": 4.0}]}}, "10月": {"money": 155820, "mom": 101.6, "repeatCnt": 229, "repeatUsers": 175, "kanteiCnt": 421, "kanteiUsers": 192, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 4130.0, 19250.0, 2590.0, 27930.0, 0.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [28840.0, 18760.0, 15890.0, 20300.0, 33460.0, 22960.0, 15610.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [8610.0, 8190.0, 2450.0, 3500.0, 0.0, 3430.0, 2100.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 180.5, "waitPrev": 182.3, "waitMoM": 99.0, "after": {"total": 257, "sent": 144, "unsent": 113, "rate": 57.0}}, "p2": {"counts": [{"label": "1回", "n": 17, "pct": 8.9}, {"label": "2回", "n": 157, "pct": 81.8}, {"label": "3回", "n": 10, "pct": 5.2}, {"label": "4回", "n": 3, "pct": 1.6}, {"label": "5回以上", "n": 5, "pct": 2.6}]}}, "9月": {"money": 153440, "mom": 88.9, "repeatCnt": 311, "repeatUsers": 271, "kanteiCnt": 598, "kanteiUsers": 287, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [0.0, 0.0, 0.0, 0.0, 10430.0, 3920.0, 24220.0, 1540.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [22120.0, 23660.0, 25060.0, 17360.0, 26390.0, 17640.0, 21210.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "30日"], "values": [6720.0, 4410.0, 8540.0, 3920.0, 10290.0, 3220.0, 980.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 182.3, "waitPrev": 151.5, "waitMoM": 120.3, "after": {"total": 344, "sent": 144, "unsent": 200, "rate": 42.0}}, "p2": {"counts": [{"label": "1回", "n": 16, "pct": 5.6}, {"label": "2回", "n": 251, "pct": 87.5}, {"label": "3回", "n": 12, "pct": 4.2}, {"label": "4回", "n": 2, "pct": 0.7}, {"label": "5回以上", "n": 6, "pct": 2.1}]}}, "8月": {"money": 172620, "mom": null, "repeatCnt": 245, "repeatUsers": 214, "kanteiCnt": 480, "kanteiUsers": 235, "chart": {"hour": {"labels": ["0時", "3時", "6時", "9時", "12時", "15時", "18時", "21時", "23時"], "values": [910.0, 0.0, 0.0, 8960.0, 15120.0, 2380.0, 28840.0, 4620.0, 0.0]}, "weekday": {"labels": ["日", "月", "火", "水", "木", "金", "土"], "values": [40740.0, 16870.0, 30030.0, 11060.0, 16030.0, 24430.0, 33460.0]}, "day": {"labels": ["1日", "6日", "11日", "16日", "21日", "26日", "31日"], "values": [0.0, 980.0, 3220.0, 12740.0, 2310.0, 6790.0, 8330.0]}}, "user": {"age": [{"label": "18 - 24", "pct": 14.4}, {"label": "25 - 34", "pct": 31.0}, {"label": "35 - 44", "pct": 22.0}, {"label": "45 - 54", "pct": 24.5}, {"label": "55 - 64", "pct": 7.2}, {"label": "65 -", "pct": 0.9}], "gender": {"female": 86.9, "male": 13.1}}, "reader": {"waitThis": 151.5, "waitPrev": null, "waitMoM": null, "after": {"total": 284, "sent": 139, "unsent": 145, "rate": 49.0}}, "p2": {"counts": [{"label": "1回", "n": 21, "pct": 8.9}, {"label": "2回", "n": 201, "pct": 85.5}, {"label": "3回", "n": 7, "pct": 3.0}, {"label": "4回", "n": 1, "pct": 0.4}, {"label": "5回以上", "n": 5, "pct": 2.1}]}}}
-  };
-
-  function initMonths(){
-    const row = el("monthRow"); row.innerHTML = "";
-    APP.months.forEach(m=>{
-      const b = document.createElement("button");
-      b.className = "chip" + (m===APP.state.month ? " active":"");
-      b.textContent = m;
-      b.addEventListener("click", ()=>{ APP.state.month=m; syncAll(); });
-      row.appendChild(b);
-    });
-  }
-
-  function syncKPIs(){
-    const d = APP.dataByMonth[APP.state.month];
-    el("kpiMoney").textContent = yen(d.money);
-    el("kpiMoM").textContent = (d.mom==null ? "—" : pctText(d.mom));
-    el("kpiRepeatCnt").textContent = (d.repeatCnt==null ? "—" : d.repeatCnt);
-    el("kpiRepeatUsers").textContent = (d.repeatUsers==null ? "—" : d.repeatUsers);
-    el("kpiKanteiCnt").textContent = (d.kanteiCnt==null ? "—" : d.kanteiCnt);
-    el("kpiKanteiUsers").textContent = (d.kanteiUsers==null ? "—" : d.kanteiUsers);
-  }
-
-  function syncMonthChips(){
-    [...document.querySelectorAll("#monthRow .chip")].forEach(ch=>{
-      ch.classList.toggle("active", ch.textContent===APP.state.month);
-    });
-  }
-
-  function syncMainTab(){
-    const isKpi = APP.state.mainTab==="kpi";
-    el("viewKpi").classList.toggle("hidden", !isKpi);
-    el("viewDetail").classList.toggle("hidden", isKpi);
-    el("tabKpi").classList.toggle("active", isKpi);
-    el("tabKpi").setAttribute("aria-selected", isKpi ? "true":"false");
-    el("tabDetail").classList.toggle("active", !isKpi);
-    el("tabDetail").setAttribute("aria-selected", !isKpi ? "true":"false");
-  }
-
-  function syncDetailTab(){
-    const isUser = APP.state.detailTab==="user";
-    el("panelUser").classList.toggle("hidden", !isUser);
-    el("panelReader").classList.toggle("hidden", isUser);
-    [...document.querySelectorAll(".tab")].forEach(t=>{
-      t.classList.toggle("active", t.dataset.detail===APP.state.detailTab);
-    });
-  }
-
-  function syncUserPanel(){
-    const d = APP.dataByMonth[APP.state.month].user;
-    const ageWrap = el("ageList"); ageWrap.innerHTML = "";
-    (d.age||[]).forEach(item=>{
-      const block = document.createElement("div");
-      block.className = "barItem";
-      block.innerHTML = `
-        <div class="barTop"><div>${item.label}</div><div class="pct">${pctText(item.pct)}</div></div>
-        <div class="barBg"><div class="barFill" style="width:${Math.max(0,Math.min(100,item.pct))}%"></div></div>
-      `;
-      ageWrap.appendChild(block);
-    });
-
-    const f = (d.gender?.female ?? null);
-    const m = (d.gender?.male ?? null);
-    el("femaleBar").style.width = (f==null?0:f) + "%";
-    el("maleBar").style.width = (m==null?0:m) + "%";
-    el("femalePct").textContent = (f==null ? "—" : pctText(f));
-    el("malePct").textContent = (m==null ? "—" : pctText(m));
-  }
-
-  function syncReaderPanel(){
-    const d = APP.dataByMonth[APP.state.month].reader;
-
-    el("waitThis").textContent = (d.waitThis==null ? "—" : hoursText(d.waitThis) + "h");
-    el("waitPrev").textContent = (d.waitPrev==null ? "—" : hoursText(d.waitPrev) + "h");
-    el("waitMoM").textContent = (d.waitMoM==null ? "—" : pctText(d.waitMoM));
-
-    const a = d.after || {};
-    el("amTotal").textContent = (a.total==null ? "—" : a.total);
-    el("amSent").textContent = (a.sent==null ? "—" : a.sent);
-    el("amUnsent").textContent = (a.unsent==null ? "—" : a.unsent);
-    el("amRate").textContent = (a.rate==null ? "—" : pctText(a.rate));
-  }
-
-  function syncChartModeButtons(){
-    [...document.querySelectorAll(".toggle")].forEach(b=>{
-      b.classList.toggle("active", b.dataset.mode===APP.state.chartMode);
-    });
-  }
-
-  /* ===== 修正：チャートの点数を 24 / 7 / 31 に正規化（1つずつ確認できる） ===== */
-  function normalizeSeries(mode, labels, values){
-    const safeLabels = Array.isArray(labels) ? labels : [];
-    const safeValues = Array.isArray(values) ? values : [];
-
-    if(mode==="hour"){
-      const outLabels = Array.from({length:24},(_,i)=>`${i}時`);
-      const outValues = Array(24).fill(0);
-      // 既存ラベルが「0時」「3時」などの場合は該当時刻だけ埋める（他は0）
-      for(let i=0;i<Math.min(safeLabels.length, safeValues.length);i++){
-        const h = parseInt(String(safeLabels[i]).replace(/[^\d]/g,""), 10);
-        if(Number.isInteger(h) && h>=0 && h<=23) outValues[h] = Number(safeValues[i]) || 0;
+  <script>
+    (function(){
+      function yen(n){
+        if(n===null || n===undefined || n==="—") return "—";
+        const num = Number(n);
+        if(!isFinite(num)) return "—";
+        return "¥" + num.toLocaleString("ja-JP");
       }
-      return { labels: outLabels, values: outValues };
-    }
-
-    if(mode==="weekday"){
-      const order = ["日","月","火","水","木","金","土"];
-      const outValues = Array(7).fill(0);
-      for(let i=0;i<Math.min(safeLabels.length, safeValues.length);i++){
-        const idx = order.indexOf(String(safeLabels[i]));
-        if(idx>=0) outValues[idx] = Number(safeValues[i]) || 0;
-      }
-      return { labels: order, values: outValues };
-    }
-
-    if(mode==="day"){
-      const outLabels = Array.from({length:31},(_,i)=>`${i+1}日`);
-      const outValues = Array(31).fill(0);
-      for(let i=0;i<Math.min(safeLabels.length, safeValues.length);i++){
-        const d = parseInt(String(safeLabels[i]).replace(/[^\d]/g,""), 10);
-        if(Number.isInteger(d) && d>=1 && d<=31) outValues[d-1] = Number(safeValues[i]) || 0;
-      }
-      return { labels: outLabels, values: outValues };
-    }
-
-    return { labels: safeLabels, values: safeValues };
-  }
-
-  function getSeries(){
-    const src = APP.dataByMonth[APP.state.month].chart[APP.state.chartMode] || {labels:[],values:[]};
-    return normalizeSeries(APP.state.chartMode, src.labels, src.values);
-  }
-  /* ===== 修正ここまで ===== */
-
-  const chart = {
-    canvas:null, ctx:null, inner:null, viewport:null, xLabelViewport:null, xLabelRow:null,
-    w:0, h:0, padding:{ left:10, right:46, top:10, bottom:10 }, yMax:1155, slot:64,
-    setSize(){
-      const vpRect = this.viewport.getBoundingClientRect();
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-
-      const series = getSeries(); /* 修正 */
-      const n = series.values.length;
-
-      const avail = Math.max(1, vpRect.width - this.padding.left - this.padding.right);
-      this.slot = Math.max(8, avail / Math.max(1, (n-1)));
-
-      const innerW = vpRect.width;
-      const innerH = vpRect.height;
-
-      this.inner.style.width = innerW + "px";
-      this.inner.style.height = innerH + "px";
-
-      this.w = Math.floor(innerW);
-      this.h = Math.floor(innerH);
-
-      this.canvas.width = Math.floor(this.w * dpr);
-      this.canvas.height = Math.floor(this.h * dpr);
-      this.canvas.style.width = this.w + "px";
-      this.canvas.style.height = this.h + "px";
-      this.ctx.setTransform(dpr,0,0,dpr,0,0);
-
-      this.xLabelRow.style.width = innerW + "px";
-      this.xLabelRow.style.setProperty("--slot", this.slot + "px");
-    },
-    draw(){
-      const ctx = this.ctx;
-      const {w,h,padding} = this;
-      ctx.clearRect(0,0,w,h);
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0,0,w,h);
-
-      const gridYs = [ padding.top + 8, (h + padding.top - padding.bottom)/2, h - padding.bottom - 8 ];
-      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--grid").trim() || "#e5e7eb";
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3,4]);
-      gridYs.forEach(y=>{
-        ctx.beginPath(); ctx.moveTo(padding.left, y); ctx.lineTo(w - padding.right, y); ctx.stroke();
-      });
-      ctx.setLineDash([]);
-
-      const series = getSeries(); /* 修正 */
-      const values = series.values;
-      const labels = series.labels;
-      const n = values.length;
-      if(n===0){
-        el("yTop").textContent = "—";
-        el("yMid").textContent = "—";
-        el("yBot").textContent = "—";
-        el("cursorLine").style.display = "none";
-        el("tooltip").style.display = "none";
-        renderXLabels(labels);
-        return;
+      function pct(n, d){
+        if(!d || !isFinite(d) || d<=0) return "0%";
+        return ( (n/d)*100 ).toFixed(1) + "%";
       }
 
-      const maxV = Math.max(...values, 1);
-      const targetMax = Math.max(1155, Math.ceil(maxV/5)*5);
-      this.yMax = targetMax;
+      /* =========================================================
+         ここが「あとで実データ連結」する場所
+         いまはモック。見た目と動きの確認用。
+      ========================================================= */
+      const DATA = {
+        kanteishiName: "minami",
+        months: ["2025-12","2025-11","2025-10","2025-09","2025-08","2025-07"],
+        byMonth: {
+          "2025-12": {
+            reward: 88270,
+            reward_mom: "56.6%",
+            repeat_cnt: 139,
+            repeat_users: 118,
+            kantei_cnt: 257,
+            kantei_users: 118,
+            hourValues: [650,820,500,360,280,800,320,400,720,610,420,350,370,390,250,210,190,260,310,480,510,420,360,540],
+            weekValues: [900,780,1200,880,760,980,820],
+            repeatCounts: { "1": 0, "2": 103, "3": 9, "4": 6, "5p": 0 },
+            repeatDetails: {
+              "1": [],
+              "2": [
+                { uid:"20415161", cnt:2, dates:["1 01/02","2 12/16"] },
+                { uid:"20435755", cnt:2, dates:["1 12/08","2 12/08"] },
+                { uid:"20434256", cnt:2, dates:["1 11/08","2 11/29"] },
+                { uid:"20393623", cnt:2, dates:["1 11/09","2 11/29"] },
+                { uid:"20432937", cnt:2, dates:["1 12/12","2 12/18"] }
+              ],
+              "3": [
+                { uid:"20436187", cnt:3, dates:["1 12/18","2 12/18","3 12/18"] }
+              ],
+              "4": [
+                { uid:"20436141", cnt:4, dates:["1 12/17","2 12/17","3 12/17","4 12/17"] }
+              ],
+              "5p": []
+            }
+          },
+          "2025-11": {
+            reward: 155900,
+            reward_mom: "—",
+            repeat_cnt: 210,
+            repeat_users: 160,
+            kantei_cnt: 320,
+            kantei_users: 200,
+            hourValues: [420,480,410,380,360,500,520,630,680,720,610,590,560,520,410,360,340,370,430,520,610,640,560,480],
+            weekValues: [800,900,780,850,920,980,880],
+            repeatCounts: { "1": 12, "2": 44, "3": 18, "4": 6, "5p": 3 },
+            repeatDetails: { "1": [], "2": [], "3": [], "4": [], "5p": [] }
+          },
+          "2025-10": {
+            reward: 0,
+            reward_mom: "—",
+            repeat_cnt: 0,
+            repeat_users: 0,
+            kantei_cnt: 0,
+            kantei_users: 0,
+            hourValues: new Array(24).fill(0),
+            weekValues: new Array(7).fill(0),
+            repeatCounts: { "1": 0, "2": 0, "3": 0, "4": 0, "5p": 0 },
+            repeatDetails: { "1": [], "2": [], "3": [], "4": [], "5p": [] }
+          },
+          "2025-09": { reward: 120000, reward_mom:"—", repeat_cnt: 80, repeat_users: 60, kantei_cnt: 140, kantei_users: 90,
+            hourValues:[300,280,260,240,220,210,230,260,300,360,420,480,520,500,460,420,380,360,340,360,380,400,360,320],
+            weekValues:[650,620,680,700,640,660,610],
+            repeatCounts:{ "1": 30, "2": 18, "3": 6, "4": 2, "5p": 1 },
+            repeatDetails:{ "1":[], "2":[], "3":[], "4":[], "5p":[] }
+          },
+          "2025-08": { reward: 98000, reward_mom:"—", repeat_cnt: 60, repeat_users: 45, kantei_cnt: 120, kantei_users: 80,
+            hourValues:[260,240,220,210,200,210,220,240,280,320,360,420,460,440,420,380,340,320,300,320,340,360,320,280],
+            weekValues:[600,580,610,640,620,660,590],
+            repeatCounts:{ "1": 22, "2": 14, "3": 5, "4": 1, "5p": 0 },
+            repeatDetails:{ "1":[], "2":[], "3":[], "4":[], "5p":[] }
+          },
+          "2025-07": { reward: 76000, reward_mom:"—", repeat_cnt: 40, repeat_users: 35, kantei_cnt: 90, kantei_users: 65,
+            hourValues:[220,210,200,190,180,190,200,220,260,300,340,380,420,410,390,360,320,300,280,300,320,340,300,260],
+            weekValues:[540,520,550,560,570,600,520],
+            repeatCounts:{ "1": 18, "2": 10, "3": 3, "4": 1, "5p": 0 },
+            repeatDetails:{ "1":[], "2":[], "3":[], "4":[], "5p":[] }
+          }
+        }
+      };
 
-      el("yTop").textContent = targetMax.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      el("yMid").textContent = Math.round(targetMax*2/3).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      el("yBot").textContent = Math.round(targetMax*1/3).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      /* =========================================================
+         月チップ
+      ========================================================= */
+      const KANTEISHI_NAME = document.getElementById("KANTEISHI_NAME");
+      KANTEISHI_NAME.textContent = DATA.kanteishiName || "—";
 
-      const x0 = padding.left;
-      const y0 = h - padding.bottom;
-      const y1 = padding.top;
-      const dx = this.slot;
+      const monthChips = document.getElementById("monthChips");
+      let currentMonth = DATA.months[0] || null;
 
-      const pts = values.map((v,i)=>{
-        const x = x0 + dx*i;
-        const t = v / targetMax;
-        const y = y0 - (y0 - y1) * t;
-        return {x,y,v,i};
-      });
+      function jpMonthLabel(ym){
+        if(!ym) return "—";
+        const parts = ym.split("-");
+        if(parts.length!==2) return ym;
+        return String(Number(parts[1])) + "月";
+      }
 
-      ctx.beginPath();
-      ctx.moveTo(pts[0].x, y0);
-      pts.forEach(p=>ctx.lineTo(p.x,p.y));
-      ctx.lineTo(pts[pts.length-1].x, y0);
-      ctx.closePath();
-      ctx.fillStyle = "rgba(37,99,235,.10)";
-      ctx.fill();
+      function renderMonthChips(){
+        monthChips.innerHTML = "";
+        DATA.months.forEach(ym=>{
+          const a = document.createElement("a");
+          a.className = "chip" + (ym===currentMonth ? " on" : "");
+          a.href = "javascript:void(0)";
+          a.textContent = jpMonthLabel(ym);
+          a.addEventListener("click", ()=>{
+            currentMonth = ym;
+            renderMonthChips();
+            applyMonth();
+          });
+          monthChips.appendChild(a);
+        });
+      }
 
-      ctx.beginPath();
-      pts.forEach((p,idx)=>{ if(idx===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
-      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--blue").trim() || "#2563eb";
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      /* =========================================================
+         メインカード切替（報酬 / 鑑定データ詳細）
+      ========================================================= */
+      const cardReward = document.getElementById("cardReward");
+      const cardRepeat = document.getElementById("cardRepeat");
+      const secReward  = document.getElementById("secReward");
+      const secRepeat  = document.getElementById("secRepeat");
 
-      const idx = (APP.state.cursorIndex==null ? Math.floor(n/2) : APP.state.cursorIndex);
-      const p = pts[Math.max(0,Math.min(n-1,idx))];
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
-      ctx.fillStyle = "#ffffff";
-      ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--blue").trim() || "#2563eb";
-      ctx.stroke();
+      function showReward(){
+        cardReward.classList.add("active"); cardRepeat.classList.remove("active");
+        secReward.classList.add("show"); secRepeat.classList.remove("show");
+      }
+      function showRepeat(){
+        cardRepeat.classList.add("active"); cardReward.classList.remove("active");
+        secRepeat.classList.add("show"); secReward.classList.remove("show");
+      }
+      cardReward.addEventListener("click", showReward);
+      cardRepeat.addEventListener("click", showRepeat);
 
-      renderXLabels(labels);
+      /* =========================================================
+         数値表示
+      ========================================================= */
+      const MONTH_REWARD = document.getElementById("MONTH_REWARD");
+      const REWARD_MOM   = document.getElementById("REWARD_MOM");
+      const REPEAT_CNT   = document.getElementById("REPEAT_CNT");
+      const REPEAT_USERS = document.getElementById("REPEAT_USERS");
+      const KANTEI_CNT   = document.getElementById("KANTEI_CNT");
+      const KANTEI_USERS = document.getElementById("KANTEI_USERS");
+
+      function applyMonth(){
+        const m = DATA.byMonth[currentMonth];
+        if(!m){
+          MONTH_REWARD.textContent = "—";
+          REWARD_MOM.textContent = "—";
+          REPEAT_CNT.textContent = "—";
+          REPEAT_USERS.textContent = "—";
+          KANTEI_CNT.textContent = "—";
+          KANTEI_USERS.textContent = "—";
+          setGraphData("hour", new Array(24).fill(0), hourLabels);
+          setRepeatSection({ "1":0,"2":0,"3":0,"4":0,"5p":0 }, { "1":[], "2":[], "3":[], "4":[], "5p":[] });
+          return;
+        }
+        MONTH_REWARD.textContent = yen(m.reward);
+        REWARD_MOM.textContent = (m.reward_mom===null || m.reward_mom===undefined || m.reward_mom==="") ? "—" : m.reward_mom;
+
+        REPEAT_CNT.textContent = (m.repeat_cnt ?? "—");
+        REPEAT_USERS.textContent = (m.repeat_users ?? "—");
+        KANTEI_CNT.textContent = (m.kantei_cnt ?? "—");
+        KANTEI_USERS.textContent = (m.kantei_users ?? "—");
+
+        // グラフ
+        setGraphData(mode, (mode==="hour" ? (m.hourValues||[]) : (m.weekValues||[])));
+
+        // 鑑定データ詳細
+        setRepeatSection(m.repeatCounts || {"1":0,"2":0,"3":0,"4":0,"5p":0}, m.repeatDetails || {"1":[], "2":[], "3":[], "4":[], "5p":[]});
+      }
+
+      /* =========================================================
+         グラフ（v6の動きを維持）
+      ========================================================= */
+      const tabHour = document.getElementById("tabHour");
+      const tabWeek = document.getElementById("tabWeek");
+      const tipLabel = document.getElementById("tipLabel");
+      const tipValue = document.getElementById("tipValue");
+      const chartTitle = document.getElementById("chartTitle");
+      const svg = document.getElementById("chart");
+
+      const hourLabels = Array.from({length:24}, (_,i)=> i + "時");
+      const weekLabels = ["日","月","火","水","木","金","土"];
+
+      let mode="hour";
+      let dataLabels=hourLabels.slice();
+      let dataValues=new Array(24).fill(0);
+      let activeIndex=5;
+
+      function setGraphData(nextMode, values){
+        const m = DATA.byMonth[currentMonth] || {};
+        const hourValues = (m.hourValues && m.hourValues.length===24) ? m.hourValues : new Array(24).fill(0);
+        const weekValues = (m.weekValues && m.weekValues.length===7) ? m.weekValues : new Array(7).fill(0);
+
+        if(nextMode==="hour"){
+          mode="hour";
+          tabHour.classList.add("on"); tabWeek.classList.remove("on");
+          chartTitle.textContent="もっともアクティブな時間帯（平均）";
+          dataLabels=hourLabels.slice();
+          dataValues=hourValues.slice();
+          activeIndex=5;
+        }else{
+          mode="week";
+          tabWeek.classList.add("on"); tabHour.classList.remove("on");
+          chartTitle.textContent="もっともアクティブな曜日（平均）";
+          dataLabels=weekLabels.slice();
+          dataValues=weekValues.slice();
+          activeIndex=2;
+        }
+        render();
+        updateTip(activeIndex);
+      }
+
+      tabHour.addEventListener("click", ()=>setGraphData("hour"));
+      tabWeek.addEventListener("click", ()=>setGraphData("week"));
+
+      const W=360, H=220, padL=18, padR=12, padT=16, padB=28;
+      const plotW=W-padL-padR, plotH=H-padT-padB;
+      const BLUE="#2b6de6", GRID="#e5e7eb", AXIS="#9ca3af", AREA="#cfe3ff";
+
+      function scaleX(i,n){ if(n<=1) return padL+plotW/2; return padL+(plotW*(i/(n-1))); }
+      function scaleY(v,vmin,vmax){ if(vmax===vmin) return padT+plotH/2; const t=(v-vmin)/(vmax-vmin); return padT+(plotH*(1-t)); }
+
+      function buildPath(values){
+        const vmaxBase = Math.max.apply(null, values.map(v=>Number(v)||0));
+        const vmax = (vmaxBase>0 ? vmaxBase*1.05 : 1);
+        const vmin=0;
+        const n=values.length;
+        let d="";
+        for(let i=0;i<n;i++){
+          const x=scaleX(i,n), y=scaleY(Number(values[i])||0,vmin,vmax);
+          d += (i===0?"M":"L")+x.toFixed(2)+" "+y.toFixed(2)+" ";
+        }
+        return {d,vmin,vmax};
+      }
+
+      function clearSvg(){ while(svg.firstChild) svg.removeChild(svg.firstChild); }
+      function el(name, attrs){ const e=document.createElementNS("http://www.w3.org/2000/svg", name); if(attrs) Object.keys(attrs).forEach(k=>e.setAttribute(k, attrs[k])); return e; }
+
+      function render(){
+        clearSvg();
+        const n=dataValues.length;
+        const info=buildPath(dataValues);
+        const vmin=info.vmin, vmax=info.vmax;
+
+        for(let i=1;i<=3;i++){
+          const y=padT+(plotH*(i/3));
+          svg.appendChild(el("line",{x1:padL,y1:y,x2:W-padR,y2:y,stroke:GRID,"stroke-width":"1","stroke-dasharray":"3 4"}));
+        }
+
+        const areaD = info.d + `L ${scaleX(n-1,n).toFixed(2)} ${(padT+plotH).toFixed(2)} ` + `L ${scaleX(0,n).toFixed(2)} ${(padT+plotH).toFixed(2)} Z`;
+        svg.appendChild(el("path",{d:areaD,fill:AREA,"fill-opacity":"0.55",stroke:"none"}));
+        svg.appendChild(el("path",{d:info.d,fill:"none",stroke:BLUE,"stroke-width":"2"}));
+
+        if(mode==="hour"){
+          [0,4,8,12,16,20,23].forEach(m=>{
+            const x=scaleX(m,n);
+            const t=el("text",{x:x,y:H-10,"text-anchor":"middle",fill:AXIS,"font-size":"11"});
+            t.textContent=String(m);
+            svg.appendChild(t);
+          });
+        }else{
+          for(let i=0;i<n;i++){
+            const x=scaleX(i,n);
+            const t=el("text",{x:x,y:H-10,"text-anchor":"middle",fill:AXIS,"font-size":"11"});
+            t.textContent=dataLabels[i];
+            svg.appendChild(t);
+          }
+        }
+
+        svg.appendChild(el("line",{id:"cross",x1:0,y1:padT,x2:0,y2:padT+plotH,stroke:BLUE,"stroke-width":"1","stroke-opacity":"0.9"}));
+        svg.appendChild(el("circle",{id:"activeDot",cx:0,cy:0,r:"5.5",fill:"#fff",stroke:BLUE,"stroke-width":"2"}));
+        svg.appendChild(el("circle",{id:"activeDot2",cx:0,cy:0,r:"2.6",fill:BLUE,stroke:"none","opacity":"0.85"}));
+
+        const hit=el("rect",{x:0,y:0,width:W,height:H,fill:"transparent"});
+        svg.appendChild(hit);
+
+        updateCursor(activeIndex, vmin, vmax);
+
+        let dragging=false;
+        function indexFromClientX(clientX){
+          const rect=svg.getBoundingClientRect();
+          const x=Math.max(0, Math.min(rect.width, clientX-rect.left));
+          const t=x/rect.width;
+          return Math.max(0, Math.min(n-1, Math.round(t*(n-1))));
+        }
+        function onDown(e){
+          dragging=true;
+          const ptX=(e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+          activeIndex=indexFromClientX(ptX);
+          updateCursor(activeIndex, vmin, vmax);
+          updateTip(activeIndex);
+          e.preventDefault();
+        }
+        function onMove(e){
+          if(!dragging) return;
+          const ptX=(e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+          const i=indexFromClientX(ptX);
+          if(i!==activeIndex){
+            activeIndex=i;
+            updateCursor(activeIndex, vmin, vmax);
+            updateTip(activeIndex);
+          }
+          e.preventDefault();
+        }
+        function onUp(){ dragging=false; }
+
+        hit.addEventListener("mousedown", onDown);
+        hit.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+
+        hit.addEventListener("touchstart", onDown, {passive:false});
+        hit.addEventListener("touchmove", onMove, {passive:false});
+        window.addEventListener("touchend", onUp);
+      }
+
+      function updateCursor(i, vmin, vmax){
+        const n=dataValues.length;
+        const x=scaleX(i,n);
+        const y=scaleY(Number(dataValues[i])||0,vmin,vmax);
+        const cross=svg.querySelector("#cross");
+        const dot=svg.querySelector("#activeDot");
+        const dot2=svg.querySelector("#activeDot2");
+        if(cross){ cross.setAttribute("x1",x); cross.setAttribute("x2",x); }
+        if(dot){ dot.setAttribute("cx",x); dot.setAttribute("cy",y); }
+        if(dot2){ dot2.setAttribute("cx",x); dot2.setAttribute("cy",y); }
+      }
+
+      function updateTip(i){
+        tipLabel.textContent = (mode==="hour") ? dataLabels[i] : (dataLabels[i]+"曜日");
+        tipValue.textContent = yen(Number(dataValues[i])||0);
+      }
+
+      /* =========================================================
+         「鑑定データ詳細」：回数別ユーザー数＋終了回数の一覧＋詳細
+      ========================================================= */
+      const repeatRows = document.getElementById("repeatRows");
+      const endItems = document.getElementById("endItems");
+      const detailTitle = document.getElementById("detailTitle");
+      const detailCount = document.getElementById("detailCount");
+      const detailBody  = document.getElementById("detailBody");
+
+      const BUCKETS = [
+        { key:"1",  label:"1回" },
+        { key:"2",  label:"2回" },
+        { key:"3",  label:"3回" },
+        { key:"4",  label:"4回" },
+        { key:"5p", label:"5回以上" }
+      ];
+
+      let currentBucketKey = "1";
+      let currentDetails = { "1":[], "2":[], "3":[], "4":[], "5p":[] };
+      let currentCounts  = { "1":0, "2":0, "3":0, "4":0, "5p":0 };
+
+      function setRepeatSection(counts, details){
+        currentCounts = Object.assign({ "1":0, "2":0, "3":0, "4":0, "5p":0 }, counts||{});
+        currentDetails = Object.assign({ "1":[], "2":[], "3":[], "4":[], "5p":[] }, details||{});
+
+        renderRepeatTable();
+        renderEndItems();
+
+        // まず「1回」を選ぶ。0なら、2→3→4→5回以上の順で最初に数字があるものを自動選択
+        const order = ["1","2","3","4","5p"];
+        let pick = "1";
+        for(const k of order){
+          if((currentCounts[k]||0) > 0){ pick = k; break; }
+        }
+        selectBucket(pick);
+      }
+
+      function renderRepeatTable(){
+        repeatRows.innerHTML = "";
+        const total = BUCKETS.reduce((s,b)=> s + (Number(currentCounts[b.key])||0), 0);
+        const max   = Math.max(1, ...BUCKETS.map(b=>Number(currentCounts[b.key])||0));
+
+        BUCKETS.forEach(b=>{
+          const cnt = Number(currentCounts[b.key])||0;
+          const row = document.createElement("div");
+          row.className = "rptRow";
+
+          const k = document.createElement("div");
+          k.className = "rptK";
+          k.textContent = b.label;
+
+          const barWrap = document.createElement("div");
+          barWrap.className = "rptBarWrap";
+          const bar = document.createElement("div");
+          bar.className = "rptBar";
+          bar.style.width = (cnt/max*100).toFixed(1) + "%";
+          barWrap.appendChild(bar);
+
+          const num = document.createElement("div");
+          num.className = "rptNum";
+          num.textContent = cnt + "人";
+
+          const p = document.createElement("div");
+          p.className = "rptPct";
+          p.textContent = pct(cnt, total);
+
+          row.appendChild(k);
+          row.appendChild(barWrap);
+          row.appendChild(num);
+          row.appendChild(p);
+          repeatRows.appendChild(row);
+        });
+      }
+
+      function renderEndItems(){
+        endItems.innerHTML = "";
+        BUCKETS.forEach(b=>{
+          const cnt = Number(currentCounts[b.key])||0;
+          const item = document.createElement("div");
+          item.className = "endItem";
+          item.dataset.key = b.key;
+
+          const t = document.createElement("div");
+          t.className = "t";
+          t.textContent = b.label + "で終了";
+
+          const n = document.createElement("div");
+          n.className = "n";
+          n.textContent = cnt + "人";
+
+          item.appendChild(t);
+          item.appendChild(n);
+
+          item.addEventListener("click", ()=> selectBucket(b.key));
+          endItems.appendChild(item);
+        });
+      }
+
+      function selectBucket(key){
+        currentBucketKey = key;
+
+        Array.from(endItems.querySelectorAll(".endItem")).forEach(el=>{
+          el.classList.toggle("on", el.dataset.key === key);
+        });
+
+        const bucket = BUCKETS.find(b=>b.key===key) || {label:"—"};
+        const cnt = Number(currentCounts[key])||0;
+
+        detailTitle.textContent = bucket.label + "で終了";
+        detailCount.textContent = cnt + "人";
+
+        const list = currentDetails[key] || [];
+        detailBody.innerHTML = "";
+
+        if(!list.length){
+          const d = document.createElement("div");
+          d.className = "empty";
+          d.textContent = "該当ユーザーがいません";
+          detailBody.appendChild(d);
+          return;
+        }
+
+        list.forEach(u=>{
+          const row = document.createElement("div");
+          row.className = "uRow";
+
+          const top = document.createElement("div");
+          top.className = "uTop";
+
+          const uid = document.createElement("div");
+          uid.className = "uid";
+          uid.textContent = String(u.uid || "—");
+
+          const ucnt = document.createElement("div");
+          ucnt.className = "ucnt";
+          ucnt.textContent = (u.cnt ? String(u.cnt) : bucket.label.replace("回以上","回")) + "回";
+
+          top.appendChild(uid);
+          top.appendChild(ucnt);
+
+          const chips = document.createElement("div");
+          chips.className = "dchips";
+
+          const dates = Array.isArray(u.dates) ? u.dates : [];
+          if(!dates.length){
+            const sp = document.createElement("div");
+            sp.className = "muted";
+            sp.style.fontSize = "12px";
+            sp.textContent = "日時なし";
+            chips.appendChild(sp);
+          }else{
+            dates.forEach(s=>{
+              const ch = document.createElement("span");
+              ch.className = "dchip";
+              ch.textContent = String(s);
+              chips.appendChild(ch);
+            });
+          }
+
+          row.appendChild(top);
+          row.appendChild(chips);
+          detailBody.appendChild(row);
+        });
+      }
+
+      /* 初期表示 */
+      renderMonthChips();
+      setGraphData("hour");
+      applyMonth();
+      showReward(); // 最初は報酬側
+    })();
+  </script>
+</body>
+</html>
