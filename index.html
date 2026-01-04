@@ -515,37 +515,6 @@
       cursor:pointer;
     }
 
-    /* ===== accordion（回数別/終了回数） ===== */
-    .accHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .accTitleRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .accArrow{
-      width:22px;height:22px;
-      display:grid;place-items:center;
-      border-radius:999px;
-      border:1px solid #e5e7eb;
-      background:#f9fafb;
-      color:var(--muted);
-      font-weight:900;
-      line-height:1;
-      transform:rotate(0deg);
-      transition:transform .15s ease;
-    }
-    .panelCard.open .accArrow{ transform:rotate(180deg); }
-
-    .accBody{ display:none; margin-top:10px; }
-    .panelCard.open .accBody{ display:block; }
-
     .empty{
       color:var(--muted);
       font-size:12px;
@@ -733,46 +702,29 @@
 
     <!-- ===== VIEW B (PDF 2枚目) ===== -->
     <div id="viewRepeat" style="display:none;">
-
-      <!-- アコーディオン①：回数別ユーザー数（最初は閉じる） -->
-      <div class="panelCard" id="accDist">
-        <div class="accHead">
-          <div class="accTitleRow">
-            <div class="panelTitle">回数別ユーザー数</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div class="panelCols"><span>人数</span><span>割合</span></div>
-            <div class="accArrow">⌄</div>
-          </div>
+      <div class="panelCard">
+        <div class="panelHead">
+          <div class="panelTitle">回数別ユーザー数</div>
+          <div class="panelCols"><span>人数</span><span>割合</span></div>
         </div>
-        <div class="accBody" id="accDistBody">
-          <div id="distTable"></div>
-        </div>
+        <div id="distTable"></div>
       </div>
 
-      <!-- アコーディオン②：終了回数の一覧（最初は閉じる） -->
-      <div class="panelCard" id="accEnd">
-        <div class="accHead">
-          <div class="accTitleRow">
-            <div class="panelTitle">終了回数の一覧</div>
-          </div>
-          <div class="accArrow">⌄</div>
+      <div class="panelCard">
+        <div class="panelHead">
+          <div class="panelTitle">終了回数の一覧</div>
         </div>
+        <div class="endList" id="endList"></div>
 
-        <div class="accBody" id="accEndBody">
-          <div class="endList" id="endList"></div>
-
-          <div class="endDetail" id="endDetail">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-              <div style="font-weight:900;font-size:12px;" id="endTitle">—</div>
-              <div class="pillCount" id="endCount">0人</div>
-            </div>
-            <div id="uidList"></div>
-            <button class="moreBtn" id="moreBtn" style="display:none;">さらに表示</button>
+        <div class="endDetail" id="endDetail">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <div style="font-weight:900;font-size:12px;" id="endTitle">—</div>
+            <div class="pillCount" id="endCount">0人</div>
           </div>
+          <div id="uidList"></div>
+          <button class="moreBtn" id="moreBtn" style="display:none;">さらに表示</button>
         </div>
       </div>
-
     </div>
 
     <div id="needJson" class="empty" style="display:none;">
@@ -805,23 +757,6 @@
       if(n===null || n===undefined || n==="" || Number.isNaN(Number(n))) return "—";
       return Number(n).toFixed(1).replace(/\.0$/,"") + "%";
     };
-
-    function closeAllRepeatAccordions(){
-      const a = document.getElementById("accDist");
-      const b = document.getElementById("accEnd");
-      if(a) a.classList.remove("open");
-      if(b) b.classList.remove("open");
-    }
-
-    function bindRepeatAccordions(){
-      document.querySelectorAll("#viewRepeat .accHead").forEach(head=>{
-        head.addEventListener("click", ()=>{
-          const card = head.closest(".panelCard");
-          if(!card) return;
-          card.classList.toggle("open");
-        });
-      });
-    }
 
     function safeGetMonthObj(){
       const p = state.payload;
@@ -1185,11 +1120,6 @@
         });
         endBox.appendChild(item);
       });
-
-      if(!state.endKey){
-        state.endKey = "1回";
-      }
-      renderEndDetail();
     }
 
     function renderEndDetail(){
@@ -1249,7 +1179,6 @@
       if(v==="main"){
         renderGraph();
       }else{
-        closeAllRepeatAccordions();
         renderRepeatView();
       }
     }
@@ -1281,8 +1210,6 @@
         renderRepeatView();
       }
     }
-
-    bindRepeatAccordions();
 
     // ===== events =====
     $("#btnJson").addEventListener("click", ()=> $("#jsonFile").click());
