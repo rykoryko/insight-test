@@ -587,7 +587,7 @@
     </div>
 
     <!-- ===== VIEW A (PDF 1枚目) ===== -->
-    <div id="viewMain" style="display:none;">
+    <div id="viewMain">
       <div class="graphWrap">
         <div class="tabRow">
           <button class="tab active" data-graph="time">時間別</button>
@@ -695,7 +695,7 @@
     </div>
 
     <!-- ===== VIEW B (PDF 2枚目) ===== -->
-    <div id="viewRepeat">
+    <div id="viewRepeat" style="display:none;">
       <div class="panelCard">
         <div class="panelHead">
           <div class="panelTitle">回数別ユーザー数</div>
@@ -737,7 +737,7 @@
       month: null,
       graphMode: "time",
       subMode: "user",
-      view: "repeat", // main | repeat
+      view: "repeat", // main | repeat（デフォルトは回数別ユーザー数を出す）
       endKey: null,
       endPage: 1,
       endPageSize: 20,
@@ -832,7 +832,6 @@
       $("#kAllCases").textContent = (rstat.totalSessions||0).toLocaleString("ja-JP");
       $("#kAllUsers").textContent = (rstat.usersTotal||0).toLocaleString("ja-JP");
 
-      // 見本に合わせて「表示中の画面」で右/左カードの強調を切替
       const cr = $("#cardRevenue");
       const cd = $("#cardDetail");
       cr.classList.toggle("active", state.view==="main");
@@ -841,7 +840,6 @@
 
     function renderGraph(){
       const mo = safeGetMonthObj();
-      const p = state.payload;
       const chart = $("#chart");
       const grid = $("#grid");
       const line = $("#line");
@@ -876,12 +874,10 @@
       $("#sumValue").textContent = fmtYen(sum).replace("¥ ","").toLocaleString("ja-JP") + " 円";
       $("#sumLabel").textContent = "";
 
-      // y scale
       const max = Math.max(1, ...values);
       const pad = Math.ceil(max * 0.08);
       const ymax = max + pad;
 
-      // right y labels (3段)
       const yTop = ymax;
       const yMid = Math.round(ymax * 2/3);
       const yLow = Math.round(ymax * 1/3);
@@ -889,13 +885,12 @@
       $("#yMid").textContent = yMid.toLocaleString("ja-JP");
       $("#yLow").textContent = yLow.toLocaleString("ja-JP");
 
-      // grid lines (3)
       const w = 320, h = 190;
       const left = 10, right = 10, top = 10, bottom = 20;
       const cw = w - left - right;
       const ch = h - top - bottom;
 
-      [0, 1/3, 2/3, 1].forEach((t, i)=>{
+      [0, 1/3, 2/3, 1].forEach((t)=>{
         const y = top + ch*(1-t);
         const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
         ln.setAttribute("x1", left);
@@ -921,38 +916,20 @@
       line.setAttribute("d", dLine);
       area.setAttribute("d", dArea);
 
-      // x labels density
       const xl = $("#xlabels");
       xl.innerHTML = "";
       const n = labels.length;
-      let step = 1;
-      if(n>=24) step = 2;
-      if(n>=31) step = 3;
-
-      const picks = [];
-      for(let i=0;i<n;i++){
-        if(i%step===0) picks.push(i);
+      let finalIdx = [];
+      if(n>0){
+        finalIdx = [0, Math.floor((n-1)*0.2), Math.floor((n-1)*0.4), Math.floor((n-1)*0.6), Math.floor((n-1)*0.8), n-1];
       }
-      if(picks[picks.length-1] !== n-1) picks.push(n-1);
+      const uniq = Array.from(new Set(finalIdx)).sort((a,b)=>a-b);
 
-      // make equally spaced labels bar
       const labelRow = document.createElement("div");
       labelRow.style.display="flex";
       labelRow.style.width="100%";
       labelRow.style.justifyContent="space-between";
       labelRow.style.gap="6px";
-
-      // build map of picked label positions
-      const pickedSet = new Set(picks);
-      const showLabels = labels.map((t,i)=> pickedSet.has(i)? t : "");
-      // Put 6~8 positions max for visual like PDF
-      // If too many, compress by selecting fixed count
-      let finalIdx = picks;
-      if(finalIdx.length>8){
-        finalIdx = [0, Math.floor((n-1)*0.2), Math.floor((n-1)*0.4), Math.floor((n-1)*0.6), Math.floor((n-1)*0.8), n-1];
-      }
-      const uniq = Array.from(new Set(finalIdx)).sort((a,b)=>a-b);
-
       uniq.forEach((i)=>{
         const s = document.createElement("span");
         s.textContent = labels[i];
@@ -960,7 +937,6 @@
       });
       xl.appendChild(labelRow);
 
-      // hover interaction
       const box = $("#chartBox");
       const svg = $("#chart");
       function onMove(ev){
@@ -1026,7 +1002,6 @@
       $("#femalePct").textContent = fmtPct(fp);
       $("#malePct").textContent = fmtPct(mp);
 
-      // bar: left blue (男性), right pink (女性)  ※見本の色使いに寄せる
       $("#maleBar").style.width = Math.max(0,Math.min(100,mp)) + "%";
       $("#femaleBar").style.width = Math.max(0,Math.min(100,fp)) + "%";
     }
@@ -1062,9 +1037,9 @@
       const endBox = $("#endList");
       distBox.innerHTML = "";
       endBox.innerHTML = "";
-      $("#endDetail").style.display = "none";
       $("#uidList").innerHTML = "";
       $("#moreBtn").style.display = "none";
+      $("#endDetail").style.display = "none";
 
       if(!mo || !mo.repeat){
         distBox.innerHTML = `<div class="empty">この月のデータがありません。</div>`;
@@ -1096,7 +1071,6 @@
         return;
       }
 
-      // 表示順
       const order = ["1回","2回","3回","4回","5回以上"];
       order.forEach(k=>{
         if(!(k in details)) return;
@@ -1108,12 +1082,25 @@
           <div class="r">${arr.length.toLocaleString("ja-JP")}人</div>
         `;
         item.addEventListener("click", ()=>{
+          if(state.endKey === k && $("#endDetail").style.display === "block"){
+            state.endKey = null;
+            $("#endDetail").style.display = "none";
+            $("#uidList").innerHTML = "";
+            $("#moreBtn").style.display = "none";
+            return;
+          }
           state.endKey = k;
           state.endPage = 1;
           renderEndDetail();
         });
         endBox.appendChild(item);
       });
+
+      if(state.endKey && (state.endKey in details)){
+        renderEndDetail();
+      }else{
+        $("#endDetail").style.display = "none";
+      }
     }
 
     function renderEndDetail(){
@@ -1170,6 +1157,8 @@
       renderCards();
       if(v==="main"){
         renderGraph();
+        renderDemographics();
+        renderKanteishiStats();
       }else{
         renderRepeatView();
       }
@@ -1219,7 +1208,6 @@
           state.view = "repeat";
           state.endKey = null;
           state.endPage = 1;
-          // tabs reset
           $$(".tab").forEach(b=>b.classList.toggle("active", b.dataset.graph==="time"));
           $$(".subTab").forEach(b=>b.classList.toggle("active", b.dataset.sub==="user"));
           $("#subUser").style.display="block";
@@ -1253,17 +1241,11 @@
       });
     });
 
-    // カードで切替（ボタンは表示しない）
+    // ここが「メインデータ切り替えボタン」：上の2カードをタップで切替
     $("#cardRevenue").style.cursor = "pointer";
     $("#cardDetail").style.cursor = "pointer";
-    $("#cardRevenue").addEventListener("click", ()=>{
-      setView("main");
-    });
-    $("#cardDetail").addEventListener("click", ()=>{
-      state.endKey = null;
-      state.endPage = 1;
-      setView("repeat");
-    });
+    $("#cardRevenue").addEventListener("click", ()=> setView("main"));
+    $("#cardDetail").addEventListener("click", ()=> setView("repeat"));
 
     // auto-load when hosted (GitHub Pages) : insight_data.json in same folder
     (async ()=>{
@@ -1276,7 +1258,6 @@
         setView("repeat");
         renderAll();
       }catch(e){
-        // offline local open: ask user to pick json
         $("#needJson").style.display = "block";
       }
     })();
