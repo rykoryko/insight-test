@@ -586,12 +586,6 @@
       </div>
     </div>
 
-    <!-- 控えめ切替（見た目優先で小さく） -->
-    <div class="viewToggle">
-      <button class="viewBtn active" id="viewMainBtn">グラフ/詳細データ</button>
-      <button class="viewBtn" id="viewRepeatBtn">回数別/終了回数</button>
-    </div>
-
     <!-- ===== VIEW A (PDF 1枚目) ===== -->
     <div id="viewMain">
       <div class="graphWrap">
@@ -1178,14 +1172,7 @@
       state.view = v;
       $("#viewMain").style.display = (v==="main") ? "block" : "none";
       $("#viewRepeat").style.display = (v==="repeat") ? "block" : "none";
-      $("#viewMainBtn").classList.toggle("active", v==="main");
-      $("#viewRepeatBtn").classList.toggle("active", v==="repeat");
-      renderCards();
-      if(v==="main"){
-        renderGraph();
-      }else{
-        renderRepeatView();
-      }
+      renderAll();
     }
 
     function renderAll(){
@@ -1266,8 +1253,11 @@
       });
     });
 
-    $("#viewMainBtn").addEventListener("click", ()=> setView("main"));
-    $("#viewRepeatBtn").addEventListener("click", ()=> setView("repeat"));
+    // 青い2カードをタップで切替
+    $("#cardRevenue").style.cursor = "pointer";
+    $("#cardDetail").style.cursor  = "pointer";
+    $("#cardRevenue").addEventListener("click", ()=> setView("main"));
+    $("#cardDetail").addEventListener("click",  ()=> setView("repeat"));
 
     // auto-load when hosted (GitHub Pages) : insight_data.json in same folder
     (async ()=>{
@@ -1287,4 +1277,3 @@
   </script>
 </body>
 </html>
-
