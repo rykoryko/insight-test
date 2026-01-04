@@ -15,1275 +15,806 @@
       --chipActive:#111111;
       --chipActiveText:#ffffff;
       --card:#ffffff;
-      --cardBorder:#9ca3af;
+      --cardBorder:#d1d5db;
       --cardActiveBg:#fde7ef;
       --cardActiveBorder:#f3a6c8;
+      --bar:#2563eb;
+      --barBg:#e5e7eb;
       --shadow: 0 8px 24px rgba(17,24,39,.08);
-      --blue:#2563eb;
-      --pink:#ec4899;
-      --dark:#374151;
+      --radius:18px;
     }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
+    html{ -webkit-text-size-adjust: 100%; }
     body{
       margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
       background:var(--bg);
       color:var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    }
+    .wrap{
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 18px 16px 48px;
     }
 
-    /* ====== phone frame ====== */
-    .phone{
-      width:min(390px, 100%);
-      margin:0 auto;
-      padding:14px 14px 30px;
-    }
-
-    /* ===== header ===== */
-    .header{
+    .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      padding-top:2px;
+      gap:12px;
     }
     .brand{
       display:flex;
-      align-items:center;
+      align-items:flex-end;
       gap:10px;
-      min-width:90px;
     }
-    .pixy{
-      font-weight:700;
-      letter-spacing:.02em;
-      font-size:24px;
-      line-height:1;
-    }
-    .title{
-      font-weight:700;
-      font-size:22px;
-      line-height:1;
-      text-align:center;
-      flex:1;
-    }
-    .topActions{
-      min-width:90px;
-      display:flex;
-      justify-content:flex-end;
-      align-items:center;
-      gap:8px;
-    }
+    .brand .pixy{font-weight:800; font-size:36px; letter-spacing:.2px;}
+    .brand .insight{font-weight:800; font-size:26px;}
     .btnJson{
       border:0;
-      background:var(--chipActive);
+      background:#111111;
       color:#fff;
+      padding:10px 18px;
       border-radius:999px;
-      padding:10px 14px;
       font-weight:700;
-      font-size:13px;
       cursor:pointer;
     }
     .meta{
       margin-top:6px;
       color:var(--muted);
-      font-size:12px;
-    }
-
-    .pinkLine{
-      height:2px;
-      background:var(--line);
-      border-radius:999px;
-      margin:12px 0;
-    }
-
-    .labelRow{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:10px;
-      margin:2px 0 8px;
-    }
-    .label{
-      font-weight:700;
       font-size:14px;
     }
-    .smallValue{
-      color:var(--muted);
-      font-size:12px;
+    .hrPink{
+      height:3px;
+      background:var(--line);
+      border-radius:999px;
+      margin:14px 0 18px;
     }
 
-    .chips{
+    .kanteishiLine{
+      padding:10px 0 6px;
+      border-top:2px solid var(--line);
+      border-bottom:2px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .kanteishiLine .label{font-weight:800}
+    .kanteishiLine .value{color:var(--muted); font-weight:700}
+
+    .months{
       display:flex;
       gap:10px;
-      flex-wrap:wrap;
-      margin:8px 0 14px;
+      margin:14px 0 16px;
+      overflow:auto;
+      padding-bottom:2px;
     }
     .chip{
       border:0;
       background:var(--chip);
       color:var(--chipText);
+      padding:10px 14px;
       border-radius:999px;
-      padding:8px 14px;
-      font-size:13px;
+      font-weight:800;
       cursor:pointer;
+      white-space:nowrap;
+      flex:0 0 auto;
     }
     .chip.active{
       background:var(--chipActive);
       color:var(--chipActiveText);
     }
 
-    /* section title like PDF */
-    .sectionTitleRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin:8px 0 6px;
-    }
     .sectionTitle{
-      font-weight:800;
-      font-size:16px;
+      font-weight:900;
+      font-size:20px;
+      margin: 8px 0 12px;
+      border-bottom:3px solid var(--line);
+      padding-bottom:8px;
     }
 
-    /* view toggle (控えめ) */
-    .viewToggle{
-      display:flex;
-      gap:8px;
-      margin:10px 0 10px;
-    }
-    .viewBtn{
-      border:0;
-      background:var(--chip);
-      color:var(--chipText);
-      border-radius:999px;
-      padding:8px 12px;
-      font-size:12px;
-      cursor:pointer;
-    }
-    .viewBtn.active{
-      background:var(--dark);
-      color:#fff;
-    }
-
-    /* ===== cards ===== */
-    .grid2{
+    .cards2{
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin-top:6px;
+      gap:12px;
+      margin-bottom:12px;
     }
     .card{
       background:var(--card);
-      border:1px solid var(--cardBorder);
-      border-radius:12px;
-      padding:12px;
-      box-shadow: none;
+      border:2px solid var(--cardBorder);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px 14px 12px;
     }
+    .card.clickable{cursor:pointer; user-select:none;}
     .card.active{
-      background:var(--cardActiveBg);
-      border-color:var(--cardActiveBorder);
+      border-color: var(--cardActiveBorder);
+      background: var(--cardActiveBg);
     }
-    .cardTitle{
-      font-size:12px;
+    .card .small{
       color:var(--muted);
-      font-weight:700;
-      margin-bottom:6px;
+      font-weight:800;
+      font-size:13px;
+      margin-bottom:10px;
     }
-    .money{
+    .bigMoney{
+      font-size:34px;
       font-weight:900;
-      font-size:22px;
-      letter-spacing:.02em;
+      letter-spacing:.3px;
+      line-height:1.0;
     }
-    .sub{
-      margin-top:4px;
-      font-size:12px;
-      color:var(--text);
-    }
-    .kpiGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:8px 10px;
-      margin-top:8px;
-    }
-    .kpi{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      padding-top:2px;
-    }
-    .kpi .k{
-      font-size:11px;
+    .moneyUnit{font-size:18px; font-weight:900; margin-left:4px}
+    .subRow{
+      margin-top:10px;
       color:var(--muted);
-      font-weight:700;
-      white-space:nowrap;
-    }
-    .kpi .v{
-      font-weight:900;
-      font-size:18px;
-      line-height:1.1;
+      font-weight:800;
+      font-size:14px;
     }
 
-    /* ===== graph card ===== */
-    .graphWrap{
-      margin-top:10px;
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      padding:10px;
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px 12px;
     }
-    .tabRow{
+    .kv .k{color:var(--muted); font-size:12px; font-weight:900}
+    .kv .v{font-size:24px; font-weight:900; margin-top:2px}
+
+    .panel{display:none;}
+    .panel.show{display:block;}
+
+    .graphBox{
+      background:#fff;
+      border:2px solid var(--cardBorder);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:12px;
+      margin: 10px 0 18px;
+    }
+    .graphHead{
       display:flex;
-      gap:8px;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
       margin-bottom:10px;
+    }
+    .graphHead .title{font-weight:900}
+    .tabs{
+      display:flex;
+      gap:10px;
+      overflow:auto;
+      padding-bottom:2px;
     }
     .tab{
       border:0;
       background:var(--chip);
       color:var(--chipText);
+      padding:10px 14px;
       border-radius:999px;
-      padding:8px 14px;
-      font-size:12px;
+      font-weight:900;
       cursor:pointer;
+      white-space:nowrap;
+      flex:0 0 auto;
     }
-    .tab.active{
-      background:var(--dark);
-      color:#fff;
-    }
-    .chartBox{
-      position:relative;
-      border-radius:10px;
-      background:#f9fafb;
-      padding:8px 8px 4px;
+    .tab.active{background:var(--chipActive); color:var(--chipActiveText);}
+
+    .bars{
+      display:flex;
+      align-items:flex-end;
+      gap:6px;
+      height:150px;
+      padding:6px 4px 2px;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid #eef2f7;
       overflow:hidden;
     }
-    .chartMetaRight{
-      position:absolute;
-      top:10px;
-      right:10px;
-      display:flex;
-      flex-direction:column;
-      gap:44px;
-      color:#9ca3af;
-      font-size:11px;
-      text-align:right;
-      pointer-events:none;
+    .bar{
+      width:10px;
+      background: #111827;
+      border-radius:8px 8px 2px 2px;
+      flex: 0 0 auto;
+      opacity:.9;
     }
     .xlabels{
       display:flex;
-      justify-content:space-between;
       gap:6px;
-      margin-top:6px;
-      padding:0 2px 0;
-      color:#9ca3af;
-      font-size:11px;
-      overflow:hidden;
+      margin-top:8px;
+      overflow:auto;
+      padding-bottom:2px;
+    }
+    .xlabel{
+      width:10px;
+      flex:0 0 auto;
+      font-size:10px;
+      color:var(--muted);
+      text-align:center;
+      transform: translateX(-2px);
       white-space:nowrap;
     }
-    .chartFooter{
+    .graphFoot{
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      gap:10px;
+      align-items:center;
+      color:var(--muted);
+      font-weight:900;
       margin-top:8px;
-      color:var(--text);
-      font-size:12px;
-      font-weight:700;
     }
-    .chartFooter span{
-      color:var(--muted);
-      font-weight:700;
-    }
-    .tooltip{
-      position:absolute;
-      min-width:88px;
+
+    .listBox{
       background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:10px;
-      box-shadow:var(--shadow);
-      padding:8px 10px;
-      font-size:12px;
-      pointer-events:none;
-      transform:translate(-50%,-110%);
-      display:none;
-    }
-    .tooltip .t1{ font-weight:800; }
-    .tooltip .t2{ margin-top:2px; color:var(--muted); font-weight:800; }
-
-    /* ===== detail data ===== */
-    .detailBlock{
-      margin-top:16px;
-    }
-    .subTabs{
-      display:flex;
-      gap:10px;
-      margin:10px 0 10px;
-    }
-    .subTab{
-      border:0;
-      background:var(--chip);
-      color:var(--chipText);
-      border-radius:999px;
-      padding:8px 14px;
-      font-size:12px;
-      cursor:pointer;
-    }
-    .subTab.active{
-      background:var(--dark);
-      color:#fff;
-    }
-
-    .bulletTitle{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-weight:900;
-      font-size:12px;
-      color:var(--text);
-      margin:10px 0 8px;
-    }
-    .sq{
-      width:8px;height:8px;border-radius:2px;background:var(--blue);
-      flex:0 0 auto;
-    }
-    .sq.cyan{ background:#22c55e; }
-    .sq.pink{ background:var(--pink); }
-
-    .barRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin:10px 0;
-      font-size:12px;
-    }
-    .barRow .left{ min-width:64px; color:var(--text); font-weight:700; }
-    .barRow .right{ min-width:56px; text-align:right; color:var(--text); font-weight:800; }
-    .bar{
-      flex:1;
-      height:8px;
-      border-radius:999px;
-      background:#e5e7eb;
-      overflow:hidden;
-    }
-    .bar > i{
-      display:block;
-      height:100%;
-      background:var(--blue);
-      width:0%;
-      border-radius:999px;
-    }
-
-    .ratioBar{
-      height:10px;
-      background:#e5e7eb;
-      border-radius:999px;
-      overflow:hidden;
-      display:flex;
-    }
-    .ratioBar .male{ background:var(--blue); width:0%; }
-    .ratioBar .female{ background:var(--pink); width:0%; }
-    .ratioLabels{
-      display:flex;
-      justify-content:space-between;
-      margin-top:6px;
-      font-size:12px;
-    }
-    .ratioLabels .name{ color:var(--text); font-weight:800; }
-    .ratioLabels .pct{ color:var(--muted); font-weight:900; }
-
-    /* ===== detail screen blocks ===== */
-    .panelCard{
-      margin-top:10px;
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:12px;
+      border:2px solid var(--cardBorder);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       padding:12px;
+      margin: 10px 0 18px;
     }
-    .panelHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+    .distHeader{
+      display:grid;
+      grid-template-columns: 80px 1fr 70px 60px;
       gap:10px;
-      margin-bottom:8px;
-    }
-    .panelTitle{
-      font-weight:900;
-      font-size:13px;
-    }
-    .panelCols{
-      display:flex;
-      gap:16px;
       color:var(--muted);
+      font-weight:900;
       font-size:12px;
-      font-weight:800;
+      padding:0 4px 6px;
     }
     .distRow{
       display:grid;
-      grid-template-columns: 52px 1fr 52px 56px;
-      align-items:center;
+      grid-template-columns: 80px 1fr 70px 60px;
       gap:10px;
-      margin:7px 0;
-      font-size:12px;
+      align-items:center;
+      padding:10px 4px;
+      border-top:1px solid #eef2f7;
     }
-    .distRow .lbl{ font-weight:900; }
-    .distRow .bar{ height:7px; }
-    .distRow .bar > i{ background:var(--blue); }
-    .distRow .n{ text-align:right; font-weight:900; }
-    .distRow .p{ text-align:right; color:var(--muted); font-weight:900; }
+    .distRow .label{font-weight:900}
+    .barWrap{
+      height:10px;
+      background:var(--barBg);
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .barFill{
+      height:100%;
+      background:var(--bar);
+      border-radius:999px;
+      width:0%;
+    }
+    .distRow .n{font-weight:900; text-align:right}
+    .distRow .p{font-weight:900; color:var(--muted); text-align:right}
 
-    .endList{
-      border-top:1px solid #f3f4f6;
-      margin-top:10px;
-      padding-top:10px;
-    }
-    .endItem{
+    .endListTitle{
+      font-weight:900;
+      margin: 4px 0 10px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding:10px 0;
-      border-bottom:1px solid #f3f4f6;
-      cursor:pointer;
-      user-select:none;
-    }
-    .endItem .l{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:900;
-      font-size:12px;
     }
     .pillCount{
-      border:1px solid #e5e7eb;
-      background:#f9fafb;
-      border-radius:999px;
-      padding:4px 10px;
-      font-size:12px;
-      font-weight:900;
-      color:var(--text);
-    }
-    .endItem .r{
-      color:var(--muted);
-      font-weight:900;
-      font-size:12px;
-    }
-    .endDetail{
-      margin-top:10px;
-      padding:10px;
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      background:#fff;
-      display:none;
-    }
-    .uidCard{
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      padding:10px;
-      margin:10px 0;
-      background:#fff;
-    }
-    .uidTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      font-weight:900;
-      font-size:13px;
-    }
-    .uidBottom{
-      margin-top:8px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-    .uidBottom .dt{
       background:#f3f4f6;
-      border:1px solid #e5e7eb;
       border-radius:999px;
       padding:6px 10px;
       font-weight:900;
+      color:#111827;
       font-size:12px;
-      color:var(--text);
     }
-    .moreBtn{
-      border:1px solid #e5e7eb;
-      background:#fff;
-      border-radius:10px;
-      padding:10px 12px;
-      font-size:12px;
-      font-weight:900;
+    details.endItem{
+      border-top:1px solid #eef2f7;
+      padding:10px 0;
+    }
+    details.endItem summary{
       cursor:pointer;
+      list-style:none;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
     }
-
-    .empty{
-      color:var(--muted);
-      font-size:12px;
-      padding:10px;
-      background:#f9fafb;
-      border:1px dashed #e5e7eb;
-      border-radius:12px;
+    details.endItem summary::-webkit-details-marker{display:none;}
+    .endUsers{
       margin-top:10px;
+      display:grid;
+      gap:8px;
     }
+    .u{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      background:#f9fafb;
+      border:1px solid #eef2f7;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:800;
+    }
+    .u .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .badge{
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      background:#eef2f7;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      font-size:12px;
+    }
+    .err{
+      color:#b91c1c;
+      font-weight:900;
+      margin-top:12px;
+      white-space:pre-wrap;
+    }
+    .hint{
+      color:var(--muted);
+      font-weight:800;
+      margin-top:8px;
+      font-size:13px;
+    }
+    .hiddenFile{display:none;}
   </style>
 </head>
 <body>
-  <div class="phone">
-    <div class="header">
+  <div class="wrap">
+    <div class="topbar">
       <div class="brand">
         <div class="pixy">Pixy</div>
+        <div class="insight">インサイト</div>
       </div>
-      <div class="title">インサイト</div>
-      <div class="topActions">
-        <button class="btnJson" id="btnJson">JSON</button>
-      </div>
+      <button class="btnJson" id="btnJson">JSON</button>
+      <input class="hiddenFile" id="fileJson" type="file" accept=".json,application/json" />
     </div>
 
-    <div class="meta" id="meta">未読み込み</div>
+    <div class="meta" id="metaLine">生成: -</div>
+    <div class="hrPink"></div>
 
-    <div class="pinkLine"></div>
-
-    <div class="labelRow">
+    <div class="kanteishiLine">
       <div class="label">鑑定師名</div>
-      <div class="smallValue" id="kanteishiLabel">—</div>
+      <div class="value" id="kanteishiName">-</div>
     </div>
 
-    <div class="pinkLine" style="margin-top:8px;margin-bottom:10px;"></div>
+    <div class="months" id="monthChips"></div>
 
-    <div class="chips" id="monthChips"></div>
+    <div class="sectionTitle">メインデータ</div>
 
-    <div class="sectionTitleRow">
-      <div class="sectionTitle">メインデータ</div>
-    </div>
-    <div class="pinkLine" style="margin-top:6px;margin-bottom:10px;"></div>
-
-    <div class="grid2">
-      <div class="card" id="cardRevenue">
-        <div class="cardTitle">今月の報酬金</div>
-        <div class="money" id="revThis">—</div>
-        <div class="sub">前月比　<span id="revMom">—</span></div>
+    <div class="cards2">
+      <div class="card clickable active" id="cardGraph" role="button" aria-label="グラフを表示">
+        <div class="small">今月の報酬金</div>
+        <div><span class="bigMoney" id="revThis">-</span><span class="moneyUnit">円</span></div>
+        <div class="subRow">前月比　<span id="revMom">-</span>%</div>
       </div>
 
-      <div class="card" id="cardDetail">
-        <div class="cardTitle">鑑定データ詳細</div>
-        <div class="kpiGrid">
-          <div class="kpi">
+      <div class="card clickable" id="cardCounts" role="button" aria-label="回数別/終了回数を表示">
+        <div class="small">鑑定データ詳細</div>
+        <div class="grid2">
+          <div class="kv">
             <div class="k">リピート件数</div>
-            <div class="v" id="kRepeatCases">—</div>
+            <div class="v" id="repCount">-</div>
           </div>
-          <div class="kpi">
+          <div class="kv">
             <div class="k">リピート人数</div>
-            <div class="v" id="kRepeatUsers">—</div>
+            <div class="v" id="repUsers">-</div>
           </div>
-          <div class="kpi">
+          <div class="kv">
             <div class="k">鑑定件数</div>
-            <div class="v" id="kAllCases">—</div>
+            <div class="v" id="kCount">-</div>
           </div>
-          <div class="kpi">
+          <div class="kv">
             <div class="k">鑑定人数</div>
-            <div class="v" id="kAllUsers">—</div>
+            <div class="v" id="kUsers">-</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 控えめ切替（見た目優先で小さく） -->
-    <div class="viewToggle">
-      <button class="viewBtn active" id="viewMainBtn">グラフ/詳細データ</button>
-      <button class="viewBtn" id="viewRepeatBtn">回数別/終了回数</button>
-    </div>
-
-    <!-- ===== VIEW A (PDF 1枚目) ===== -->
-    <div id="viewMain">
-      <div class="graphWrap">
-        <div class="tabRow">
-          <button class="tab active" data-graph="time">時間別</button>
-          <button class="tab" data-graph="weekday">曜日別</button>
-          <button class="tab" data-graph="day">日別</button>
+    <section class="panel show" id="panelGraph">
+      <div class="graphBox">
+        <div class="graphHead">
+          <div class="title">報酬金グラフ</div>
+          <div class="right" id="graphModeLabel">時間別</div>
         </div>
-
-        <div class="chartBox" id="chartBox">
-          <div class="chartMetaRight" id="yLabels">
-            <div id="yTop">—</div>
-            <div id="yMid">—</div>
-            <div id="yLow">—</div>
-          </div>
-
-          <svg id="chart" width="100%" height="190" viewBox="0 0 320 190" preserveAspectRatio="none" style="display:block;">
-            <defs>
-              <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#93c5fd" stop-opacity="0.45"/>
-                <stop offset="1" stop-color="#93c5fd" stop-opacity="0.05"/>
-              </linearGradient>
-            </defs>
-
-            <g id="grid"></g>
-            <path id="area" d="" fill="url(#fillGrad)"></path>
-            <path id="line" d="" fill="none" stroke="#2563eb" stroke-width="2"></path>
-
-            <line id="vline" x1="0" y1="10" x2="0" y2="170" stroke="#60a5fa" stroke-width="1" opacity="0"></line>
-            <circle id="dot" cx="0" cy="0" r="3.5" fill="#ffffff" stroke="#2563eb" stroke-width="2" opacity="0"></circle>
-          </svg>
-
-          <div class="tooltip" id="tooltip">
-            <div class="t1" id="ttLabel">—</div>
-            <div class="t2" id="ttValue">—</div>
-          </div>
-
-          <div class="xlabels" id="xlabels"></div>
+        <div class="tabs" id="graphTabs">
+          <button class="tab active" data-mode="time">時間別</button>
+          <button class="tab" data-mode="weekday">曜日別</button>
+          <button class="tab" data-mode="day">日別</button>
         </div>
-
-        <div class="chartFooter">
-          <div>合計： <span id="sumLabel"></span><b id="sumValue">—</b></div>
-          <div><span>選択：</span><b id="selValue">なし</b></div>
+        <div class="bars" id="bars"></div>
+        <div class="xlabels" id="xlabels"></div>
+        <div class="graphFoot">
+          <div>合計：<span id="graphSum">-</span> 円</div>
+          <div>選択：<span id="graphPick">なし</span></div>
         </div>
       </div>
 
-      <div class="detailBlock">
-        <div class="sectionTitleRow">
-          <div class="sectionTitle">詳細データ</div>
+      <div class="listBox">
+        <div class="endListTitle">
+          <span>待機</span>
+          <span class="pillCount" id="standbyNote">今月 / 前月 / 前月比</span>
         </div>
-        <div class="pinkLine" style="margin-top:6px;margin-bottom:10px;"></div>
-
-        <div class="subTabs">
-          <button class="subTab active" data-sub="user">ユーザー分析</button>
-          <button class="subTab" data-sub="kanteishi">鑑定師分析</button>
-        </div>
-
-        <div id="subUser">
-          <div class="bulletTitle"><i class="sq"></i>年齢構成比</div>
-          <div id="ageBars"></div>
-
-          <div class="bulletTitle" style="margin-top:14px;"><i class="sq"></i>男女比率</div>
-          <div class="ratioBar">
-            <div class="male" id="maleBar"></div>
-            <div class="female" id="femaleBar"></div>
-          </div>
-          <div class="ratioLabels">
-            <div><span class="name">女性</span>　<span class="pct" id="femalePct">—</span></div>
-            <div><span class="name">男性</span>　<span class="pct" id="malePct">—</span></div>
-          </div>
-        </div>
-
-        <div id="subKanteishi" style="display:none;">
-          <div class="bulletTitle"><i class="sq"></i>待機時間</div>
-          <div class="barRow" style="margin-top:6px;">
-            <div class="left">今月の待機時間</div>
-            <div class="right" id="stThis">—</div>
-          </div>
-          <div class="barRow">
-            <div class="left">前月の待機時間</div>
-            <div class="right" id="stPrev">—</div>
-          </div>
-          <div class="barRow" style="margin-top:10px;">
-            <div class="left">前月比</div>
-            <div class="right" id="stMom">—</div>
-          </div>
-
-          <div class="bulletTitle" style="margin-top:16px;"><i class="sq cyan"></i>アフターメッセージ</div>
-          <div class="barRow" style="margin-top:6px;">
-            <div class="left">鑑定件数</div>
-            <div class="right" id="amPhone">—</div>
-          </div>
-          <div class="barRow">
-            <div class="left">送信数</div>
-            <div class="right" id="amSent">—</div>
-          </div>
-          <div class="barRow">
-            <div class="left">未送信</div>
-            <div class="right" id="amUnsent">—</div>
-          </div>
-          <div class="barRow" style="margin-top:10px;">
-            <div class="left">送信率</div>
-            <div class="right" id="amRate">—</div>
-          </div>
+        <div class="grid2">
+          <div class="kv"><div class="k">今月</div><div class="v" id="sbThis">-</div></div>
+          <div class="kv"><div class="k">前月</div><div class="v" id="sbPrev">-</div></div>
+          <div class="kv"><div class="k">前月比</div><div class="v" id="sbMom">-</div></div>
+          <div class="kv"><div class="k"></div><div class="v"></div></div>
         </div>
       </div>
-    </div>
 
-    <!-- ===== VIEW B (PDF 2枚目) ===== -->
-    <div id="viewRepeat" style="display:none;">
-      <div class="panelCard">
-        <div class="panelHead">
-          <div class="panelTitle">回数別ユーザー数</div>
-          <div class="panelCols"><span>人数</span><span>割合</span></div>
+      <div class="listBox">
+        <div class="endListTitle">
+          <span>お礼メール</span>
+          <span class="pillCount">送信数 / 送信率</span>
         </div>
-        <div id="distTable"></div>
-      </div>
-
-      <div class="panelCard">
-        <div class="panelHead">
-          <div class="panelTitle">終了回数の一覧</div>
-        </div>
-        <div class="endList" id="endList"></div>
-
-        <div class="endDetail" id="endDetail">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-            <div style="font-weight:900;font-size:12px;" id="endTitle">—</div>
-            <div class="pillCount" id="endCount">0人</div>
-          </div>
-          <div id="uidList"></div>
-          <button class="moreBtn" id="moreBtn" style="display:none;">さらに表示</button>
+        <div class="grid2">
+          <div class="kv"><div class="k">送信数</div><div class="v" id="amSent">-</div></div>
+          <div class="kv"><div class="k">対象（終了数）</div><div class="v" id="amTotal">-</div></div>
+          <div class="kv"><div class="k">送信率</div><div class="v" id="amRate">-</div></div>
+          <div class="kv"><div class="k"></div><div class="v"></div></div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div id="needJson" class="empty" style="display:none;">
-      右上の「JSON」から insight_data.json を読み込んでください。
-    </div>
+    <section class="panel" id="panelCounts">
+      <div class="listBox">
+        <div class="endListTitle">
+          <span>回数別ユーザー数</span>
+          <span class="pillCount">合計 <span id="distTotal">-</span>人</span>
+        </div>
+        <div class="distHeader">
+          <div></div><div></div><div style="text-align:right;">人数</div><div style="text-align:right;">割合</div>
+        </div>
+        <div id="distRows"></div>
+      </div>
+
+      <div class="listBox">
+        <div class="endListTitle">
+          <span>終了回数の一覧</span>
+          <span class="pillCount" id="endPickLabel">-</span>
+        </div>
+        <div id="endList"></div>
+        <div class="hint">※「さらに表示」は未実装（必要なら追加する）</div>
+      </div>
+    </section>
+
+    <div class="err" id="err"></div>
   </div>
 
-  <input id="jsonFile" type="file" accept="application/json" style="display:none;" />
+<script>
+(function(){
+  let INSIGHT = null;
+  let currentMonth = null;
+  let graphMode = 'time';
 
-  <script>
-    const $ = (q)=>document.querySelector(q);
-    const $$ = (q)=>Array.from(document.querySelectorAll(q));
+  const $ = (id)=>document.getElementById(id);
 
-    const state = {
-      payload: null,
-      month: null,
-      graphMode: "time",
-      subMode: "user",
-      view: "main", // main | repeat
-      endKey: null,
-      endPage: 1,
-      endPageSize: 20,
-    };
+  function yen(n){
+    if(n===null || n===undefined) return '-';
+    const x = Number(n);
+    if(!Number.isFinite(x)) return '-';
+    return x.toLocaleString('ja-JP');
+  }
+  function num(n){
+    if(n===null || n===undefined) return '-';
+    const x = Number(n);
+    if(!Number.isFinite(x)) return '-';
+    return String(x);
+  }
+  function pct(n){
+    if(n===null || n===undefined) return '-';
+    const x = Number(n);
+    if(!Number.isFinite(x)) return '-';
+    return x.toFixed(1).replace(/\.0$/,'');
+  }
+  function safe(obj, path, fallback=null){
+    try{
+      const parts = path.split('.');
+      let cur = obj;
+      for(const p of parts){
+        if(cur==null) return fallback;
+        cur = cur[p];
+      }
+      return (cur===undefined) ? fallback : cur;
+    }catch(e){ return fallback; }
+  }
 
-    const fmtYen = (n)=>{
-      const v = Number(n||0);
-      return "¥ " + v.toLocaleString("ja-JP");
-    };
-    const fmtPct = (n)=>{
-      if(n===null || n===undefined || n==="" || Number.isNaN(Number(n))) return "—";
-      return Number(n).toFixed(1).replace(/\.0$/,"") + "%";
-    };
+  function setView(mode){
+    const isGraph = (mode === 'graph');
+    $('panelGraph').classList.toggle('show', isGraph);
+    $('panelCounts').classList.toggle('show', !isGraph);
+    $('cardGraph').classList.toggle('active', isGraph);
+    $('cardCounts').classList.toggle('active', !isGraph);
+    localStorage.setItem('pixy_view_mode', mode);
+  }
 
-    function safeGetMonthObj(){
-      const p = state.payload;
-      if(!p || !p.data || !state.month) return null;
-      return p.data[state.month] || null;
+  $('cardGraph').addEventListener('click', ()=>setView('graph'));
+  $('cardCounts').addEventListener('click', ()=>setView('counts'));
+  setView(localStorage.getItem('pixy_view_mode') || 'graph');
+
+  $('btnJson').addEventListener('click', ()=> $('fileJson').click());
+  $('fileJson').addEventListener('change', async (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    try{
+      const txt = await f.text();
+      INSIGHT = JSON.parse(txt);
+      initAfterLoad();
+    }catch(err){
+      showErr('JSONの読み込みに失敗: ' + err);
+    }
+  });
+
+  async function autoLoad(){
+    try{
+      const res = await fetch('insight_data.json', {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const txt = await res.text();
+      INSIGHT = JSON.parse(txt);
+      initAfterLoad();
+    }catch(err){
+      $('metaLine').textContent = '生成: -（JSON未読み込み）';
+      $('kanteishiName').textContent = '-';
+      $('monthChips').innerHTML = '';
+      $('err').textContent = '';
+    }
+  }
+
+  function initAfterLoad(){
+    $('err').textContent = '';
+    const gen = safe(INSIGHT,'generated_at','-');
+    const exclude = safe(INSIGHT,'target.exclude_under_seconds',60);
+    $('metaLine').textContent = `生成: ${gen}（${exclude}秒未満除外: ${exclude}s）`;
+
+    const name = safe(INSIGHT,'target.name','-');
+    const kid = safe(INSIGHT,'target.kid','-');
+    $('kanteishiName').textContent = `${name}（KID:${kid}）`;
+
+    const months = safe(INSIGHT,'months',[]);
+    if(months.length){
+      currentMonth = currentMonth && months.includes(currentMonth) ? currentMonth : months[0];
     }
 
-    function computeRepeatStats(mo){
-      try{
-        const details = (mo && mo.repeat && mo.repeat.details) ? mo.repeat.details : {};
-        let usersTotal = 0;
-        let totalSessions = 0;
-        let repeatUsers = 0;
-        let repeatSessions = 0;
-        Object.keys(details).forEach(k=>{
-          const arr = details[k] || [];
-          usersTotal += arr.length;
-          arr.forEach(r=>{
-            const c = Number(r.count || 0);
-            totalSessions += c;
-            if(c>=2) repeatUsers += 1;
-            if(c>=2) repeatSessions += (c-1);
-          });
-        });
-        return {usersTotal, totalSessions, repeatUsers, repeatSessions};
-      }catch(e){
-        return {usersTotal:0,totalSessions:0,repeatUsers:0,repeatSessions:0};
-      }
-    }
+    renderMonthChips(months);
+    renderAll();
+  }
 
-    function renderTop(p){
-      const target = p && p.target ? p.target : null;
-      $("#kanteishiLabel").textContent = target ? `${target.name}（KID:${target.kid}）` : "—";
-      $("#meta").textContent = p && p.generated_at ? `生成: ${p.generated_at}（60秒未満除外: 60s）` : "未読み込み";
-    }
-
-    function renderMonthChips(){
-      const p = state.payload;
-      const months = (p && p.months) ? p.months : [];
-      const box = $("#monthChips");
-      box.innerHTML = "";
-      months.slice(0,5).forEach(m=>{
-        const btn = document.createElement("button");
-        btn.className = "chip" + (state.month===m ? " active" : "");
-        btn.textContent = (m.split("-")[1]||"").replace(/^0/,"") + "月";
-        btn.addEventListener("click", ()=>{
-          state.month = m;
-          state.endKey = null;
-          state.endPage = 1;
-          renderAll();
-        });
-        box.appendChild(btn);
-      });
-
-      if(months.length===0){
-        box.innerHTML = `<div class="empty">月データがありません。</div>`;
-      }
-    }
-
-    function renderCards(){
-      const mo = safeGetMonthObj();
-      if(!mo){
-        $("#revThis").textContent = "—";
-        $("#revMom").textContent = "—";
-        $("#kRepeatCases").textContent = "—";
-        $("#kRepeatUsers").textContent = "—";
-        $("#kAllCases").textContent = "—";
-        $("#kAllUsers").textContent = "—";
-        return;
-      }
-
-      const rev = mo.revenue || {};
-      $("#revThis").textContent = (rev.this!==undefined) ? (Number(rev.this).toLocaleString("ja-JP") + " 円") : "—";
-      $("#revMom").textContent = (rev.mom_pct!==undefined) ? (String(rev.mom_pct) + "%") : "—";
-
-      const rstat = computeRepeatStats(mo);
-      $("#kRepeatCases").textContent = (rstat.repeatSessions||0).toLocaleString("ja-JP");
-      $("#kRepeatUsers").textContent = (rstat.repeatUsers||0).toLocaleString("ja-JP");
-      $("#kAllCases").textContent = (rstat.totalSessions||0).toLocaleString("ja-JP");
-      $("#kAllUsers").textContent = (rstat.usersTotal||0).toLocaleString("ja-JP");
-
-      // 見本に合わせて「表示中の画面」で右/左カードの強調を切替
-      const cr = $("#cardRevenue");
-      const cd = $("#cardDetail");
-      cr.classList.toggle("active", state.view==="main");
-      cd.classList.toggle("active", state.view==="repeat");
-    }
-
-    function renderGraph(){
-      const mo = safeGetMonthObj();
-      const p = state.payload;
-      const chart = $("#chart");
-      const grid = $("#grid");
-      const line = $("#line");
-      const area = $("#area");
-      const vline = $("#vline");
-      const dot = $("#dot");
-      const tooltip = $("#tooltip");
-
-      grid.innerHTML = "";
-      vline.setAttribute("opacity","0");
-      dot.setAttribute("opacity","0");
-      tooltip.style.display="none";
-      $("#selValue").textContent = "なし";
-
-      if(!mo || !mo.graphs || !mo.graphs[state.graphMode]){
-        line.setAttribute("d","");
-        area.setAttribute("d","");
-        $("#xlabels").innerHTML = "";
-        $("#sumValue").textContent = "—";
-        $("#sumLabel").textContent = "";
-        $("#yTop").textContent = "—";
-        $("#yMid").textContent = "—";
-        $("#yLow").textContent = "—";
-        return;
-      }
-
-      const raw = mo.graphs[state.graphMode] || [];
-      const values = raw.map(d=>Number(d.value||0));
-      const labels = raw.map(d=>String(d.label||""));
-      const sum = values.reduce((a,b)=>a+b,0);
-
-      $("#sumValue").textContent = fmtYen(sum).replace("¥ ","").toLocaleString("ja-JP") + " 円";
-      $("#sumLabel").textContent = "";
-
-      // y scale
-      const max = Math.max(1, ...values);
-      const pad = Math.ceil(max * 0.08);
-      const ymax = max + pad;
-
-      // right y labels (3段)
-      const yTop = ymax;
-      const yMid = Math.round(ymax * 2/3);
-      const yLow = Math.round(ymax * 1/3);
-      $("#yTop").textContent = yTop.toLocaleString("ja-JP");
-      $("#yMid").textContent = yMid.toLocaleString("ja-JP");
-      $("#yLow").textContent = yLow.toLocaleString("ja-JP");
-
-      // grid lines (3)
-      const w = 320, h = 190;
-      const left = 10, right = 10, top = 10, bottom = 20;
-      const cw = w - left - right;
-      const ch = h - top - bottom;
-
-      [0, 1/3, 2/3, 1].forEach((t, i)=>{
-        const y = top + ch*(1-t);
-        const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
-        ln.setAttribute("x1", left);
-        ln.setAttribute("x2", left+cw);
-        ln.setAttribute("y1", y);
-        ln.setAttribute("y2", y);
-        ln.setAttribute("stroke", "#e5e7eb");
-        ln.setAttribute("stroke-width", "1");
-        grid.appendChild(ln);
-      });
-
-      const pts = values.map((v,i)=>{
-        const x = left + (values.length===1 ? 0 : (cw * (i/(values.length-1))));
-        const y = top + (ch * (1 - (v / ymax)));
-        return {x,y,v,label:labels[i]};
-      });
-
-      const dLine = pts.map((p,i)=> (i===0?`M ${p.x.toFixed(2)} ${p.y.toFixed(2)}`:`L ${p.x.toFixed(2)} ${p.y.toFixed(2)}`)).join(" ");
-      const dArea = `M ${pts[0].x.toFixed(2)} ${(top+ch).toFixed(2)} ` +
-                    pts.map((p)=>`L ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" ") +
-                    ` L ${pts[pts.length-1].x.toFixed(2)} ${(top+ch).toFixed(2)} Z`;
-
-      line.setAttribute("d", dLine);
-      area.setAttribute("d", dArea);
-
-      // x labels density
-      const xl = $("#xlabels");
-      xl.innerHTML = "";
-      const n = labels.length;
-      let step = 1;
-      if(n>=24) step = 2;
-      if(n>=31) step = 3;
-
-      const picks = [];
-      for(let i=0;i<n;i++){
-        if(i%step===0) picks.push(i);
-      }
-      if(picks[picks.length-1] !== n-1) picks.push(n-1);
-
-      // make equally spaced labels bar
-      const labelRow = document.createElement("div");
-      labelRow.style.display="flex";
-      labelRow.style.width="100%";
-      labelRow.style.justifyContent="space-between";
-      labelRow.style.gap="6px";
-
-      // build map of picked label positions
-      const pickedSet = new Set(picks);
-      const showLabels = labels.map((t,i)=> pickedSet.has(i)? t : "");
-      // Put 6~8 positions max for visual like PDF
-      // If too many, compress by selecting fixed count
-      let finalIdx = picks;
-      if(finalIdx.length>8){
-        finalIdx = [0, Math.floor((n-1)*0.2), Math.floor((n-1)*0.4), Math.floor((n-1)*0.6), Math.floor((n-1)*0.8), n-1];
-      }
-      const uniq = Array.from(new Set(finalIdx)).sort((a,b)=>a-b);
-
-      uniq.forEach((i)=>{
-        const s = document.createElement("span");
-        s.textContent = labels[i];
-        labelRow.appendChild(s);
-      });
-      xl.appendChild(labelRow);
-
-      // hover interaction
-      const box = $("#chartBox");
-      const svg = $("#chart");
-      function onMove(ev){
-        const rect = svg.getBoundingClientRect();
-        const x = ev.clientX - rect.left;
-        const ratio = Math.max(0, Math.min(1, x/rect.width));
-        const idx = Math.round(ratio * (pts.length-1));
-        const p0 = pts[idx];
-
-        vline.setAttribute("x1", p0.x);
-        vline.setAttribute("x2", p0.x);
-        vline.setAttribute("opacity", "1");
-
-        dot.setAttribute("cx", p0.x);
-        dot.setAttribute("cy", p0.y);
-        dot.setAttribute("opacity", "1");
-
-        $("#ttLabel").textContent = p0.label;
-        $("#ttValue").textContent = fmtYen(p0.v);
-        tooltip.style.left = (p0.x/320*100) + "%";
-        tooltip.style.top = (p0.y/190*100) + "%";
-        tooltip.style.display = "block";
-
-        $("#selValue").textContent = `${p0.label}　${fmtYen(p0.v)}`;
-      }
-      function onLeave(){
-        vline.setAttribute("opacity","0");
-        dot.setAttribute("opacity","0");
-        tooltip.style.display="none";
-        $("#selValue").textContent = "なし";
-      }
-      box.onmousemove = onMove;
-      box.onmouseleave = onLeave;
-      box.ontouchmove = (e)=>{ if(e.touches && e.touches[0]) onMove(e.touches[0]); };
-      box.ontouchend = onLeave;
-    }
-
-    function renderDemographics(){
-      const p = state.payload;
-      const d = (p && p.demographics) ? p.demographics : null;
-
-      const ageBox = $("#ageBars");
-      ageBox.innerHTML = "";
-      if(!d || !d.ages || d.ages.length===0){
-        ageBox.innerHTML = `<div class="empty">年齢データがありません。</div>`;
-      }else{
-        d.ages.forEach(a=>{
-          const row = document.createElement("div");
-          row.className="barRow";
-          row.innerHTML = `
-            <div class="left">${a.label}</div>
-            <div class="bar"><i style="width:${Math.max(0,Math.min(100,Number(a.pct||0))).toFixed(1)}%"></i></div>
-            <div class="right">${fmtPct(a.pct)}</div>
-          `;
-          ageBox.appendChild(row);
-        });
-      }
-
-      const g = d && d.gender ? d.gender : null;
-      const fp = g ? Number(g.female_pct||0) : 0;
-      const mp = g ? Number(g.male_pct||0) : 0;
-
-      $("#femalePct").textContent = fmtPct(fp);
-      $("#malePct").textContent = fmtPct(mp);
-
-      // bar: left blue (男性), right pink (女性)  ※見本の色使いに寄せる
-      $("#maleBar").style.width = Math.max(0,Math.min(100,mp)) + "%";
-      $("#femaleBar").style.width = Math.max(0,Math.min(100,fp)) + "%";
-    }
-
-    function renderKanteishiStats(){
-      const mo = safeGetMonthObj();
-      if(!mo){
-        $("#stThis").textContent="—";
-        $("#stPrev").textContent="—";
-        $("#stMom").textContent="—";
-        $("#amPhone").textContent="—";
-        $("#amSent").textContent="—";
-        $("#amUnsent").textContent="—";
-        $("#amRate").textContent="—";
-        return;
-      }
-
-      const st = mo.standby || {};
-      $("#stThis").textContent = st.this_text || "—";
-      $("#stPrev").textContent = st.prev_text || "—";
-      $("#stMom").textContent = (st.mom_pct!==undefined) ? (String(st.mom_pct) + "%") : "—";
-
-      const am = mo.after_message || {};
-      $("#amPhone").textContent = (am.phone_count!==undefined) ? (String(am.phone_count).toLocaleString("ja-JP")) : "—";
-      $("#amSent").textContent = (am.sent_count!==undefined) ? (String(am.sent_count).toLocaleString("ja-JP")) : "—";
-      $("#amUnsent").textContent = (am.unsent_count!==undefined) ? (String(am.unsent_count).toLocaleString("ja-JP")) : "—";
-      $("#amRate").textContent = (am.send_rate_pct!==undefined) ? (String(am.send_rate_pct) + "%") : "—";
-    }
-
-    function renderRepeatView(){
-      const mo = safeGetMonthObj();
-      const distBox = $("#distTable");
-      const endBox = $("#endList");
-      distBox.innerHTML = "";
-      endBox.innerHTML = "";
-      $("#endDetail").style.display = "none";
-      $("#uidList").innerHTML = "";
-      $("#moreBtn").style.display = "none";
-
-      if(!mo || !mo.repeat){
-        distBox.innerHTML = `<div class="empty">この月のデータがありません。</div>`;
-        endBox.innerHTML = `<div class="empty">この月のデータがありません。</div>`;
-        return;
-      }
-
-      const dist = mo.repeat.distribution || [];
-      if(dist.length===0){
-        distBox.innerHTML = `<div class="empty">該当データがありません。</div>`;
-      }else{
-        dist.forEach(r=>{
-          const row = document.createElement("div");
-          row.className = "distRow";
-          row.innerHTML = `
-            <div class="lbl">${r.label}</div>
-            <div class="bar"><i style="width:${Math.max(0,Math.min(100,Number(r.pct||0))).toFixed(1)}%"></i></div>
-            <div class="n">${Number(r.users||0).toLocaleString("ja-JP")}人</div>
-            <div class="p">${fmtPct(r.pct)}</div>
-          `;
-          distBox.appendChild(row);
-        });
-      }
-
-      const details = mo.repeat.details || {};
-      const keys = Object.keys(details);
-      if(keys.length===0){
-        endBox.innerHTML = `<div class="empty">該当データがありません。</div>`;
-        return;
-      }
-
-      // 表示順
-      const order = ["1回","2回","3回","4回","5回以上"];
-      order.forEach(k=>{
-        if(!(k in details)) return;
-        const arr = details[k] || [];
-        const item = document.createElement("div");
-        item.className="endItem";
-        item.innerHTML = `
-          <div class="l"><span>${k}で終了</span></div>
-          <div class="r">${arr.length.toLocaleString("ja-JP")}人</div>
-        `;
-        item.addEventListener("click", ()=>{
-          state.endKey = k;
-          state.endPage = 1;
-          renderEndDetail();
-        });
-        endBox.appendChild(item);
-      });
-
-      if(!state.endKey){
-        state.endKey = "1回";
-      }
-      renderEndDetail();
-    }
-
-    function renderEndDetail(){
-      const mo = safeGetMonthObj();
-      if(!mo || !mo.repeat || !mo.repeat.details || !state.endKey) return;
-
-      const arrAll = mo.repeat.details[state.endKey] || [];
-      $("#endTitle").textContent = `${state.endKey}で終了`;
-      $("#endCount").textContent = `${arrAll.length.toLocaleString("ja-JP")}人`;
-      $("#endDetail").style.display = "block";
-
-      const start = 0;
-      const end = state.endPage * state.endPageSize;
-      const slice = arrAll.slice(start, end);
-
-      const list = $("#uidList");
-      list.innerHTML = "";
-      if(slice.length===0){
-        list.innerHTML = `<div class="empty">該当データがありません。</div>`;
-      }else{
-        slice.forEach(r=>{
-          const card = document.createElement("div");
-          card.className = "uidCard";
-          card.innerHTML = `
-            <div class="uidTop">
-              <div>${r.user_id}</div>
-              <div style="color:var(--muted);font-size:12px;">${r.count}回</div>
-            </div>
-            <div class="uidBottom">
-              <div class="dt">${r.datetime || r.date || ""}</div>
-              <div style="color:var(--muted);font-weight:900;font-size:12px;">${r.count}回</div>
-            </div>
-          `;
-          list.appendChild(card);
-        });
-      }
-
-      const more = $("#moreBtn");
-      if(end < arrAll.length){
-        more.style.display = "inline-block";
-        more.onclick = ()=>{
-          state.endPage += 1;
-          renderEndDetail();
-        };
-      }else{
-        more.style.display = "none";
-      }
-    }
-
-    function setView(v){
-      state.view = v;
-      $("#viewMain").style.display = (v==="main") ? "block" : "none";
-      $("#viewRepeat").style.display = (v==="repeat") ? "block" : "none";
-      $("#viewMainBtn").classList.toggle("active", v==="main");
-      $("#viewRepeatBtn").classList.toggle("active", v==="repeat");
-      renderCards();
-      if(v==="main"){
-        renderGraph();
-      }else{
-        renderRepeatView();
-      }
-    }
-
-    function renderAll(){
-      const p = state.payload;
-      $("#needJson").style.display = p ? "none" : "block";
-
-      if(!p){
-        renderMonthChips();
-        renderCards();
-        return;
-      }
-
-      if(!state.month){
-        const months = p.months || [];
-        state.month = months[0] || null;
-      }
-
-      renderTop(p);
-      renderMonthChips();
-      renderCards();
-
-      if(state.view==="main"){
-        renderGraph();
-        renderDemographics();
-        renderKanteishiStats();
-      }else{
-        renderRepeatView();
-      }
-    }
-
-    // ===== events =====
-    $("#btnJson").addEventListener("click", ()=> $("#jsonFile").click());
-    $("#jsonFile").addEventListener("change", (e)=>{
-      const file = e.target.files && e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = ()=>{
-        try{
-          const payload = JSON.parse(String(reader.result||"{}"));
-          state.payload = payload;
-          state.month = (payload.months && payload.months[0]) ? payload.months[0] : null;
-          state.graphMode = "time";
-          state.subMode = "user";
-          state.view = "main";
-          state.endKey = null;
-          state.endPage = 1;
-          // tabs reset
-          $$(".tab").forEach(b=>b.classList.toggle("active", b.dataset.graph==="time"));
-          $$(".subTab").forEach(b=>b.classList.toggle("active", b.dataset.sub==="user"));
-          $("#subUser").style.display="block";
-          $("#subKanteishi").style.display="none";
-          setView("main");
-          renderAll();
-        }catch(err){
-          alert("JSONの読み込みに失敗しました。");
-          console.error(err);
-        }
-      };
-      reader.readAsText(file, "utf-8");
-      e.target.value = "";
-    });
-
-    $$(".tab").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        state.graphMode = btn.dataset.graph;
-        $$(".tab").forEach(b=>b.classList.toggle("active", b===btn));
-        renderGraph();
-      });
-    });
-
-    $$(".subTab").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        state.subMode = btn.dataset.sub;
-        $$(".subTab").forEach(b=>b.classList.toggle("active", b===btn));
-        $("#subUser").style.display = (state.subMode==="user") ? "block" : "none";
-        $("#subKanteishi").style.display = (state.subMode==="kanteishi") ? "block" : "none";
-        if(state.subMode==="kanteishi") renderKanteishiStats();
-      });
-    });
-
-    $("#viewMainBtn").addEventListener("click", ()=> setView("main"));
-    $("#viewRepeatBtn").addEventListener("click", ()=> setView("repeat"));
-
-    // auto-load when hosted (GitHub Pages) : insight_data.json in same folder
-    (async ()=>{
-      try{
-        const res = await fetch("./insight_data.json", {cache:"no-store"});
-        if(!res.ok) throw new Error("no file");
-        const payload = await res.json();
-        state.payload = payload;
-        state.month = (payload.months && payload.months[0]) ? payload.months[0] : null;
-        setView("main");
+  function renderMonthChips(months){
+    const box = $('monthChips');
+    box.innerHTML = '';
+    const show = months.slice(0,5);
+    for(const m of show){
+      const mm = m.split('-')[1];
+      const btn = document.createElement('button');
+      btn.className = 'chip' + (m===currentMonth ? ' active':'');
+      btn.textContent = Number(mm) + '月';
+      btn.addEventListener('click', ()=>{
+        currentMonth = m;
+        for(const el of box.querySelectorAll('.chip')) el.classList.remove('active');
+        btn.classList.add('active');
         renderAll();
-      }catch(e){
-        // offline local open: ask user to pick json
-        $("#needJson").style.display = "block";
+      });
+      box.appendChild(btn);
+    }
+  }
+
+  function renderAll(){
+    if(!INSIGHT || !currentMonth) return;
+
+    const d = safe(INSIGHT, `data.${currentMonth}`, null);
+    if(!d){
+      showErr('この月のデータがありません: ' + currentMonth);
+      return;
+    }
+
+    $('revThis').textContent = yen(safe(d,'revenue.this',null));
+    $('revMom').textContent  = pct(safe(d,'revenue.mom_pct',null));
+
+    const repCount = safe(d,'summary.repeat_count', safe(d,'repeat.repeat_count', safe(d,'repeat.count', null)));
+    const repUsers = safe(d,'summary.repeat_users', safe(d,'summary.repeat_user_count', null));
+    const kCount   = safe(d,'summary.kantei_count', safe(d,'summary.call_count', null));
+    const kUsers   = safe(d,'summary.users_total', safe(d,'summary.user_count', null));
+
+    $('repCount').textContent = num(repCount);
+    $('repUsers').textContent = num(repUsers);
+    $('kCount').textContent   = num(kCount);
+    $('kUsers').textContent   = num(kUsers);
+
+    if($('repUsers').textContent === '-' && safe(d,'repeat.distribution',null)){
+      const dist = safe(d,'repeat.distribution',[]);
+      let sum = 0;
+      for(const row of dist){
+        const lab = String(row.label||'');
+        if(lab.includes('1回')) continue;
+        sum += Number(row.users||0);
       }
-    })();
-  </script>
+      $('repUsers').textContent = sum ? String(sum) : '-';
+    }
+    if($('repCount').textContent === '-' && safe(d,'repeat.details',null)){
+      const det = safe(d,'repeat.details',{});
+      let cnt = 0;
+      for(const k in det){
+        if(String(k).includes('1回')) continue;
+        cnt += (det[k]||[]).length;
+      }
+      $('repCount').textContent = cnt ? String(cnt) : '-';
+    }
+    if($('kCount').textContent === '-' && safe(d,'after_message.phone_count',null)!=null){
+      $('kCount').textContent = String(Number(safe(d,'after_message.phone_count',0)) || '-');
+    }
+
+    graphMode = graphMode || 'time';
+    renderGraph(d);
+
+    $('sbThis').textContent = safe(d,'standby.this_text','-');
+    $('sbPrev').textContent = safe(d,'standby.prev_text','-');
+    $('sbMom').textContent  = (safe(d,'standby.mom_pct',null)==null) ? '-' : (pct(safe(d,'standby.mom_pct',null)) + '%');
+
+    $('amSent').textContent = num(safe(d,'after_message.sent_count',null));
+    $('amTotal').textContent= num(safe(d,'after_message.phone_count',null));
+    const r = safe(d,'after_message.send_rate_pct',null);
+    $('amRate').textContent = (r==null) ? '-' : (pct(r) + '%');
+
+    renderDistribution(d);
+    renderEndList(d, '1回');
+  }
+
+  $('graphTabs').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-mode]');
+    if(!btn || !INSIGHT) return;
+    graphMode = btn.getAttribute('data-mode');
+    for(const b of $('graphTabs').querySelectorAll('.tab')) b.classList.remove('active');
+    btn.classList.add('active');
+    renderAll();
+  });
+
+  function renderGraph(d){
+    const modes = {time:'時間別', weekday:'曜日別', day:'日別'};
+    $('graphModeLabel').textContent = modes[graphMode] || '時間別';
+
+    const arr = safe(d, `graphs.${graphMode}`, []);
+    const bars = $('bars');
+    const xlabels = $('xlabels');
+    bars.innerHTML = '';
+    xlabels.innerHTML = '';
+
+    if(!arr || !arr.length){
+      $('graphSum').textContent = '-';
+      return;
+    }
+
+    const values = arr.map(x=>Number(x.value||0));
+    const max = Math.max(1, ...values);
+    let sum = 0;
+
+    arr.forEach((x,i)=>{
+      const v = Number(x.value||0);
+      sum += v;
+
+      const div = document.createElement('div');
+      div.className = 'bar';
+      div.style.height = Math.round((v/max)*150) + 'px';
+      div.title = `${x.label}: ${yen(v)}円`;
+      div.addEventListener('click', ()=>{
+        $('graphPick').textContent = `${x.label} / ${yen(v)}円`;
+      });
+      bars.appendChild(div);
+
+      const lab = document.createElement('div');
+      lab.className = 'xlabel';
+      lab.textContent = x.label;
+      xlabels.appendChild(lab);
+    });
+
+    $('graphSum').textContent = yen(sum);
+    $('graphPick').textContent = 'なし';
+  }
+
+  function renderDistribution(d){
+    const dist = safe(d,'repeat.distribution',[]);
+    const box = $('distRows');
+    box.innerHTML = '';
+
+    let total = 0;
+    dist.forEach(r=> total += Number(r.users||0));
+    $('distTotal').textContent = total ? String(total) : '-';
+
+    const max = Math.max(1, ...dist.map(r=>Number(r.users||0)));
+
+    dist.forEach(r=>{
+      const row = document.createElement('div');
+      row.className = 'distRow';
+
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = r.label || '-';
+
+      const wrap = document.createElement('div');
+      wrap.className = 'barWrap';
+      const fill = document.createElement('div');
+      fill.className = 'barFill';
+      fill.style.width = Math.round((Number(r.users||0)/max)*100) + '%';
+      wrap.appendChild(fill);
+
+      const n = document.createElement('div');
+      n.className = 'n';
+      n.textContent = (r.users==null) ? '-' : (String(r.users) + '人');
+
+      const p = document.createElement('div');
+      p.className = 'p';
+      p.textContent = (r.pct==null) ? '-' : (pct(r.pct) + '%');
+
+      row.appendChild(label);
+      row.appendChild(wrap);
+      row.appendChild(n);
+      row.appendChild(p);
+
+      box.appendChild(row);
+    });
+  }
+
+  function renderEndList(d, pickLabel){
+    const details = safe(d,'repeat.details', {});
+    const list = $('endList');
+    list.innerHTML = '';
+
+    const items = details && details[pickLabel] ? details[pickLabel] : [];
+    $('endPickLabel').textContent = pickLabel + 'で終了 ' + (items.length ? (items.length + '人') : '0人');
+
+    if(!items.length){
+      const div = document.createElement('div');
+      div.className = 'hint';
+      div.textContent = '該当データがありません。';
+      list.appendChild(div);
+      return;
+    }
+
+    const det = document.createElement('details');
+    det.className = 'endItem';
+    det.open = true;
+
+    const sum = document.createElement('summary');
+    sum.innerHTML = `<span>${pickLabel}で終了</span><span class="pillCount">${items.length}人</span>`;
+    det.appendChild(sum);
+
+    const users = document.createElement('div');
+    users.className = 'endUsers';
+
+    items.slice(0, 200).forEach((u,i)=>{
+      const row = document.createElement('div');
+      row.className = 'u';
+      const left = document.createElement('div');
+      left.className = 'left';
+      const badge = document.createElement('div');
+      badge.className = 'badge';
+      badge.textContent = String(u.count || 1);
+      const id = document.createElement('div');
+      id.textContent = String(u.user_id || '-');
+      left.appendChild(badge);
+      left.appendChild(id);
+
+      const dt = document.createElement('div');
+      dt.style.color = '#6b7280';
+      dt.style.fontWeight = '900';
+      dt.style.fontSize = '12px';
+      dt.textContent = u.datetime || u.date || '';
+
+      row.appendChild(left);
+      row.appendChild(dt);
+      users.appendChild(row);
+    });
+
+    det.appendChild(users);
+    list.appendChild(det);
+  }
+
+  function showErr(msg){
+    $('err').textContent = msg;
+  }
+
+  autoLoad();
+})();
+</script>
 </body>
 </html>
