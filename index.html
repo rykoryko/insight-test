@@ -431,35 +431,32 @@
     .distRow .n{ text-align:right; font-weight:900; }
     .distRow .p{ text-align:right; color:var(--muted); font-weight:900; }
 
+    /* ====== ここだけ修正（終了回数の一覧 UI） ====== */
     .endList{
-      border-top:1px solid #f3f4f6;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
       margin-top:10px;
-      padding-top:10px;
     }
     .endItem{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding:10px 0;
-      border-bottom:1px solid #f3f4f6;
+      padding:12px 12px;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      background:#fff;
       cursor:pointer;
       user-select:none;
     }
-    .endItem .l{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:900;
-      font-size:12px;
+    .endItem.open{
+      border-bottom-left-radius:0;
+      border-bottom-right-radius:0;
+      border-bottom:0;
     }
-    .pillCount{
-      border:1px solid #e5e7eb;
-      background:#f9fafb;
-      border-radius:999px;
-      padding:4px 10px;
-      font-size:12px;
+    .endItem .l{
       font-weight:900;
-      color:var(--text);
+      font-size:12px;
     }
     .endItem .r{
       color:var(--muted);
@@ -467,82 +464,81 @@
       font-size:12px;
     }
     .endDetail{
-      margin-top:10px;
-      padding:10px;
+      margin-top:0;
+      padding:10px 12px 12px;
       border:1px solid #e5e7eb;
-      border-radius:12px;
+      border-top:0;
+      border-radius:0 0 12px 12px;
       background:#fff;
       display:none;
     }
+    /* 展開側の「1回で終了」など（重複見出し）を消す */
+    #endDetail > div:first-child{ display:none; }
 
-    /* ===== ここから「終了回数の一覧」見た目調整（追加） ===== */
-    .uidCols{
-      display:flex;
-      justify-content:space-between;
+    .endTableHead{
+      display:grid;
+      grid-template-columns: 1fr 1.7fr;
       gap:10px;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:800;
-      padding:2px 2px 6px;
-    }
-    .uidCols .c1{ min-width:90px; }
-    .uidCols .c2{ flex:1; text-align:right; }
-    /* ===== ここまで（追加） ===== */
-
-    .uidCard{
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      padding:10px;
-      margin:10px 0;
-      background:#fff;
-    }
-    .uidTop{
-      display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      padding:8px 0 10px;
+      border-bottom:1px solid #f3f4f6;
+      font-size:12px;
+      color:var(--muted);
       font-weight:900;
-      font-size:13px;
+    }
+    .endRow{
+      display:grid;
+      grid-template-columns: 1fr 1.7fr;
+      gap:10px;
+      align-items:flex-start;
+      padding:10px 0;
+      border-bottom:1px solid #f3f4f6;
+      font-size:12px;
+    }
+    .endRow:last-child{ border-bottom:0; }
+    .uidCell{
+      font-weight:900;
+      letter-spacing:.02em;
     }
 
-    /* ===== ここから「終了回数の一覧」見た目調整（追加） ===== */
-    .uidDates{
-      margin-top:8px;
+    .histWrap{
       display:flex;
-      gap:8px;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-start;
+      min-width:0;
+    }
+    .histWrap.nowrap{
+      flex-wrap:nowrap;
       overflow-x:auto;
       -webkit-overflow-scrolling:touch;
       padding-bottom:2px;
     }
-    .uidDates::-webkit-scrollbar{ height:6px; }
-    .uidDates::-webkit-scrollbar-thumb{ background:#e5e7eb; border-radius:999px; }
-    .dtPill{
-      background:#f3f4f6;
-      border:1px solid #e5e7eb;
-      border-radius:999px;
-      padding:6px 10px;
-      font-weight:900;
-      font-size:12px;
-      color:var(--text);
+    .histItem{
       white-space:nowrap;
+      font-weight:900;
+      color:var(--text);
       flex:0 0 auto;
     }
-    /* ===== ここまで（追加） ===== */
-
-    .uidBottom{
-      margin-top:8px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-    .uidBottom .dt{
-      background:#f3f4f6;
-      border:1px solid #e5e7eb;
-      border-radius:999px;
-      padding:6px 10px;
+    .histTag{
+      color:var(--muted);
       font-weight:900;
+      margin-right:6px;
+    }
+    .endNote{
+      color:var(--muted);
       font-size:12px;
+      padding-top:10px;
+    }
+
+    .pillCount{
+      border:1px solid #e5e7eb;
+      background:#f9fafb;
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:12px;
+      font-weight:900;
       color:var(--text);
     }
     .moreBtn{
@@ -751,9 +747,9 @@
         <div class="endList" id="endList"></div>
 
         <div class="endDetail" id="endDetail">
-          <div class="uidCols">
-            <div class="c1">UID</div>
-            <div class="c2">最終鑑定日時</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <div style="font-weight:900;font-size:12px;" id="endTitle">—</div>
+            <div class="pillCount" id="endCount">0人</div>
           </div>
           <div id="uidList"></div>
           <button class="moreBtn" id="moreBtn" style="display:none;">さらに表示</button>
@@ -780,7 +776,7 @@
       view: "main", // main | repeat
       endKey: null,
       endPage: 1,
-      endPageSize: 20,
+      endPageSize: 200,
     };
 
     const fmtYen = (n)=>{
@@ -791,6 +787,68 @@
       if(n===null || n===undefined || n==="" || Number.isNaN(Number(n))) return "—";
       return Number(n).toFixed(1).replace(/\.0$/,"") + "%";
     };
+
+    const fmtDtShort = (s)=>{
+      if(s===null || s===undefined) return "";
+      let t = String(s).trim();
+      if(!t) return "";
+      // 2025-12-18 19:01:44 -> 2025/12/18 19:01
+      t = t.replace(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2}).*$/, "$1/$2/$3 $4:$5");
+      // 2025/12/18 19:01:44 -> 2025/12/18 19:01
+      t = t.replace(/^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2}).*$/, "$1/$2/$3 $4:$5");
+      // 2025-12-18 -> 2025/12/18
+      t = t.replace(/^(\d{4})-(\d{2})-(\d{2})$/, "$1/$2/$3");
+      return t;
+    };
+
+    function extractHistory(r){
+      const out = [];
+      const pushVal = (v)=>{
+        const s = fmtDtShort(v);
+        if(s) out.push(s);
+      };
+
+      if(!r || typeof r !== "object") return out;
+
+      // 配列で持ってるパターンを優先
+      const candArrays = ["history","histories","datetime_list","datetimes","dates","date_list","sessions","items","events"];
+      for(const k of candArrays){
+        if(Array.isArray(r[k]) && r[k].length){
+          r[k].forEach(x=>{
+            if(x && typeof x === "object"){
+              pushVal(x.datetime ?? x.date ?? x.dt ?? x.time ?? x.at);
+            }else{
+              pushVal(x);
+            }
+          });
+          if(out.length) return out;
+        }
+      }
+
+      // 連番キー（dt1/dt2, date1/date2, datetime1/datetime2 など）
+      const keys = Object.keys(r);
+      const pickByPrefix = (prefix)=>{
+        const pairs = [];
+        keys.forEach(kk=>{
+          const m = kk.match(new RegExp("^" + prefix + "(\\d+)$"));
+          if(m){
+            const idx = Number(m[1]);
+            pairs.push([idx, r[kk]]);
+          }
+        });
+        pairs.sort((a,b)=>a[0]-b[0]).forEach(p=>pushVal(p[1]));
+      };
+      pickByPrefix("datetime");
+      if(out.length) return out;
+      pickByPrefix("date");
+      if(out.length) return out;
+      pickByPrefix("dt");
+      if(out.length) return out;
+
+      // 単発
+      pushVal(r.datetime ?? r.date ?? r.dt ?? r.last_datetime ?? r.last_date);
+      return out;
+    }
 
     function safeGetMonthObj(){
       const p = state.payload;
@@ -1143,22 +1201,31 @@
         const arr = details[k] || [];
         const item = document.createElement("div");
         item.className="endItem";
+        const label = (k==="5回以上") ? "5回以上" : `${k}で終了`;
         item.innerHTML = `
-          <div class="l"><span>${k}で終了</span></div>
+          <div class="l"><span>${label}</span></div>
           <div class="r">${arr.length.toLocaleString("ja-JP")}人</div>
         `;
         item.addEventListener("click", ()=>{
           const detail = $("#endDetail");
+          const allItems = $$("#endList .endItem");
+
           if(state.endKey===k && detail.style.display==="block"){
             state.endKey = null;
             state.endPage = 1;
             detail.style.display = "none";
             $("#uidList").innerHTML = "";
             $("#moreBtn").style.display = "none";
+            allItems.forEach(it=>it.classList.remove("open"));
             return;
           }
+
           state.endKey = k;
           state.endPage = 1;
+
+          allItems.forEach(it=>it.classList.remove("open"));
+          item.classList.add("open");
+
           item.insertAdjacentElement("afterend", detail);
           renderEndDetail();
         });
@@ -1171,72 +1238,63 @@
       if(!mo || !mo.repeat || !mo.repeat.details || !state.endKey) return;
 
       const arrAll = mo.repeat.details[state.endKey] || [];
-      $("#endDetail").style.display = "block";
 
-      const start = 0;
-      const end = state.endPage * state.endPageSize;
-      const slice = arrAll.slice(start, end);
+      $("#endDetail").style.display = "block";
 
       const list = $("#uidList");
       list.innerHTML = "";
+
+      const colLabel = (state.endKey==="1回") ? "鑑定履歴日時" : "最終鑑定日時";
+
+      const head = document.createElement("div");
+      head.className = "endTableHead";
+      head.innerHTML = `<div>UID</div><div>${colLabel}</div>`;
+      list.appendChild(head);
+
+      const maxShow = Math.min(arrAll.length, state.endPageSize);
+      const slice = arrAll.slice(0, maxShow);
+
       if(slice.length===0){
         list.innerHTML = `<div class="empty">該当データがありません。</div>`;
       }else{
         slice.forEach(r=>{
-          const userId = r.user_id || "";
-          const cnt = Number(r.count || 0);
+          const row = document.createElement("div");
+          row.className = "endRow";
 
-          let dates = [];
-          if(Array.isArray(r.datetimes)) dates = r.datetimes.slice();
-          else if(Array.isArray(r.dates)) dates = r.dates.slice();
-          else if(Array.isArray(r.datetime_list)) dates = r.datetime_list.slice();
-          else if(Array.isArray(r.date_list)) dates = r.date_list.slice();
-          else if(typeof r.datetimes === "string" && r.datetimes.trim()){
-            dates = r.datetimes.split(/[,、\n]/).map(s=>s.trim()).filter(Boolean);
-          }else if(typeof r.datetime_list === "string" && r.datetime_list.trim()){
-            dates = r.datetime_list.split(/[,、\n]/).map(s=>s.trim()).filter(Boolean);
+          const uid = String(r.user_id ?? "");
+
+          const hist = extractHistory(r);
+          const wrap = document.createElement("div");
+          wrap.className = "histWrap" + ((state.endKey==="5回以上") ? " nowrap" : "");
+
+          if(hist.length===0){
+            const s = document.createElement("span");
+            s.style.color = "var(--muted)";
+            s.style.fontWeight = "900";
+            s.textContent = "—";
+            wrap.appendChild(s);
           }else{
-            const one = (r.datetime || r.date || "");
-            dates = one ? [one] : [];
+            hist.forEach((dt,i)=>{
+              const it = document.createElement("span");
+              it.className = "histItem";
+              it.innerHTML = `<span class="histTag">[${i+1}回目]</span>${dt}`;
+              wrap.appendChild(it);
+            });
           }
 
-          if(cnt>=2 && dates.length<cnt && dates.length>0){
-            // 足りない場合でも表示崩れ防止（最後の値で埋める）
-            while(dates.length<cnt) dates.push(dates[dates.length-1]);
-          }
+          row.innerHTML = `<div class="uidCell">${uid}</div><div></div>`;
+          row.children[1].appendChild(wrap);
 
-          const card = document.createElement("div");
-          card.className = "uidCard";
-
-          const pills = (dates.length===0)
-            ? `<div class="empty" style="margin:8px 0 0;">日時データがありません。</div>`
-            : `<div class="uidDates">` + dates.map((d,i)=>{
-                const idx = i+1;
-                const prefix = (cnt>=2) ? `${idx} ` : `1 `;
-                return `<div class="dtPill">${prefix}${d}</div>`;
-              }).join("") + `</div>`;
-
-          card.innerHTML = `
-            <div class="uidTop">
-              <div>${userId}</div>
-              <div style="color:var(--muted);font-size:12px;">${cnt}回</div>
-            </div>
-            ${pills}
-          `;
-          list.appendChild(card);
+          list.appendChild(row);
         });
+
+        const note = document.createElement("div");
+        note.className = "endNote";
+        note.textContent = "表示は上から200人まで";
+        list.appendChild(note);
       }
 
-      const more = $("#moreBtn");
-      if(end < arrAll.length){
-        more.style.display = "inline-block";
-        more.onclick = ()=>{
-          state.endPage += 1;
-          renderEndDetail();
-        };
-      }else{
-        more.style.display = "none";
-      }
+      $("#moreBtn").style.display = "none";
     }
 
     function setView(v){
