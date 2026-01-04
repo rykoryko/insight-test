@@ -1253,9 +1253,12 @@
       });
     });
 
+    // カードで切替（ボタンは表示しない）
     $("#cardRevenue").style.cursor = "pointer";
     $("#cardDetail").style.cursor = "pointer";
-    $("#cardRevenue").addEventListener("click", ()=> setView("main"));
+    $("#cardRevenue").addEventListener("click", ()=>{
+      setView("main");
+    });
     $("#cardDetail").addEventListener("click", ()=>{
       state.endKey = null;
       state.endPage = 1;
