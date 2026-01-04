@@ -475,73 +475,19 @@
       display:none;
     }
 
-    /* ====== ここから「終了回数の一覧」詳細 表スタイル ====== */
-    .endTableHead{
-      display:grid;
-      grid-template-columns: 1fr 1.6fr;
-      gap:10px;
-      padding:8px 4px;
-      margin-top:10px;
-      color:var(--muted);
-      font-size:11px;
-      font-weight:900;
-      border-top:1px solid #f3f4f6;
-    }
-    .endRow2{
-      display:grid;
-      grid-template-columns: 1fr 1.6fr;
-      gap:10px;
-      padding:10px 4px;
-      border-top:1px solid #f3f4f6;
-    }
-    .uidCell{
+    /* ===== ここから「終了回数の一覧」見た目調整（追加） ===== */
+    .uidCols{
       display:flex;
-      align-items:baseline;
-      gap:8px;
-      font-weight:900;
-      font-size:12px;
-      min-width:0;
-    }
-    .uidCnt{
-      color:var(--muted);
-      font-weight:900;
-      font-size:11px;
-      white-space:nowrap;
-    }
-    .dtCell{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px 8px;
-      align-items:flex-start;
-      justify-content:flex-start;
-      min-width:0;
-    }
-    .dtTag{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      border:1px solid #e5e7eb;
-      background:#f9fafb;
-      border-radius:999px;
-      padding:6px 10px;
-      font-weight:900;
-      font-size:11px;
-      color:var(--text);
-      max-width:100%;
-    }
-    .dtN{
-      color:var(--muted);
-      font-weight:900;
-      white-space:nowrap;
-      flex:0 0 auto;
-    }
-    .endNote{
-      margin-top:10px;
+      justify-content:space-between;
+      gap:10px;
       color:var(--muted);
       font-size:12px;
-      font-weight:700;
+      font-weight:800;
+      padding:2px 2px 6px;
     }
-    /* ====== ここまで ====== */
+    .uidCols .c1{ min-width:90px; }
+    .uidCols .c2{ flex:1; text-align:right; }
+    /* ===== ここまで（追加） ===== */
 
     .uidCard{
       border:1px solid #e5e7eb;
@@ -558,6 +504,31 @@
       font-weight:900;
       font-size:13px;
     }
+
+    /* ===== ここから「終了回数の一覧」見た目調整（追加） ===== */
+    .uidDates{
+      margin-top:8px;
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:2px;
+    }
+    .uidDates::-webkit-scrollbar{ height:6px; }
+    .uidDates::-webkit-scrollbar-thumb{ background:#e5e7eb; border-radius:999px; }
+    .dtPill{
+      background:#f3f4f6;
+      border:1px solid #e5e7eb;
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:900;
+      font-size:12px;
+      color:var(--text);
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    /* ===== ここまで（追加） ===== */
+
     .uidBottom{
       margin-top:8px;
       display:flex;
@@ -780,19 +751,11 @@
         <div class="endList" id="endList"></div>
 
         <div class="endDetail" id="endDetail">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-            <div style="font-weight:900;font-size:12px;" id="endTitle">—</div>
-            <div class="pillCount" id="endCount">0人</div>
+          <div class="uidCols">
+            <div class="c1">UID</div>
+            <div class="c2">最終鑑定日時</div>
           </div>
-
-          <div class="endTableHead">
-            <div>UID</div>
-            <div>最終鑑定日時</div>
-          </div>
-
           <div id="uidList"></div>
-          <div class="endNote" id="endNote"></div>
-
           <button class="moreBtn" id="moreBtn" style="display:none;">さらに表示</button>
         </div>
       </div>
@@ -1142,7 +1105,6 @@
       $("#endDetail").style.display = "none";
       $("#uidList").innerHTML = "";
       $("#moreBtn").style.display = "none";
-      $("#endNote").textContent = "";
 
       if(!mo || !mo.repeat){
         distBox.innerHTML = `<div class="empty">この月のデータがありません。</div>`;
@@ -1193,7 +1155,6 @@
             detail.style.display = "none";
             $("#uidList").innerHTML = "";
             $("#moreBtn").style.display = "none";
-            $("#endNote").textContent = "";
             return;
           }
           state.endKey = k;
@@ -1205,105 +1166,77 @@
       });
     }
 
-    function extractDateList(r){
-      const pickArray = (arr)=>{
-        if(!Array.isArray(arr)) return [];
-        return arr.map(x=>{
-          if(x===null || x===undefined) return "";
-          if(typeof x === "string" || typeof x === "number") return String(x);
-          if(typeof x === "object"){
-            return String(x.datetime || x.date || x.at || x.time || x.dt || "");
-          }
-          return "";
-        }).filter(s=>String(s).trim()!=="");
-      };
-
-      const keys = ["dates","date_list","datetime_list","datetimes","sessions","history","logs"];
-      for(const k of keys){
-        if(r && Array.isArray(r[k])){
-          const out = pickArray(r[k]);
-          if(out.length) return out;
-        }
-      }
-
-      const one = (r && (r.datetime || r.date || r.last_datetime || r.last_date)) ? String(r.datetime || r.date || r.last_datetime || r.last_date) : "";
-      if(one.trim()!=="") return [one];
-      return [];
-    }
-
     function renderEndDetail(){
       const mo = safeGetMonthObj();
       if(!mo || !mo.repeat || !mo.repeat.details || !state.endKey) return;
 
       const arrAll = mo.repeat.details[state.endKey] || [];
-      $("#endTitle").textContent = `${state.endKey}で終了`;
-      $("#endCount").textContent = `${arrAll.length.toLocaleString("ja-JP")}人`;
       $("#endDetail").style.display = "block";
 
-      const LIMIT = 200;
-      const slice = arrAll.slice(0, LIMIT);
+      const start = 0;
+      const end = state.endPage * state.endPageSize;
+      const slice = arrAll.slice(start, end);
 
       const list = $("#uidList");
       list.innerHTML = "";
-
       if(slice.length===0){
         list.innerHTML = `<div class="empty">該当データがありません。</div>`;
       }else{
         slice.forEach(r=>{
-          const row = document.createElement("div");
-          row.className = "endRow2";
+          const userId = r.user_id || "";
+          const cnt = Number(r.count || 0);
 
-          const uid = (r && (r.user_id ?? r.uid ?? r.user ?? "")) ? String(r.user_id ?? r.uid ?? r.user ?? "") : "—";
-          const dates = extractDateList(r);
-          const cnt = Number((r && r.count!==undefined) ? r.count : (dates.length || 0));
-
-          const left = document.createElement("div");
-          left.className = "uidCell";
-          const uidSpan = document.createElement("span");
-          uidSpan.textContent = uid;
-          left.appendChild(uidSpan);
-
-          if(cnt){
-            const c = document.createElement("span");
-            c.className = "uidCnt";
-            c.textContent = `${cnt}回`;
-            left.appendChild(c);
-          }
-
-          const right = document.createElement("div");
-          right.className = "dtCell";
-
-          if(dates.length===0){
-            const tag = document.createElement("span");
-            tag.className = "dtTag";
-            tag.textContent = "—";
-            right.appendChild(tag);
+          let dates = [];
+          if(Array.isArray(r.datetimes)) dates = r.datetimes.slice();
+          else if(Array.isArray(r.dates)) dates = r.dates.slice();
+          else if(Array.isArray(r.datetime_list)) dates = r.datetime_list.slice();
+          else if(Array.isArray(r.date_list)) dates = r.date_list.slice();
+          else if(typeof r.datetimes === "string" && r.datetimes.trim()){
+            dates = r.datetimes.split(/[,、\n]/).map(s=>s.trim()).filter(Boolean);
+          }else if(typeof r.datetime_list === "string" && r.datetime_list.trim()){
+            dates = r.datetime_list.split(/[,、\n]/).map(s=>s.trim()).filter(Boolean);
           }else{
-            dates.forEach((d,i)=>{
-              const tag = document.createElement("span");
-              tag.className = "dtTag";
-
-              const n = document.createElement("span");
-              n.className = "dtN";
-              n.textContent = `[${i+1}回目]`;
-
-              const t = document.createElement("span");
-              t.textContent = String(d);
-
-              tag.appendChild(n);
-              tag.appendChild(t);
-              right.appendChild(tag);
-            });
+            const one = (r.datetime || r.date || "");
+            dates = one ? [one] : [];
           }
 
-          row.appendChild(left);
-          row.appendChild(right);
-          list.appendChild(row);
+          if(cnt>=2 && dates.length<cnt && dates.length>0){
+            // 足りない場合でも表示崩れ防止（最後の値で埋める）
+            while(dates.length<cnt) dates.push(dates[dates.length-1]);
+          }
+
+          const card = document.createElement("div");
+          card.className = "uidCard";
+
+          const pills = (dates.length===0)
+            ? `<div class="empty" style="margin:8px 0 0;">日時データがありません。</div>`
+            : `<div class="uidDates">` + dates.map((d,i)=>{
+                const idx = i+1;
+                const prefix = (cnt>=2) ? `${idx} ` : `1 `;
+                return `<div class="dtPill">${prefix}${d}</div>`;
+              }).join("") + `</div>`;
+
+          card.innerHTML = `
+            <div class="uidTop">
+              <div>${userId}</div>
+              <div style="color:var(--muted);font-size:12px;">${cnt}回</div>
+            </div>
+            ${pills}
+          `;
+          list.appendChild(card);
         });
       }
 
-      $("#moreBtn").style.display = "none";
-      $("#endNote").textContent = (arrAll.length > LIMIT) ? `表示は上から${LIMIT}人まで` : "";
+      const more = $("#moreBtn");
+      if(end < arrAll.length){
+        more.style.display = "inline-block";
+        more.onclick = ()=>{
+          state.endPage += 1;
+          renderEndDetail();
+        };
+      }else{
+        more.style.display = "none";
+      }
     }
 
     function setView(v){
