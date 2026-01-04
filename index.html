@@ -586,14 +586,8 @@
       </div>
     </div>
 
-    <!-- 控えめ切替（見た目優先で小さく） -->
-    <div class="viewToggle">
-      <button class="viewBtn active" id="viewMainBtn">グラフ/詳細データ</button>
-      <button class="viewBtn" id="viewRepeatBtn">回数別/終了回数</button>
-    </div>
-
     <!-- ===== VIEW A (PDF 1枚目) ===== -->
-    <div id="viewMain">
+    <div id="viewMain" style="display:none;">
       <div class="graphWrap">
         <div class="tabRow">
           <button class="tab active" data-graph="time">時間別</button>
@@ -701,7 +695,7 @@
     </div>
 
     <!-- ===== VIEW B (PDF 2枚目) ===== -->
-    <div id="viewRepeat" style="display:none;">
+    <div id="viewRepeat">
       <div class="panelCard">
         <div class="panelHead">
           <div class="panelTitle">回数別ユーザー数</div>
@@ -743,7 +737,7 @@
       month: null,
       graphMode: "time",
       subMode: "user",
-      view: "main", // main | repeat
+      view: "repeat", // main | repeat
       endKey: null,
       endPage: 1,
       endPageSize: 20,
@@ -1173,8 +1167,6 @@
       state.view = v;
       $("#viewMain").style.display = (v==="main") ? "block" : "none";
       $("#viewRepeat").style.display = (v==="repeat") ? "block" : "none";
-      $("#viewMainBtn").classList.toggle("active", v==="main");
-      $("#viewRepeatBtn").classList.toggle("active", v==="repeat");
       renderCards();
       if(v==="main"){
         renderGraph();
@@ -1224,7 +1216,7 @@
           state.month = (payload.months && payload.months[0]) ? payload.months[0] : null;
           state.graphMode = "time";
           state.subMode = "user";
-          state.view = "main";
+          state.view = "repeat";
           state.endKey = null;
           state.endPage = 1;
           // tabs reset
@@ -1232,7 +1224,7 @@
           $$(".subTab").forEach(b=>b.classList.toggle("active", b.dataset.sub==="user"));
           $("#subUser").style.display="block";
           $("#subKanteishi").style.display="none";
-          setView("main");
+          setView("repeat");
           renderAll();
         }catch(err){
           alert("JSONの読み込みに失敗しました。");
@@ -1261,8 +1253,14 @@
       });
     });
 
-    $("#viewMainBtn").addEventListener("click", ()=> setView("main"));
-    $("#viewRepeatBtn").addEventListener("click", ()=> setView("repeat"));
+    $("#cardRevenue").style.cursor = "pointer";
+    $("#cardDetail").style.cursor = "pointer";
+    $("#cardRevenue").addEventListener("click", ()=> setView("main"));
+    $("#cardDetail").addEventListener("click", ()=>{
+      state.endKey = null;
+      state.endPage = 1;
+      setView("repeat");
+    });
 
     // auto-load when hosted (GitHub Pages) : insight_data.json in same folder
     (async ()=>{
@@ -1272,7 +1270,7 @@
         const payload = await res.json();
         state.payload = payload;
         state.month = (payload.months && payload.months[0]) ? payload.months[0] : null;
-        setView("main");
+        setView("repeat");
         renderAll();
       }catch(e){
         // offline local open: ask user to pick json
