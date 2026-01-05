@@ -431,107 +431,27 @@
     .distRow .n{ text-align:right; font-weight:900; }
     .distRow .p{ text-align:right; color:var(--muted); font-weight:900; }
 
-    /* ====== ここだけ修正（終了回数の一覧 UI） ====== */
     .endList{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
+      border-top:1px solid #f3f4f6;
       margin-top:10px;
+      padding-top:10px;
     }
     .endItem{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding:12px 12px;
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      background:#fff;
+      padding:10px 0;
+      border-bottom:1px solid #f3f4f6;
       cursor:pointer;
       user-select:none;
     }
-    .endItem.open{
-      border-bottom-left-radius:0;
-      border-bottom-right-radius:0;
-      border-bottom:0;
-    }
     .endItem .l{
-      font-weight:900;
-      font-size:12px;
-    }
-    .endItem .r{
-      color:var(--muted);
-      font-weight:900;
-      font-size:12px;
-    }
-    .endDetail{
-      margin-top:0;
-      padding:10px 12px 12px;
-      border:1px solid #e5e7eb;
-      border-top:0;
-      border-radius:0 0 12px 12px;
-      background:#fff;
-      display:none;
-    }
-    /* 展開側の「1回で終了」など（重複見出し）を消す */
-    #endDetail > div:first-child{ display:none; }
-
-    .endTableHead{
-      display:grid;
-      grid-template-columns: 1fr 1.7fr;
-      gap:10px;
-      align-items:center;
-      padding:8px 0 10px;
-      border-bottom:1px solid #f3f4f6;
-      font-size:12px;
-      color:var(--muted);
-      font-weight:900;
-    }
-    .endRow{
-      display:grid;
-      grid-template-columns: 1fr 1.7fr;
-      gap:10px;
-      align-items:flex-start;
-      padding:10px 0;
-      border-bottom:1px solid #f3f4f6;
-      font-size:12px;
-    }
-    .endRow:last-child{ border-bottom:0; }
-    .uidCell{
-      font-weight:900;
-      letter-spacing:.02em;
-    }
-
-    .histWrap{
       display:flex;
-      gap:14px;
-      flex-wrap:wrap;
       align-items:center;
-      justify-content:flex-start;
-      min-width:0;
-    }
-    .histWrap.nowrap{
-      flex-wrap:nowrap;
-      overflow-x:auto;
-      -webkit-overflow-scrolling:touch;
-      padding-bottom:2px;
-    }
-    .histItem{
-      white-space:nowrap;
+      gap:10px;
       font-weight:900;
-      color:var(--text);
-      flex:0 0 auto;
-    }
-    .histTag{
-      color:var(--muted);
-      font-weight:900;
-      margin-right:6px;
-    }
-    .endNote{
-      color:var(--muted);
       font-size:12px;
-      padding-top:10px;
     }
-
     .pillCount{
       border:1px solid #e5e7eb;
       background:#f9fafb;
@@ -539,6 +459,50 @@
       padding:4px 10px;
       font-size:12px;
       font-weight:900;
+      color:var(--text);
+    }
+    .endItem .r{
+      color:var(--muted);
+      font-weight:900;
+      font-size:12px;
+    }
+    .endDetail{
+      margin-top:10px;
+      padding:10px;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      background:#fff;
+      display:none;
+    }
+    .uidCard{
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:10px;
+      margin:10px 0;
+      background:#fff;
+    }
+    .uidTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-weight:900;
+      font-size:13px;
+    }
+    .uidBottom{
+      margin-top:8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .uidBottom .dt{
+      background:#f3f4f6;
+      border:1px solid #e5e7eb;
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:900;
+      font-size:12px;
       color:var(--text);
     }
     .moreBtn{
@@ -550,6 +514,61 @@
       font-weight:900;
       cursor:pointer;
     }
+
+    /* ====== ここから「終了回数の一覧」だけ修正 ====== */
+    .endTableHead{
+      display:grid;
+      grid-template-columns: 110px 1fr;
+      gap:10px;
+      align-items:center;
+      padding:6px 6px 8px;
+      color:var(--muted);
+      font-weight:900;
+      font-size:12px;
+      border-bottom:1px solid #f3f4f6;
+    }
+    .endRow{
+      display:grid;
+      grid-template-columns: 110px 1fr;
+      gap:10px;
+      align-items:center;
+      padding:10px 6px;
+      border-bottom:1px solid #f3f4f6;
+    }
+    .endUid{
+      font-weight:900;
+      font-size:13px;
+      letter-spacing:.01em;
+    }
+    .endDates{
+      overflow-x:auto;
+      white-space:nowrap;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom:2px;
+    }
+    .datePill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#f3f4f6;
+      border:1px solid #e5e7eb;
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:900;
+      font-size:12px;
+      color:var(--text);
+      margin-right:8px;
+    }
+    .datePill b{
+      color:var(--muted);
+      font-weight:900;
+    }
+    .moreRow{
+      display:flex;
+      justify-content:center;
+      padding:10px 0 2px;
+    }
+    /* ====== ここまで「終了回数の一覧」だけ修正 ====== */
 
     .empty{
       color:var(--muted);
@@ -747,12 +766,14 @@
         <div class="endList" id="endList"></div>
 
         <div class="endDetail" id="endDetail">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-            <div style="font-weight:900;font-size:12px;" id="endTitle">—</div>
-            <div class="pillCount" id="endCount">0人</div>
+          <div class="endTableHead">
+            <div>UID</div>
+            <div id="histHead">鑑定履歴日時</div>
           </div>
           <div id="uidList"></div>
-          <button class="moreBtn" id="moreBtn" style="display:none;">さらに表示</button>
+          <div class="moreRow">
+            <button class="moreBtn" id="moreBtn" style="display:none;">続きを表示</button>
+          </div>
         </div>
       </div>
     </div>
@@ -776,7 +797,7 @@
       view: "main", // main | repeat
       endKey: null,
       endPage: 1,
-      endPageSize: 200,
+      endPageSize: 50,
     };
 
     const fmtYen = (n)=>{
@@ -787,68 +808,6 @@
       if(n===null || n===undefined || n==="" || Number.isNaN(Number(n))) return "—";
       return Number(n).toFixed(1).replace(/\.0$/,"") + "%";
     };
-
-    const fmtDtShort = (s)=>{
-      if(s===null || s===undefined) return "";
-      let t = String(s).trim();
-      if(!t) return "";
-      // 2025-12-18 19:01:44 -> 2025/12/18 19:01
-      t = t.replace(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2}).*$/, "$1/$2/$3 $4:$5");
-      // 2025/12/18 19:01:44 -> 2025/12/18 19:01
-      t = t.replace(/^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2}).*$/, "$1/$2/$3 $4:$5");
-      // 2025-12-18 -> 2025/12/18
-      t = t.replace(/^(\d{4})-(\d{2})-(\d{2})$/, "$1/$2/$3");
-      return t;
-    };
-
-    function extractHistory(r){
-      const out = [];
-      const pushVal = (v)=>{
-        const s = fmtDtShort(v);
-        if(s) out.push(s);
-      };
-
-      if(!r || typeof r !== "object") return out;
-
-      // 配列で持ってるパターンを優先
-      const candArrays = ["history","histories","datetime_list","datetimes","dates","date_list","sessions","items","events"];
-      for(const k of candArrays){
-        if(Array.isArray(r[k]) && r[k].length){
-          r[k].forEach(x=>{
-            if(x && typeof x === "object"){
-              pushVal(x.datetime ?? x.date ?? x.dt ?? x.time ?? x.at);
-            }else{
-              pushVal(x);
-            }
-          });
-          if(out.length) return out;
-        }
-      }
-
-      // 連番キー（dt1/dt2, date1/date2, datetime1/datetime2 など）
-      const keys = Object.keys(r);
-      const pickByPrefix = (prefix)=>{
-        const pairs = [];
-        keys.forEach(kk=>{
-          const m = kk.match(new RegExp("^" + prefix + "(\\d+)$"));
-          if(m){
-            const idx = Number(m[1]);
-            pairs.push([idx, r[kk]]);
-          }
-        });
-        pairs.sort((a,b)=>a[0]-b[0]).forEach(p=>pushVal(p[1]));
-      };
-      pickByPrefix("datetime");
-      if(out.length) return out;
-      pickByPrefix("date");
-      if(out.length) return out;
-      pickByPrefix("dt");
-      if(out.length) return out;
-
-      // 単発
-      pushVal(r.datetime ?? r.date ?? r.dt ?? r.last_datetime ?? r.last_date);
-      return out;
-    }
 
     function safeGetMonthObj(){
       const p = state.payload;
@@ -1154,6 +1113,46 @@
       $("#amRate").textContent = (am.send_rate_pct!==undefined) ? (String(am.send_rate_pct) + "%") : "—";
     }
 
+    /* ====== ここから「終了回数の一覧」だけ修正（JS） ====== */
+    function normalizeDt(s){
+      if(!s) return "";
+      let t = String(s);
+      t = t.replace("T"," ");
+      t = t.replace(/-/g,"/");
+      t = t.replace(/(\d{2}:\d{2}):\d{2}/, "$1");
+      return t.trim();
+    }
+    function extractHistory(r){
+      if(!r) return [];
+      if(Array.isArray(r.history)){
+        return r.history.map((x,i)=>({idx:i+1, dt: normalizeDt((x && (x.datetime||x.date)) ? (x.datetime||x.date) : x)}));
+      }
+      if(Array.isArray(r.datetimes)){
+        return r.datetimes.map((x,i)=>({idx:i+1, dt: normalizeDt(x)}));
+      }
+      if(Array.isArray(r.dates)){
+        return r.dates.map((x,i)=>({idx:i+1, dt: normalizeDt(x)}));
+      }
+      if(Array.isArray(r.times)){
+        return r.times.map((x,i)=>({idx:i+1, dt: normalizeDt(x)}));
+      }
+      const found = [];
+      Object.keys(r).forEach(k=>{
+        const m = k.match(/^(?:datetime|date|dt)(\d+)$/i);
+        if(m){
+          const n = Number(m[1]);
+          if(!Number.isNaN(n)) found.push({n, v:r[k]});
+        }
+      });
+      found.sort((a,b)=>a.n-b.n);
+      if(found.length){
+        return found.map(x=>({idx:x.n, dt: normalizeDt(x.v)}));
+      }
+      const one = r.datetime || r.date || r.last_datetime || r.last_date || "";
+      return one ? [{idx:1, dt: normalizeDt(one)}] : [];
+    }
+    /* ====== ここまで「終了回数の一覧」だけ修正（JS） ====== */
+
     function renderRepeatView(){
       const mo = safeGetMonthObj();
       const distBox = $("#distTable");
@@ -1201,31 +1200,22 @@
         const arr = details[k] || [];
         const item = document.createElement("div");
         item.className="endItem";
-        const label = (k==="5回以上") ? "5回以上" : `${k}で終了`;
         item.innerHTML = `
-          <div class="l"><span>${label}</span></div>
+          <div class="l"><span>${k}で終了</span></div>
           <div class="r">${arr.length.toLocaleString("ja-JP")}人</div>
         `;
         item.addEventListener("click", ()=>{
           const detail = $("#endDetail");
-          const allItems = $$("#endList .endItem");
-
           if(state.endKey===k && detail.style.display==="block"){
             state.endKey = null;
             state.endPage = 1;
             detail.style.display = "none";
             $("#uidList").innerHTML = "";
             $("#moreBtn").style.display = "none";
-            allItems.forEach(it=>it.classList.remove("open"));
             return;
           }
-
           state.endKey = k;
           state.endPage = 1;
-
-          allItems.forEach(it=>it.classList.remove("open"));
-          item.classList.add("open");
-
           item.insertAdjacentElement("afterend", detail);
           renderEndDetail();
         });
@@ -1239,20 +1229,16 @@
 
       const arrAll = mo.repeat.details[state.endKey] || [];
 
+      // 1回は「鑑定履歴日時」、2回以上は「最終鑑定日時」
+      $("#histHead").textContent = (state.endKey==="1回") ? "鑑定履歴日時" : "最終鑑定日時";
+
       $("#endDetail").style.display = "block";
+
+      const end = state.endPage * state.endPageSize;
+      const slice = arrAll.slice(0, end);
 
       const list = $("#uidList");
       list.innerHTML = "";
-
-      const colLabel = (state.endKey==="1回") ? "鑑定履歴日時" : "最終鑑定日時";
-
-      const head = document.createElement("div");
-      head.className = "endTableHead";
-      head.innerHTML = `<div>UID</div><div>${colLabel}</div>`;
-      list.appendChild(head);
-
-      const maxShow = Math.min(arrAll.length, state.endPageSize);
-      const slice = arrAll.slice(0, maxShow);
 
       if(slice.length===0){
         list.innerHTML = `<div class="empty">該当データがありません。</div>`;
@@ -1261,40 +1247,33 @@
           const row = document.createElement("div");
           row.className = "endRow";
 
-          const uid = String(r.user_id ?? "");
-
+          const uid = (r && (r.user_id ?? r.uid)) ? String(r.user_id ?? r.uid) : "";
           const hist = extractHistory(r);
-          const wrap = document.createElement("div");
-          wrap.className = "histWrap" + ((state.endKey==="5回以上") ? " nowrap" : "");
 
-          if(hist.length===0){
-            const s = document.createElement("span");
-            s.style.color = "var(--muted)";
-            s.style.fontWeight = "900";
-            s.textContent = "—";
-            wrap.appendChild(s);
-          }else{
-            hist.forEach((dt,i)=>{
-              const it = document.createElement("span");
-              it.className = "histItem";
-              it.innerHTML = `<span class="histTag">[${i+1}回目]</span>${dt}`;
-              wrap.appendChild(it);
-            });
-          }
+          const pills = (hist.length ? hist : [{idx:1, dt:""}]).map(h=>{
+            const dt = h.dt || "";
+            return `<span class="datePill"><b>[${h.idx}回目]</b>${dt ? " " + dt : ""}</span>`;
+          }).join("");
 
-          row.innerHTML = `<div class="uidCell">${uid}</div><div></div>`;
-          row.children[1].appendChild(wrap);
-
+          row.innerHTML = `
+            <div class="endUid">${uid}</div>
+            <div class="endDates">${pills}</div>
+          `;
           list.appendChild(row);
         });
-
-        const note = document.createElement("div");
-        note.className = "endNote";
-        note.textContent = "表示は上から200人まで";
-        list.appendChild(note);
       }
 
-      $("#moreBtn").style.display = "none";
+      const more = $("#moreBtn");
+      if(end < arrAll.length){
+        more.style.display = "inline-block";
+        more.textContent = "続きを表示";
+        more.onclick = ()=>{
+          state.endPage += 1;
+          renderEndDetail();
+        };
+      }else{
+        more.style.display = "none";
+      }
     }
 
     function setView(v){
